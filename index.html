@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v8</title>
+    <title>中山大学附属第五医院透析工程管理系统 v9</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -1333,6 +1333,80 @@ border-color: var(--water-primary);
             opacity: 0.6;
             pointer-events: none;
         }
+        
+        /* ====== 批量录入设备列表样式 ====== */
+        .qc-device-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .qc-device-item:hover {
+            background: var(--border);
+        }
+        
+        .qc-device-item.selected {
+            background: rgba(123, 31, 162, 0.1);
+            border: 1px solid var(--qc-primary);
+        }
+        
+        .qc-device-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            accent-color: var(--qc-primary);
+            cursor: pointer;
+        }
+        
+        .qc-device-item .device-id {
+            flex: 1;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .qc-device-item .device-id.water {
+            color: var(--water-primary);
+            font-weight: 600;
+        }
+        
+        .qc-device-item select {
+            width: 90px;
+            padding: 6px 8px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--card-bg);
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        .qc-device-item input[type="text"] {
+            width: 100px;
+            padding: 6px 8px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--card-bg);
+        }
+        
+        .qc-device-item.water-row {
+            background: rgba(0, 121, 107, 0.08);
+            border: 1px dashed var(--water-primary);
+        }
+        
+        .qc-section-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 8px 0 4px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1399,6 +1473,14 @@ border-color: var(--water-primary);
 </button>
 </div>
     
+    <!-- ====== 水处理设备信息 ====== -->
+    <div id="waterDeviceInfo" style="display:none;background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:12px;padding:12px 16px;margin:0 12px 8px;color:#fff;font-size:13px;">
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+            <span style="font-weight:bold;font-size:14px;">💧 双级反渗透水处理系统</span>
+            <span>型号：劳铒/Ro Dia II3600</span>
+            <span>启用日期：2018-03-19</span>
+        </div>
+    </div>
     <!-- ====== 水处理模块子Tab ====== -->
     <div class="sub-tabs" id="waterSubTabs" style="display:none;">
 <button class="sub-btn active" onclick="switchWaterTab('daily')">
@@ -2128,56 +2210,69 @@ border-color: var(--water-primary);
 
 <!-- ====== 质控检测-检测记录 ====== -->
 <div id="qcRecordPage" class="page-content" style="display:none;">
+    <!-- 批量录入表单 -->
     <div class="card">
-        <div class="card-title">📝 新增检测记录</div>
+        <div class="card-title">📝 批量检测记录录入</div>
+        
+        <!-- 顶部公共字段 -->
         <div class="form-group">
             <label class="form-label">检测日期</label>
             <input type="date" id="qcTestDate" class="form-input">
         </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">检测类型 <span class="required">*</span></label>
+                <select id="qcTestType" class="form-select" onchange="qcUpdateSampleTypes(); qcLoadDeviceList();">
+                    <option value="">请选择</option>
+                    <option value="细菌检测">细菌检测</option>
+                    <option value="内毒素检测">内毒素检测</option>
+                    <option value="化学污染物检测">化学污染物检测</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">样品类型 <span class="required">*</span></label>
+                <select id="qcSampleType" class="form-select" disabled>
+                    <option value="">请先选检测类型</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 公共备注 -->
         <div class="form-group">
-            <label class="form-label">检测类型 <span class="required">*</span></label>
-            <select id="qcTestType" class="form-select" onchange="qcUpdateSampleTypes()">
-                <option value="">请选择</option>
-                <option value="细菌检测">细菌检测</option>
-                <option value="内毒素检测">内毒素检测</option>
-                <option value="化学污染物检测">化学污染物检测</option>
-            </select>
+            <label class="form-label">备注（公共备注）</label>
+            <input type="text" id="qcNotes" class="form-input" placeholder="特殊情况说明...">
         </div>
-        <div class="form-group">
-            <label class="form-label">样品类型 <span class="required">*</span></label>
-            <select id="qcSampleType" class="form-select">
-                <option value="">请先选择检测类型</option>
-            </select>
-        </div>
-        <div class="form-group" id="qcSampleOtherGroup" style="display:none;">
-            <label class="form-label">请输入样品类型</label>
-            <input type="text" id="qcSampleOther" class="form-input" placeholder="请输入">
-        </div>
-        <div class="form-group">
-            <label class="form-label">检测结果 <span class="required">*</span></label>
-            <select id="qcIsQualified" class="form-select">
-                <option value="true">合格</option>
-                <option value="false">不合格</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label class="form-label">检测值 <span style="font-size:11px;color:var(--text-secondary);">(可选)</span></label>
-            <input type="text" id="qcTestValue" class="form-input" placeholder="如: 50 CFU/mL 或 0.15 EU/mL">
-        </div>
-        <div class="form-group">
-            <label class="form-label">检测者</label>
-            <input type="text" id="qcTester" class="form-input" value="林茂仁">
-        </div>
-        <div class="form-group">
-            <label class="form-label">备注</label>
-            <textarea id="qcNotes" class="form-input" rows="2" placeholder="特殊情况说明..."></textarea>
-        </div>
-        <button type="button" class="add-repair-btn" onclick="qcSubmitRecord()" style="width:100%;margin-top:8px;">✅ 提交检测记录</button>
     </div>
     
-    <!-- 搜索栏 -->
+    <!-- 批量录入区域 -->
+    <div class="card">
+        <div class="card-title">🔬 批量录入 <span id="qcSelectedCount" style="color:var(--success);">0台已选</span></div>
+        
+        <!-- 全选控制 -->
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+            <button type="button" class="filter-btn" onclick="qcToggleSelectAll(true)" style="flex:1;">✅ 全选</button>
+            <button type="button" class="filter-btn" onclick="qcToggleSelectAll(false)" style="flex:1;">⭕ 全不选</button>
+        </div>
+        
+        <!-- 设备列表容器 -->
+        <div id="qcDeviceListContainer">
+            <div style="text-align:center;padding:20px;color:var(--text-secondary);">请先选择检测类型和样品类型</div>
+        </div>
+    </div>
+    
+    <!-- 实施者 -->
+    <div class="card">
+        <div class="form-group">
+            <label class="form-label">实施者</label>
+            <input type="text" id="qcTester" class="form-input" value="林茂仁">
+        </div>
+        <button type="button" class="submit-btn" onclick="qcBatchSubmit()" style="margin-top:8px;">✅ 一键批量提交</button>
+    </div>
+    
+    <!-- 历史记录搜索栏 -->
     <div class="history-search-bar" style="margin-top:12px;">
-        <input type="text" id="qcHistorySearch" class="history-search-input" placeholder="搜索检测类型/样品..." oninput="qcFilterHistory()">
+        <input type="text" id="qcHistorySearch" class="history-search-input" placeholder="搜索检测类型/设备/样品..." oninput="qcFilterHistory()">
     </div>
     <div id="qcHistoryList"></div>
     <div id="qcHistoryLoadMore" class="history-load-more" style="display:none;" onclick="qcLoadMoreHistory()">加载更多</div>
@@ -2311,6 +2406,10 @@ document.getElementById('btnEngineer').className = 'mod-btn' + (mod === 'enginee
             document.getElementById('engSubTabs').style.display = mod === 'engineer' ? 'flex' : 'none';
             document.getElementById('waterSubTabs').style.display = mod === 'water' ? 'flex' : 'none';
             document.getElementById('qcSubTabs').style.display = mod === 'qc' ? 'flex' : 'none';
+            
+            // 水处理设备信息栏
+            var waterInfo = document.getElementById('waterDeviceInfo');
+            if (waterInfo) waterInfo.style.display = mod === 'water' ? 'block' : 'none';
 
             // 隐藏所有内容页
 var allPages = ['engFormPage', 'engHistoryPage', 'engStatsPage', 'engMaintPage', 'waterDailyPage', 'waterMicroPage', 'waterDisinfectionPage', 'waterConsumablePage', 'waterMaintenancePage', 'waterWstatsPage', 'qcRecordPage', 'qcReminderPage'];
@@ -4622,6 +4721,12 @@ function switchQCTab(tab) {
     document.getElementById('qcReminderPage').style.display = tab === 'reminder' ? 'block' : 'none';
     
     if (tab === 'record') {
+        // 初始化检测日期
+        var today = new Date().toISOString().split('T')[0];
+        var qcDateInput = document.getElementById('qcTestDate');
+        if (qcDateInput && !qcDateInput.value) {
+            qcDateInput.value = today;
+        }
         qcLoadHistory();
     } else if (tab === 'reminder') {
         qcLoadReminders();
@@ -4634,12 +4739,10 @@ function switchQCTab(tab) {
 function qcUpdateSampleTypes() {
     var testType = document.getElementById('qcTestType').value;
     var sampleSelect = document.getElementById('qcSampleType');
-    var sampleOtherGroup = document.getElementById('qcSampleOtherGroup');
-    
-    sampleOtherGroup.style.display = 'none';
     
     if (!testType) {
-        sampleSelect.innerHTML = '<option value="">请先选择检测类型</option>';
+        sampleSelect.innerHTML = '<option value="">请先选检测类型</option>';
+        sampleSelect.disabled = true;
         return;
     }
     
@@ -4647,7 +4750,7 @@ function qcUpdateSampleTypes() {
     
     if (testType === '化学污染物检测') {
         // 化学污染物检测只有透析用水
-        options = '<option value="透析用水">透析用水</option>';
+        options = '<option value="透析用水" selected>透析用水</option>';
         sampleSelect.disabled = true;
     } else {
         // 细菌检测和内毒素检测可选三种
@@ -4655,91 +4758,266 @@ function qcUpdateSampleTypes() {
         options += '<option value="透析用水">透析用水</option>';
         options += '<option value="透析液">透析液</option>';
         options += '<option value="置换液">置换液</option>';
-        options += '<option value="其他">其他</option>';
         sampleSelect.disabled = false;
     }
     
     sampleSelect.innerHTML = options;
-    
-    // 监听"其他"选项
-    sampleSelect.onchange = function() {
-        if (this.value === '其他') {
-            document.getElementById('qcSampleOtherGroup').style.display = 'block';
-        } else {
-            document.getElementById('qcSampleOtherGroup').style.display = 'none';
-        }
-    };
 }
 
-// ====== 提交检测记录 ======
-async function qcSubmitRecord() {
+// ====== 加载设备列表 ======
+var qcDeviceList = [];
+var qcWaterDevice = { device_id: '水处理', device_name: '水处理设备' };
+
+async function qcLoadDeviceList() {
+    var testType = document.getElementById('qcTestType').value;
+    var sampleType = document.getElementById('qcSampleType').value;
+    var container = document.getElementById('qcDeviceListContainer');
+    
+    if (!testType || !sampleType) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">请先选择检测类型和样品类型</div>';
+        return;
+    }
+    
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">加载设备列表...</div>';
+    qcDeviceList = [];
+    
+    try {
+        // 从repair_items获取去重的device_id列表
+        if (isSupabaseConfigured) {
+            var repairs = await sbGet('repair_items', 'select=device_id&order=device_id.asc');
+            var deviceMap = {};
+            (repairs || []).forEach(function(r) {
+                if (r.device_id && r.device_id !== '中央供液室') {
+                    // 提取区号用于排序
+                    var match = r.device_id.match(/^(\d+)-/);
+                    var zone = match ? parseInt(match[1]) : 99;
+                    if (!deviceMap[r.device_id]) {
+                        deviceMap[r.device_id] = { zone: zone, id: r.device_id, name: r.device_id };
+                    }
+                }
+            });
+            
+            // 转换为数组并按区号排序
+            qcDeviceList = Object.values(deviceMap).sort(function(a, b) {
+                if (a.zone !== b.zone) return a.zone - b.zone;
+                return a.id.localeCompare(b.id, undefined, { numeric: true });
+            });
+        }
+    } catch(e) {
+        console.log('获取设备列表失败，使用默认列表');
+    }
+    
+    // 如果没有获取到设备，使用硬编码的设备列表
+    if (qcDeviceList.length === 0) {
+        qcDeviceList = [
+            {id: '01-01', name: '01-01'}, {id: '01-02', name: '01-02'}, {id: '01-03', name: '01-03'},
+            {id: '01-04', name: '01-04'}, {id: '01-05', name: '01-05'}, {id: '01-06', name: '01-06'},
+            {id: '01-07', name: '01-07'}, {id: '01-08', name: '01-08'}, {id: '01-09', name: '01-09'},
+            {id: '01-10', name: '01-10'}, {id: '01-11', name: '01-11'}, {id: '01-12', name: '01-12'},
+            {id: '02-01', name: '02-01'}, {id: '02-02', name: '02-02'}, {id: '02-03', name: '02-03'},
+            {id: '02-04', name: '02-04'}, {id: '02-05', name: '02-05'}, {id: '02-06', name: '02-06'},
+            {id: '03-01', name: '03-01'}, {id: '03-02', name: '03-02'}, {id: '03-03', name: '03-03'},
+            {id: '03-04', name: '03-04'}, {id: '03-05', name: '03-05'}, {id: '03-06', name: '03-06'},
+            {id: '04-01', name: '04-01'}, {id: '04-02', name: '04-02'}, {id: '04-03', name: '04-03'},
+            {id: '04-04', name: '04-04'}, {id: '04-05', name: '04-05'}, {id: '04-06', name: '04-06'},
+            {id: '05-01', name: '05-01'}, {id: '05-02', name: '05-02'}, {id: '05-03', name: '05-03'},
+            {id: '05-04', name: '05-04'}, {id: '05-05', name: '05-05'}, {id: '05-06', name: '05-06'},
+            {id: '05-07', name: '05-07'}, {id: '06-01', name: '06-01'}, {id: '06-02', name: '06-02'},
+            {id: '06-03', name: '06-03'}, {id: '06-04', name: '06-04'}, {id: '06-05', name: '06-05'},
+            {id: '06-06', name: '06-06'}, {id: '07-01', name: '07-01'}, {id: '07-02', name: '07-02'},
+            {id: '07-03', name: '07-03'}, {id: '07-04', name: '07-04'}, {id: '07-05', name: '07-05'},
+            {id: '07-06', name: '07-06'}, {id: '07-07', name: '07-07'}, {id: '07-08', name: '07-08'},
+            {id: '07-09', name: '07-09'}, {id: '07-10', name: '07-10'}, {id: '07-11', name: '07-11'},
+            {id: '07-12', name: '07-12'}, {id: '07-13', name: '07-13'}, {id: '07-14', name: '07-14'},
+            {id: '08-01', name: '08-01'}, {id: '08-02', name: '08-02'}, {id: '08-03', name: '08-03'},
+            {id: '08-04', name: '08-04'}, {id: '08-05', name: '08-05'}, {id: '08-06', name: '08-06'},
+            {id: '08-07', name: '08-07'}, {id: '08-08', name: '08-08'}, {id: '08-09', name: '08-09'},
+            {id: '08-10', name: '08-10'}, {id: '08-11', name: '08-11'}, {id: '08-12', name: '08-12'},
+            {id: '08-13', name: '08-13'}, {id: '08-14', name: '08-14'}, {id: '09-01', name: '09-01'},
+            {id: '09-02', name: '09-02'}, {id: '09-03', name: '09-03'}, {id: '09-04', name: '09-04'},
+            {id: '09-05', name: '09-05'}, {id: '09-06', name: '09-06'}, {id: '09-07', name: '09-07'},
+            {id: '09-08', name: '09-08'}, {id: '09-09', name: '09-09'}, {id: '09-10', name: '09-10'},
+            {id: '09-11', name: '09-11'}, {id: '09-12', name: '09-12'}, {id: '09-13', name: '09-13'},
+            {id: '09-14', name: '09-14'}, {id: '10-01', name: '10-01'}, {id: '10-02', name: '10-02'},
+            {id: '10-03', name: '10-03'}, {id: '10-04', name: '10-04'}, {id: '10-05', name: '10-05'},
+            {id: '10-06', name: '10-06'}, {id: '11-01', name: '11-01'}, {id: '11-02', name: '11-02'},
+            {id: '12-01', name: '12-01'}, {id: '12-02', name: '12-02'}, {id: '12-03', name: '12-03'}
+        ];
+    }
+    
+    // 生成设备列表HTML
+    var html = '';
+    
+    // 水处理单独一行
+    html += '<div class="qc-device-item water-row selected" data-device-id="水处理" onclick="qcToggleDevice(this)">';
+    html += '<input type="checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest(\'.qc-device-item\'))">';
+    html += '<span class="device-id water">💧 水处理</span>';
+    html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
+    html += '<input type="text" class="qc-test-value" placeholder="检测值">';
+    html += '</div>';
+    
+    // 分区显示透析机
+    var currentZone = '';
+    qcDeviceList.forEach(function(device, idx) {
+        var zoneMatch = device.id.match(/^(\d+)-/);
+        var zone = zoneMatch ? zoneMatch[1] : '';
+        
+        // 区号变化时添加区标题
+        if (zone !== currentZone) {
+            if (currentZone !== '') {
+                html += '</div>';
+            }
+            currentZone = zone;
+            html += '<div class="qc-section-header">第' + zone + '区</div>';
+            html += '<div class="qc-zone-devices" data-zone="' + zone + '">';
+        }
+        
+        html += '<div class="qc-device-item selected" data-device-id="' + device.id + '" data-zone="' + zone + '" onclick="qcToggleDevice(this)">';
+        html += '<input type="checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest(\'.qc-device-item\'))">';
+        html += '<span class="device-id">' + device.id + '</span>';
+        html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
+        html += '<input type="text" class="qc-test-value" placeholder="检测值">';
+        html += '</div>';
+    });
+    
+    if (currentZone !== '') {
+        html += '</div>';
+    }
+    
+    container.innerHTML = html;
+    qcUpdateSelectedCount();
+}
+
+// ====== 切换设备选中状态 ======
+function qcToggleDevice(el) {
+    el.classList.toggle('selected');
+    var checkbox = el.querySelector('input[type="checkbox"]');
+    checkbox.checked = el.classList.contains('selected');
+    qcUpdateSelectedCount();
+}
+
+// ====== 全选/全不选 ======
+function qcToggleSelectAll(selectAll) {
+    var items = document.querySelectorAll('.qc-device-item');
+    items.forEach(function(item) {
+        if (selectAll) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+        var checkbox = item.querySelector('input[type="checkbox"]');
+        if (checkbox) checkbox.checked = selectAll;
+    });
+    qcUpdateSelectedCount();
+}
+
+// ====== 更新选中数量 ======
+function qcUpdateSelectedCount() {
+    var selected = document.querySelectorAll('.qc-device-item.selected');
+    var countEl = document.getElementById('qcSelectedCount');
+    if (countEl) {
+        countEl.textContent = selected.length + '台已选';
+    }
+}
+
+// ====== 批量提交 ======
+async function qcBatchSubmit() {
     var testDate = document.getElementById('qcTestDate').value;
     var testType = document.getElementById('qcTestType').value;
     var sampleType = document.getElementById('qcSampleType').value;
-    var isQualified = document.getElementById('qcIsQualified').value === 'true';
-    var testValue = document.getElementById('qcTestValue').value.trim();
-    var tester = document.getElementById('qcTester').value.trim();
+    var tester = document.getElementById('qcTester').value.trim() || '林茂仁';
     var notes = document.getElementById('qcNotes').value.trim();
-    
-    // 处理"其他"样品类型
-    if (sampleType === '其他') {
-        sampleType = document.getElementById('qcSampleOther').value.trim() || '其他';
-    }
     
     if (!testDate || !testType || !sampleType) {
         showToast('请填写检测日期、检测类型和样品类型', 'error');
         return;
     }
     
-    // 保存到Supabase
-    if (isSupabaseConfigured) {
-        try {
-            await sbPost('dialysis_qc', {
-                test_date: testDate,
-                test_type: testType,
-                sample_type: sampleType,
-                is_qualified: isQualified,
-                test_value: testValue || null,
-                tester: tester || '林茂仁',
-                notes: notes || null
-            });
-            showToast('✅ 检测记录已提交', 'success');
-        } catch(e) {
-            showToast('提交失败：' + (e.message || '请先创建质控数据表'), 'error');
-            return;
-        }
-    } else {
-        showToast('⚠️ 未连接Supabase，仅本地保存', 'warning');
-        // 本地存储
-        var localData = JSON.parse(localStorage.getItem('qc_local_records') || '[]');
-        localData.unshift({
-            id: Date.now(),
+    // 获取所有选中的设备
+    var selectedDevices = document.querySelectorAll('.qc-device-item.selected');
+    if (selectedDevices.length === 0) {
+        showToast('请至少选择一台设备', 'error');
+        return;
+    }
+    
+    var records = [];
+    selectedDevices.forEach(function(item) {
+        var deviceId = item.getAttribute('data-device-id');
+        var qualifiedSelect = item.querySelector('.qc-qualified-select');
+        var testValueInput = item.querySelector('.qc-test-value');
+        
+        var isQualified = qualifiedSelect ? qualifiedSelect.value === 'true' : true;
+        var testValue = testValueInput ? testValueInput.value.trim() : '';
+        
+        records.push({
             test_date: testDate,
             test_type: testType,
             sample_type: sampleType,
             is_qualified: isQualified,
-            test_value: testValue,
-            tester: tester || '林茂仁',
-            notes: notes
+            test_value: testValue || null,
+            device_id: deviceId === '水处理' ? '水处理' : deviceId,
+            tester: tester,
+            notes: notes || null
         });
-        localStorage.setItem('qc_local_records', JSON.stringify(localData));
-        showToast('✅ 已保存到本地', 'success');
+    });
+    
+    if (records.length === 0) {
+        showToast('没有选中的设备', 'error');
+        return;
     }
     
-    // 清空表单
-    document.getElementById('qcTestDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('qcTestType').value = '';
-    document.getElementById('qcSampleType').innerHTML = '<option value="">请先选择检测类型</option>';
-    document.getElementById('qcSampleType').disabled = false;
-    document.getElementById('qcSampleOther').value = '';
-    document.getElementById('qcSampleOtherGroup').style.display = 'none';
-    document.getElementById('qcIsQualified').value = 'true';
-    document.getElementById('qcTestValue').value = '';
+    showToast('正在提交' + records.length + '条记录...', 'info');
+    
+    var successCount = 0;
+    var failCount = 0;
+    
+    // 逐条插入到Supabase
+    if (isSupabaseConfigured) {
+        for (var i = 0; i < records.length; i++) {
+            try {
+                await sbPost('dialysis_qc', records[i]);
+                successCount++;
+            } catch(e) {
+                failCount++;
+                console.error('提交失败:', records[i], e);
+            }
+        }
+    } else {
+        // 本地模式
+        var localData = JSON.parse(localStorage.getItem('qc_local_records') || '[]');
+        records.forEach(function(r) {
+            localData.unshift({
+                id: Date.now(),
+                test_date: r.test_date,
+                test_type: r.test_type,
+                sample_type: r.sample_type,
+                is_qualified: r.is_qualified,
+                test_value: r.test_value,
+                device_id: r.device_id,
+                tester: r.tester,
+                notes: r.notes,
+                created_at: new Date().toISOString()
+            });
+        });
+        localStorage.setItem('qc_local_records', JSON.stringify(localData));
+        successCount = records.length;
+    }
+    
+    if (failCount > 0) {
+        showToast('提交完成：成功' + successCount + '条，失败' + failCount + '条', 'warning');
+    } else {
+        showToast('✅ 成功提交' + successCount + '条检测记录', 'success');
+    }
+    
+    // 重置表单
     document.getElementById('qcNotes').value = '';
     
-    // 刷新历史
+    // 清空所有输入框的值
+    var inputs = document.querySelectorAll('.qc-test-value');
+    inputs.forEach(function(input) { input.value = ''; });
+    
+    // 刷新历史记录
     qcLoadHistory();
-    qcLoadReminders();
 }
 
 // ====== 加载检测历史记录 ======
@@ -4786,6 +5064,7 @@ function qcRenderHistory() {
         filtered = qcAllRecords.filter(function(r) {
             return (r.test_type && r.test_type.toLowerCase().indexOf(kw) !== -1) ||
                    (r.sample_type && r.sample_type.toLowerCase().indexOf(kw) !== -1) ||
+                   (r.device_id && r.device_id.toLowerCase().indexOf(kw) !== -1) ||
                    (r.tester && r.tester.toLowerCase().indexOf(kw) !== -1) ||
                    (r.notes && r.notes.toLowerCase().indexOf(kw) !== -1);
         });
@@ -4824,10 +5103,11 @@ function qcRenderHistory() {
             var statusText = r.is_qualified ? '合格' : '不合格';
             var testTypeLabel = r.test_type || '';
             var sampleLabel = r.sample_type || '';
+            var deviceLabel = r.device_id ? ' | ' + r.device_id : '';
             
             html += '<div class="compact-record">';
             html += '<div class="record-main">';
-            html += '<div class="record-device">' + testTypeLabel + ' - ' + sampleLabel + '</div>';
+            html += '<div class="record-device">' + testTypeLabel + ' - ' + sampleLabel + '<span style="color:var(--qc-primary);">' + deviceLabel + '</span></div>';
             html += '<div class="record-fault">' + (r.test_value || '无具体数值') + '</div>';
             html += '</div>';
             html += '<div class="record-right">';
@@ -4985,6 +5265,7 @@ async function qcExportData() {
             records.forEach(function(r) {
                 exportData.push({
                     '检测日期': r.test_date || '',
+                    '设备编号': r.device_id || '',
                     '检测类型': r.test_type || '',
                     '样品类型': r.sample_type || '',
                     '检测结果': r.is_qualified ? '合格' : '不合格',
@@ -5002,6 +5283,7 @@ async function qcExportData() {
         localData.forEach(function(r) {
             exportData.push({
                 '检测日期': r.test_date || '',
+                '设备编号': r.device_id || '',
                 '检测类型': r.test_type || '',
                 '样品类型': r.sample_type || '',
                 '检测结果': r.is_qualified ? '合格' : '不合格',
@@ -5031,15 +5313,6 @@ async function qcExportData() {
     engShowExportData(csvContent, filename, 'csv');
     showToast('已导出 ' + exportData.length + ' 条记录', 'success');
 }
-
-// 初始化质控检测日期
-document.addEventListener('DOMContentLoaded', function() {
-    var today = new Date().toISOString().split('T')[0];
-    var qcDateInput = document.getElementById('qcTestDate');
-    if (qcDateInput) {
-        qcDateInput.value = today;
-    }
-});
 </script>
 </body>
 </html>
