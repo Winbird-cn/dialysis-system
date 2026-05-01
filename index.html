@@ -3599,6 +3599,55 @@ try {
             engRenderFaultTypeChart(mappedLogs);
             engRenderPartsStats(partsMap);
             engRenderMonthlyDetail(mappedLogs);
+            
+            // 缓存数据供展开详情使用
+            window._engStatFilteredRepairs = filteredRepairs;
+            window._engStatDeviceSet = deviceSet;
+        }
+        
+        // 点击统计卡片展开详情
+        function engToggleStatDetail(type) {
+            var detailEl = document.getElementById('engStat' + (type === 'fault' ? 'Fault' : 'Device') + 'Detail');
+            if (!detailEl) return;
+            
+            if (detailEl.style.display === 'none') {
+                // 展开
+                var html = '';
+                var repairs = window._engStatFilteredRepairs || [];
+                
+                if (type === 'fault') {
+                    // 故障详情：按故障类型分组
+                    var faultMap = {};
+                    repairs.forEach(function(r) {
+                        var key = r.fault_type || '未分类';
+                        if (!faultMap[key]) faultMap[key] = [];
+                        faultMap[key].push(r);
+                    });
+                    Object.keys(faultMap).sort().forEach(function(key) {
+                        html += '<div style="margin-bottom:6px;"><b>' + key + '</b> (' + faultMap[key].length + '次)</div>';
+                        faultMap[key].forEach(function(r) {
+                            html += '<div style="padding-left:8px;color:#666;">' + (r.device_id || '') + ' - ' + (r.repair_date || '') + '</div>';
+                        });
+                    });
+                    if (!html) html = '<div style="color:#999;">暂无数据</div>';
+                } else if (type === 'device') {
+                    // 设备详情：按维修次数排序
+                    var devMap = {};
+                    repairs.forEach(function(r) {
+                        if (r.device_id) devMap[r.device_id] = (devMap[r.device_id] || 0) + 1;
+                    });
+                    Object.keys(devMap).sort(function(a, b) { return devMap[b] - devMap[a]; }).forEach(function(dev) {
+                        html += '<div style="margin-bottom:3px;">' + dev + ' <span style="color:#e74c3c;">' + devMap[dev] + '次</span></div>';
+                    });
+                    if (!html) html = '<div style="color:#999;">暂无数据</div>';
+                }
+                
+                detailEl.innerHTML = html;
+                detailEl.style.display = 'block';
+            } else {
+                // 收起
+                detailEl.style.display = 'none';
+            }
         }
         
         // 统计页面降级重试函数（最多重试1次）
