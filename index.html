@@ -4997,6 +4997,9 @@ function qcUpdateSampleTypes() {
         // 化学污染物检测只有透析用水
         options = '<option value="透析用水" selected>透析用水</option>';
         sampleSelect.disabled = true;
+        sampleSelect.onchange = function() { qcLoadDeviceList(); };
+        // 自动触发加载设备列表
+        setTimeout(function() { qcLoadDeviceList(); }, 50);
     } else {
         // 细菌检测和内毒素检测可选三种
         options = '<option value="">请选择</option>';
@@ -5004,6 +5007,7 @@ function qcUpdateSampleTypes() {
         options += '<option value="透析液">透析液</option>';
         options += '<option value="置换液">置换液</option>';
         sampleSelect.disabled = false;
+        sampleSelect.onchange = function() { qcLoadDeviceList(); };
     }
     
     sampleSelect.innerHTML = options;
