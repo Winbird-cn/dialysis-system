@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v6</title>
+    <title>中山大学附属第五医院透析工程管理系统 v8</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -1404,20 +1404,17 @@ border-color: var(--water-primary);
 <button class="sub-btn active" onclick="switchWaterTab('daily')">
 📋 每日记录
 </button>
-<button class="sub-btn" onclick="switchWaterTab('micro')">
-🧪 微生物
-</button>
 <button class="sub-btn" onclick="switchWaterTab('disinfection')">
             🧹 消毒
 </button>
 <button class="sub-btn" onclick="switchWaterTab('consumable')">
-🔧 耗材
+🔧 耗材更换
 </button>
 <button class="sub-btn" onclick="switchWaterTab('maintenance')">
             🛠️ 维修保养
 </button>
 <button class="sub-btn" onclick="switchWaterTab('wstats')">
-            📊 统计
+            📊 数据分析
 </button>
 </div>
     
@@ -1846,85 +1843,6 @@ border-color: var(--water-primary);
 <div class="card">
 <div class="card-title">📝 备注</div>
 <textarea id="wNotes" class="form-input" rows="2" placeholder="特殊情况说明..."></textarea>
-</div>
-</div>
-
-<!-- ====== 水处理-微生物检测 ====== -->
-<div id="waterMicroPage" class="page-content" style="display:none;">
-<div class="card">
-<div class="card-title">🧪 微生物检测记录</div>
-<div class="form-group">
-                <label class="form-label">检测日期 <span class="required">*</span></label>
-                <input type="date" id="wMicroTestDate" class="form-input">
-</div>
-<div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">检测类型 <span class="required">*</span></label>
-                    <select id="wMicroTestType" class="form-select" onchange="wUpdateMicroStandards()">
-                        <option value="">请选择</option>
-                        <option value="细菌">细菌培养</option>
-                        <option value="内毒素">内毒素检测</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">采样点 <span class="required">*</span></label>
-                    <select id="wMicroSamplePoint" class="form-select">
-                        <option value="">请选择</option>
-                        <optgroup label="固定采样点">
-                            <option value="回水末端">回水末端</option>
-                        </optgroup>
-                        <optgroup label="01区透析机">
-                            <option value="01-01">01-01</option><option value="01-02">01-02</option><option value="01-03">01-03</option><option value="01-04">01-04</option><option value="01-05">01-05</option><option value="01-06">01-06</option><option value="01-07">01-07</option><option value="01-08">01-08</option>
-                        </optgroup>
-                        <optgroup label="02区透析机">
-                            <option value="02-01">02-01</option><option value="02-02">02-02</option><option value="02-03">02-03</option><option value="02-04">02-04</option><option value="02-05">02-05</option><option value="02-06">02-06</option><option value="02-07">02-07</option><option value="02-08">02-08</option>
-                        </optgroup>
-                        <optgroup label="03区透析机">
-                            <option value="03-01">03-01</option><option value="03-02">03-02</option><option value="03-03">03-03</option><option value="03-04">03-04</option><option value="03-05">03-05</option><option value="03-06">03-06</option><option value="03-07">03-07</option><option value="03-08">03-08</option>
-                        </optgroup>
-                        <optgroup label="04区透析机">
-                            <option value="04-01">04-01</option><option value="04-02">04-02</option><option value="04-03">04-03</option><option value="04-04">04-04</option><option value="04-05">04-05</option><option value="04-06">04-06</option><option value="04-07">04-07</option><option value="04-08">04-08</option>
-                        </optgroup>
-                        <optgroup label="05区透析机">
-                            <option value="05-01">05-01</option><option value="05-02">05-02</option><option value="05-03">05-03</option><option value="05-04">05-04</option><option value="05-05">05-05</option><option value="05-06">05-06</option><option value="05-07">05-07</option><option value="05-08">05-08</option>
-                        </optgroup>
-                        <optgroup label="06区透析机">
-                            <option value="06-01">06-01</option><option value="06-02">06-02</option><option value="06-03">06-03</option><option value="06-04">06-04</option><option value="06-05">06-05</option><option value="06-06">06-06</option><option value="06-07">06-07</option><option value="06-08">06-08</option>
-                        </optgroup>
-                        <optgroup label="07区透析机">
-                            <option value="07-01">07-01</option><option value="07-02">07-02</option><option value="07-03">07-03</option><option value="07-04">07-04</option><option value="07-05">07-05</option><option value="07-06">07-06</option><option value="07-07">07-07</option><option value="07-08">07-08</option>
-                        </optgroup>
-                        <optgroup label="08区透析机">
-                            <option value="08-01">08-01</option><option value="08-02">08-02</option><option value="08-03">08-03</option><option value="08-04">08-04</option><option value="08-05">08-05</option><option value="08-06">08-06</option><option value="08-07">08-07</option><option value="08-08">08-08</option>
-                        </optgroup>
-                        <optgroup label="09区透析机">
-                            <option value="09-01">09-01</option><option value="09-02">09-02</option><option value="09-03">09-03</option><option value="09-04">09-04</option><option value="09-05">09-05</option><option value="09-06">09-06</option><option value="09-07">09-07</option><option value="09-08">09-08</option>
-                        </optgroup>
-                        <optgroup label="10区透析机">
-                            <option value="10-01">10-01</option><option value="10-02">10-02</option><option value="10-03">10-03</option><option value="10-04">10-04</option><option value="10-05">10-05</option><option value="10-06">10-06</option><option value="10-07">10-07</option><option value="10-08">10-08</option>
-                        </optgroup>
-                        <optgroup label="11区透析机">
-                            <option value="11-01">11-01</option><option value="11-02">11-02</option><option value="11-03">11-03</option><option value="11-04">11-04</option><option value="11-05">11-05</option><option value="11-06">11-06</option><option value="11-07">11-07</option><option value="11-08">11-08</option>
-                        </optgroup>
-                        <optgroup label="12区透析机">
-                            <option value="12-01">12-01</option><option value="12-02">12-02</option><option value="12-03">12-03</option>
-                        </optgroup>
-                    </select>
-                </div>
-</div>
-<div class="form-group">
-                <label class="form-label">检测结果 <span class="required">*</span></label>
-                <input type="number" step="0.01" id="wMicroResult" class="form-input" placeholder="0.00" oninput="wCheckMicroResult()">
-                <div class="threshold-hint" id="wMicroResultHint"></div>
-</div>
-<div class="form-group">
-                <label class="form-label">检测人员</label>
-                <input type="text" id="wMicroTester" class="form-input" placeholder="请输入检测人员" value="林茂仁">
-</div>
-<div class="form-group">
-                <label class="form-label">备注</label>
-                <textarea id="wMicroNotes" class="form-input" rows="2" placeholder="特殊情况说明..."></textarea>
-</div>
 </div>
 </div>
 
@@ -2579,14 +2497,14 @@ function switchWaterTab(tab) {
 currentWaterTab = tab;
 
 // 更新tab按钮样式
-var tabs = ['daily', 'micro', 'disinfection', 'consumable', 'maintenance', 'wstats'];
+var tabs = ['daily', 'disinfection', 'consumable', 'maintenance', 'wstats'];
 var btns = document.getElementById('waterSubTabs').querySelectorAll('button');
             btns.forEach(function(b, i) {
                 b.className = 'sub-btn' + (tabs[i] === tab ? ' active' : '');
             });
 
 // 切换页面
-var pages = ['waterDailyPage', 'waterMicroPage', 'waterDisinfectionPage', 'waterConsumablePage', 'waterMaintenancePage', 'waterWstatsPage'];
+var pages = ['waterDailyPage', 'waterDisinfectionPage', 'waterConsumablePage', 'waterMaintenancePage', 'waterWstatsPage'];
             pages.forEach(function(id) {
                 document.getElementById(id).style.display = 'none';
             });
@@ -2623,7 +2541,6 @@ if (currentModule === 'engineer') {
 } else {
                 switch (currentWaterTab) {
                     case 'daily': btn.textContent = '✅ 提交每日记录'; break;
-                    case 'micro': btn.textContent = '✅ 提交微生物检测'; break;
                     case 'disinfection': btn.textContent = '✅ 提交消毒记录'; break;
                     case 'consumable': btn.textContent = '✅ 提交耗材更换'; break;
                     case 'maintenance': btn.textContent = '✅ 提交保养记录'; break;
@@ -2639,7 +2556,6 @@ if (currentModule === 'engineer') {
 } else {
                 switch (currentWaterTab) {
                     case 'daily': wSubmitDaily(); break;
-                    case 'micro': wSubmitMicro(); break;
                     case 'disinfection': wSubmitDisinfection(); break;
                     case 'consumable': wSubmitConsumable(); break;
                     case 'maintenance': wSubmitMaintenance(); break;
@@ -2677,7 +2593,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 var today = new Date().toISOString().split('T')[0];
             document.getElementById('engLogDate').value = today;
             document.getElementById('wRecordDate').value = today;
-            document.getElementById('wMicroTestDate').value = today;
             document.getElementById('wDisinfectionDate').value = today;
             document.getElementById('wReplaceDate').value = today;
             document.getElementById('wMaintDate').value = today;
@@ -3944,33 +3859,6 @@ try {
             el.classList.toggle('checked');
         }
         
-        function wUpdateMicroStandards() {
-            var testType = document.getElementById('wMicroTestType').value;
-            var resultInput = document.getElementById('wMicroResult');
-            var standard = MICRO_STANDARDS['水'][testType];
-            if (standard) {
-                resultInput.placeholder = '标准<' + standard.standard + ' ' + standard.unit;
-            }
-        }
-        
-        function wCheckMicroResult() {
-            var testType = document.getElementById('wMicroTestType').value;
-            var value = parseFloat(document.getElementById('wMicroResult').value);
-            var hint = document.getElementById('wMicroResultHint');
-            var standard = MICRO_STANDARDS['水'][testType];
-            
-            if (!standard || isNaN(value)) {
-                if (hint) hint.textContent = '';
-                return;
-            }
-            
-            if (value >= standard.standard) {
-                if (hint) { hint.textContent = '⚠️ 超标！标准<' + standard.standard; hint.className = 'threshold-hint danger'; }
-            } else {
-                if (hint) { hint.textContent = '✓ 合格'; hint.className = 'threshold-hint success'; }
-            }
-        }
-        
         function wUpdateDisinfectionFields() {
             document.getElementById('wConcGroup').style.display = 'block';
         }
@@ -4035,34 +3923,6 @@ try {
             try {
                 await sbPost('water_daily_log', data);
                 showToast('记录已保存', 'success');
-            } catch (e) {
-                showToast('保存失败', 'error');
-            }
-        }
-        
-        async function wSubmitMicro() {
-            var testType = document.getElementById('wMicroTestType').value;
-            var result = parseFloat(document.getElementById('wMicroResult').value);
-            var standard = MICRO_STANDARDS['水'][testType];
-            
-            var data = {
-                test_date: document.getElementById('wMicroTestDate').value,
-                sample_point: document.getElementById('wMicroSamplePoint').value,
-                test_type: testType,
-                result_value: result,
-                unit: standard ? standard.unit : '',
-                standard_limit: standard ? standard.standard : null,
-                is_exceed: standard ? result >= standard.standard : false,
-                tester: document.getElementById('wMicroTester').value || null,
-                notes: document.getElementById('wMicroNotes').value || null
-            };
-            
-            try {
-                await sbPost('water_microbio_test', data);
-                showToast('记录已保存', 'success');
-                document.getElementById('wMicroResult').value = '';
-                document.getElementById('wMicroTester').value = '';
-                document.getElementById('wMicroNotes').value = '';
             } catch (e) {
                 showToast('保存失败', 'error');
             }
@@ -4298,18 +4158,16 @@ try {
             try {
                 var results = await Promise.all([
                     sbGet('water_daily_log', 'select=*&record_date=gte.' + start + '&record_date=lte.' + end + '&order=record_date.asc'),
-                    sbGet('water_microbio_test', 'select=*&test_date=gte.' + start + '&test_date=lte.' + end),
                     sbGet('water_disinfection', 'select=*&date=gte.' + start + '&date=lte.' + end),
                     sbGet('water_consumables', 'select=*&replace_date=gte.' + start + '&replace_date=lte.' + end)
                 ]);
                 
                 var dailyData = results[0] || [];
-                var microData = results[1] || [];
-                var disinfectionData = results[2] || [];
-                var consumableData = results[3] || [];
+                var disinfectionData = results[1] || [];
+                var consumableData = results[2] || [];
                 
                 document.getElementById('wStatDailyCount').textContent = dailyData.length;
-                document.getElementById('wStatExceedCount').textContent = microData.filter(function(d) { return d.is_exceed; }).length;
+                document.getElementById('wStatExceedCount').textContent = '0';
                 document.getElementById('wStatDisinfectionCount').textContent = disinfectionData.length;
                 document.getElementById('wStatConsumableCount').textContent = consumableData.length;
                 
@@ -4361,16 +4219,7 @@ try {
                     {field: 'ro_pressure_62', label: 'No.6.2', color: '#ff5722'}
                 ]);
                 
-                var alerts = microData.filter(function(d) { return d.is_exceed; });
-                if (alerts.length === 0) {
-                    document.getElementById('wAlertList').innerHTML = '<div class="empty-state">✓ 暂无超标</div>';
-                } else {
-                    var alertHtml = '';
-                    alerts.slice(0, 5).forEach(function(d) {
-                        alertHtml += '<div class="alert-item"><div class="alert-icon">🚨</div><div><div class="alert-title">' + d.test_type + ' 超标</div><div class="alert-meta">' + d.test_date + ' | ' + d.sample_point + '<br>' + d.result_value + ' ' + d.unit + ' (标准&lt;' + d.standard_limit + ')</div></div></div>';
-                    });
-                    document.getElementById('wAlertList').innerHTML = alertHtml;
-                }
+                document.getElementById('wAlertList').innerHTML = '<div class="empty-state">✓ 暂无超标</div>';
             } catch (e) {}
         }
         
@@ -4397,26 +4246,17 @@ try {
             var endStr = engLocalDate(end);
             Promise.all([
                 sbGet('water_daily_log', 'select=*&record_date=gte.' + startStr + '&record_date=lte.' + endStr + '&order=record_date.asc'),
-                sbGet('water_microbio_test', 'select=*&test_date=gte.' + startStr + '&test_date=lte.' + endStr),
                 sbGet('water_disinfection', 'select=*&date=gte.' + startStr + '&date=lte.' + endStr),
                 sbGet('water_consumables', 'select=*&replace_date=gte.' + startStr + '&replace_date=lte.' + endStr)
             ]).then(function(results) {
                 var dailyData = results[0] || [];
-                var microData = results[1] || [];
-                var disinfectionData = results[2] || [];
-                var consumableData = results[3] || [];
+                var disinfectionData = results[1] || [];
+                var consumableData = results[2] || [];
                 var csvContent = '\uFEFF日期范围:,' + startStr + ' 至 ' + endStr + '\n\n';
                 if (dailyData.length > 0) {
                     csvContent += '【日检记录】\n日期,电导度,脱盐率,总氯,水硬度,pH,产水量,原水温度,操作员\n';
                     dailyData.forEach(function(d) {
                         csvContent += (d.record_date || '') + ',' + (d.conductivity || '') + ',' + (d.desalination_rate || '') + ',' + (d.total_chlorine || '') + ',' + (d.water_hardness || '') + ',' + (d.ph || '') + ',' + (d.product_flow || '') + ',' + (d.raw_water_temp || '') + ',' + (d.operator || '') + '\n';
-                    });
-                    csvContent += '\n';
-                }
-                if (microData.length > 0) {
-                    csvContent += '【微生物检测】\n日期,采样点,检测类型,结果,单位,标准,超标,检测员\n';
-                    microData.forEach(function(d) {
-                        csvContent += (d.test_date || '') + ',' + (d.sample_point || '') + ',' + (d.test_type || '') + ',' + (d.result_value || '') + ',' + (d.unit || '') + ',' + (d.standard_limit || '') + ',' + (d.is_exceed ? '是' : '否') + ',' + (d.tester || '') + '\n';
                     });
                     csvContent += '\n';
                 }
@@ -4436,7 +4276,7 @@ try {
                 var csvContent2 = csvContent;
                 var filename = '水处理记录_' + startStr + '_' + endStr + '.csv';
                 engShowExportData(csvContent2, filename, 'csv');
-                showToast('已导出 ' + (dailyData.length + microData.length + disinfectionData.length + consumableData.length) + ' 条记录', 'success');
+                showToast('已导出 ' + (dailyData.length + disinfectionData.length + consumableData.length) + ' 条记录', 'success');
             }).catch(function() { showToast('导出失败', 'error'); });
         }
         
@@ -4462,27 +4302,18 @@ try {
             var endStr = engLocalDate(end);
             Promise.all([
                 sbGet('water_daily_log', 'select=*&record_date=gte.' + startStr + '&record_date=lte.' + endStr + '&order=record_date.asc'),
-                sbGet('water_microbio_test', 'select=*&test_date=gte.' + startStr + '&test_date=lte.' + endStr),
                 sbGet('water_disinfection', 'select=*&date=gte.' + startStr + '&date=lte.' + endStr),
                 sbGet('water_consumables', 'select=*&replace_date=gte.' + startStr + '&replace_date=lte.' + endStr)
             ]).then(function(results) {
                 var dailyData = results[0] || [];
-                var microData = results[1] || [];
-                var disinfectionData = results[2] || [];
-                var consumableData = results[3] || [];
+                var disinfectionData = results[1] || [];
+                var consumableData = results[2] || [];
                 // 生成HTML表格格式的Excel
                 var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>水处理统计</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
                 if (dailyData.length > 0) {
                     html += '<h3>日检记录</h3><table border="1"><tr><th>日期</th><th>电导度(uS/cm)</th><th>脱盐率(%)</th><th>总氯(mg/L)</th><th>水硬度(ppm)</th><th>pH值</th><th>产水量(L/h)</th><th>原水温度(°C)</th><th>操作员</th></tr>';
                     dailyData.forEach(function(d) {
                         html += '<tr><td>' + (d.record_date||'') + '</td><td>' + (d.conductivity||'') + '</td><td>' + (d.desalination_rate||'') + '</td><td>' + (d.total_chlorine||'') + '</td><td>' + (d.water_hardness||'') + '</td><td>' + (d.ph||'') + '</td><td>' + (d.product_flow||'') + '</td><td>' + (d.raw_water_temp||'') + '</td><td>' + (d.operator||'') + '</td></tr>';
-                    });
-                    html += '</table><br/>';
-                }
-                if (microData.length > 0) {
-                    html += '<h3>微生物检测</h3><table border="1"><tr><th>日期</th><th>采样点</th><th>检测类型</th><th>结果</th><th>单位</th><th>标准限值</th><th>是否超标</th><th>检测员</th></tr>';
-                    microData.forEach(function(d) {
-                        html += '<tr><td>' + (d.test_date||'') + '</td><td>' + (d.sample_point||'') + '</td><td>' + (d.test_type||'') + '</td><td>' + (d.result_value||'') + '</td><td>' + (d.unit||'') + '</td><td>' + (d.standard_limit||'') + '</td><td>' + (d.is_exceed?'是':'否') + '</td><td>' + (d.tester||'') + '</td></tr>';
                     });
                     html += '</table><br/>';
                 }
@@ -4501,7 +4332,7 @@ try {
                     html += '</table>';
                 }
                 html += '</body></html>';
-                var total = dailyData.length + microData.length + disinfectionData.length + consumableData.length;
+                var total = dailyData.length + disinfectionData.length + consumableData.length;
                 if (total === 0) {
                     showToast('所选日期范围内无数据', 'warning');
                     return;
@@ -4512,13 +4343,6 @@ try {
                     csvAll += '【日检记录】\n日期,电导度(uS/cm),脱盐率(%),总氯(mg/L),水硬度(ppm),pH值,产水量(L/h),原水温度(°C),操作员\n';
                     dailyData.forEach(function(d) {
                         csvAll += (d.record_date||'') + ',' + (d.conductivity||'') + ',' + (d.desalination_rate||'') + ',' + (d.total_chlorine||'') + ',' + (d.water_hardness||'') + ',' + (d.ph||'') + ',' + (d.product_flow||'') + ',' + (d.raw_water_temp||'') + ',' + (d.operator||'') + '\n';
-                    });
-                    csvAll += '\n';
-                }
-                if (microData.length > 0) {
-                    csvAll += '【微生物检测】\n日期,采样点,检测类型,结果,单位,标准限值,是否超标,检测员\n';
-                    microData.forEach(function(d) {
-                        csvAll += (d.test_date||'') + ',' + (d.sample_point||'') + ',' + (d.test_type||'') + ',' + (d.result_value||'') + ',' + (d.unit||'') + ',' + (d.standard_limit||'') + ',' + (d.is_exceed?'是':'否') + ',' + (d.tester||'') + '\n';
                     });
                     csvAll += '\n';
                 }
