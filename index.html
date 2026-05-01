@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v9</title>
+    <title>中山大学附属第五医院透析工程管理系统 v10</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -1407,6 +1407,149 @@ border-color: var(--water-primary);
             border-bottom: 1px solid var(--border);
             margin-bottom: 8px;
         }
+        
+        /* ====== 设备信息卡片弹窗 ====== */
+        .device-info-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .device-info-overlay.show {
+            display: flex;
+        }
+        
+        .device-info-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: deviceInfoSlideIn 0.3s ease;
+        }
+        
+        @keyframes deviceInfoSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .device-info-header {
+            background: linear-gradient(135deg, var(--active-primary), var(--active-dark));
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .device-info-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .device-info-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 20px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        
+        .device-info-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .device-info-body {
+            padding: 16px 20px;
+        }
+        
+        .device-info-id {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--active-primary);
+            text-align: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .device-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .device-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .device-info-item.full {
+            grid-column: 1 / -1;
+        }
+        
+        .device-info-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .device-info-value {
+            font-size: 14px;
+            color: var(--text);
+            font-weight: 500;
+        }
+        
+        .device-info-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(26, 115, 232, 0.1);
+            color: var(--active-primary);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 可点击的设备编号样式 */
+        .device-id-link {
+            color: var(--active-primary);
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: 1px dashed var(--active-primary);
+            transition: all 0.2s;
+        }
+        
+        .device-id-link:hover {
+            border-bottom-style: solid;
+        }
     </style>
 </head>
 <body>
@@ -2306,6 +2449,17 @@ border-color: var(--water-primary);
 <!-- ====== Toast ====== -->
 <div id="toast"></div>
 
+<!-- ====== 设备信息卡片弹窗 ====== -->
+<div class="device-info-overlay" id="deviceInfoOverlay" onclick="closeDeviceInfo(event)">
+    <div class="device-info-card" onclick="event.stopPropagation()">
+        <div class="device-info-header">
+            <h3>🔧 设备身份证</h3>
+            <button class="device-info-close" onclick="closeDeviceInfo()">×</button>
+        </div>
+        <div class="device-info-body" id="deviceInfoBody"></div>
+    </div>
+</div>
+
 <!-- ====== 图表Tooltip ====== -->
 <div class="chart-tooltip" id="chartTooltip"></div>
 
@@ -2346,6 +2500,94 @@ var engStatsCustomEnd = null;
 var engAllRepairData = [];
 var engRepairItemCount = 0;
 var currentEditLogId = null;
+
+// ====== 透析设备信息缓存 ======
+window._dialysisDevicesMap = {};
+
+// 初始化设备数据缓存
+async function initDialysisDevices() {
+    if (!isSupabaseConfigured) {
+        console.log('Supabase未连接，跳过设备数据加载');
+        return;
+    }
+    try {
+        var devices = await sbGet('dialysis_devices', 'select=*&order=device_id.asc', 3);
+        if (devices && devices.length > 0) {
+            window._dialysisDevicesMap = {};
+            devices.forEach(function(d) {
+                if (d.device_id) {
+                    window._dialysisDevicesMap[d.device_id] = d;
+                }
+            });
+            console.log('已加载 ' + Object.keys(window._dialysisDevicesMap).length + ' 台设备信息');
+        }
+    } catch(e) {
+        console.error('加载设备数据失败:', e);
+    }
+}
+
+// 显示设备信息卡片
+function showDeviceInfo(deviceId) {
+    if (!deviceId) return;
+    
+    var device = window._dialysisDevicesMap[deviceId];
+    var body = document.getElementById('deviceInfoBody');
+    
+    if (device) {
+        // 使用数据库中的设备信息
+        var html = '<div class="device-info-id">' + engEscapeHtml(device.device_id || deviceId) + '</div>';
+        html += '<div class="device-info-grid">';
+        html += '<div class="device-info-item full">';
+        html += '<span class="device-info-label">设备名称</span>';
+        html += '<span class="device-info-tag">' + engEscapeHtml(device.device_name || '血液透析机') + '</span>';
+        html += '</div>';
+        html += '<div class="device-info-item">';
+        html += '<span class="device-info-label">设备型号</span>';
+        html += '<span class="device-info-value">' + engEscapeHtml(device.model || '-') + '</span>';
+        html += '</div>';
+        html += '<div class="device-info-item">';
+        html += '<span class="device-info-label">序列号</span>';
+        html += '<span class="device-info-value">' + engEscapeHtml(device.serial_number || '-') + '</span>';
+        html += '</div>';
+        html += '<div class="device-info-item">';
+        html += '<span class="device-info-label">生产厂家</span>';
+        html += '<span class="device-info-value">' + engEscapeHtml(device.manufacturer || '-') + '</span>';
+        html += '</div>';
+        html += '<div class="device-info-item">';
+        html += '<span class="device-info-label">产地</span>';
+        html += '<span class="device-info-value">' + engEscapeHtml(device.origin || '-') + '</span>';
+        html += '</div>';
+        html += '<div class="device-info-item">';
+        html += '<span class="device-info-label">注册证号</span>';
+        html += '<span class="device-info-value">' + engEscapeHtml(device.reg_cert || '-') + '</span>';
+        html += '</div>';
+        html += '<div class="device-info-item">';
+        html += '<span class="device-info-label">启用日期</span>';
+        html += '<span class="device-info-value">' + engEscapeHtml(device.start_date || '-') + '</span>';
+        html += '</div>';
+        html += '<div class="device-info-item full">';
+        html += '<span class="device-info-label">设备类型</span>';
+        html += '<span class="device-info-value">' + engEscapeHtml(device.device_type || '-') + '</span>';
+        html += '</div>';
+        html += '</div>';
+        body.innerHTML = html;
+    } else {
+        // 设备信息未加载或不存在
+        body.innerHTML = '<div class="device-info-id">' + engEscapeHtml(deviceId) + '</div>';
+        body.innerHTML += '<div style="text-align:center;color:var(--text-secondary);padding:20px;">';
+        body.innerHTML += '<p>设备详细信息正在加载中...</p>';
+        body.innerHTML += '<p style="font-size:12px;margin-top:8px;">请确保已连接数据库</p>';
+        body.innerHTML += '</div>';
+    }
+    
+    document.getElementById('deviceInfoOverlay').classList.add('show');
+}
+
+// 关闭设备信息卡片
+function closeDeviceInfo(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('deviceInfoOverlay').classList.remove('show');
+}
 
 const MICRO_STANDARDS = {
 '水': {
@@ -2672,6 +2914,8 @@ try {
                 if (!r.ok) throw new Error('连接测试失败');
                 isSupabaseConfigured = true;
                 updateSyncStatus('synced', '☁️ 已连接');
+                // 连接成功后加载设备数据
+                initDialysisDevices();
                 return true;
 } catch (e) {
                 updateSyncStatus('offline', '📱 本地模式');
@@ -2965,7 +3209,7 @@ try {
                             
                             html += '<div class="compact-record" onclick="engToggleRecordDetail(\'' + recordId + '\', event)">';
                             html += '<div class="record-main">';
-                            html += '<div class="record-device">' + (r.deviceId || '未指定') + '</div>';
+                            html += '<div class="record-device">' + (r.deviceId ? '<span class="device-id-link" onclick="showDeviceInfo(\'' + r.deviceId + '\'); event.stopPropagation();">' + r.deviceId + '</span>' : '未指定') + '</div>';
                             html += '<div class="record-fault">' + (r.faultType || '') + (r.partsReplaced ? ' → 换' + r.partsReplaced : '') + '</div>';
                             html += '</div>';
                             html += '<div class="record-right">';
@@ -3266,6 +3510,7 @@ try {
                 var html = '';
                 
                 // 设备概览卡片
+                html += '<div style="text-align:center;margin-bottom:12px;"><span class="device-id-link" onclick="showDeviceInfo(\'' + engEscapeHtml(deviceId) + '\')" style="font-size:18px;font-weight:bold;">' + engEscapeHtml(deviceId) + '</span><span style="color:var(--text-secondary);margin-left:8px;font-size:13px;">设备详情</span></div>';
                 html += '<div class="stats-overview" style="margin-bottom:12px;">';
                 html += '<div class="stat-card"><div class="stat-value">' + totalCount + '</div><div class="stat-label">总维修次数</div></div>';
                 html += '<div class="stat-card"><div class="stat-value" style="font-size:16px;">' + firstDate + '</div><div class="stat-label">首次维修</div></div>';
@@ -3640,7 +3885,7 @@ try {
                     Object.keys(faultMap).sort().forEach(function(key) {
                         html += '<div style="margin-bottom:6px;"><b>' + key + '</b> (' + faultMap[key].length + '次)</div>';
                         faultMap[key].forEach(function(r) {
-                            html += '<div style="padding-left:8px;color:#666;">' + (r.device_id || '') + ' - ' + (r.repair_date || '') + '</div>';
+                            html += '<div style="padding-left:8px;color:#666;">' + (r.device_id ? '<span class="device-id-link" onclick="showDeviceInfo(\'' + r.device_id + '\')">' + r.device_id + '</span>' : '') + ' - ' + (r.repair_date || '') + '</div>';
                         });
                     });
                     if (!html) html = '<div style="color:#999;">暂无数据</div>';
@@ -3651,7 +3896,7 @@ try {
                         if (r.device_id) devMap[r.device_id] = (devMap[r.device_id] || 0) + 1;
                     });
                     Object.keys(devMap).sort(function(a, b) { return devMap[b] - devMap[a]; }).forEach(function(dev) {
-                        html += '<div style="margin-bottom:3px;">' + dev + ' <span style="color:#e74c3c;">' + devMap[dev] + '次</span></div>';
+                        html += '<div style="margin-bottom:3px;"><span class="device-id-link" onclick="showDeviceInfo(\'' + dev + '\')">' + dev + '</span> <span style="color:#e74c3c;">' + devMap[dev] + '次</span></div>';
                     });
                     if (!html) html = '<div style="color:#999;">暂无数据</div>';
                 }
@@ -3807,7 +4052,7 @@ try {
             
             var html = '';
             sorted.slice(0, 20).forEach(function(item, i) {
-                html += '<div class="device-rank-item"><span class="device-rank-num' + (i < 3 ? ' top3' : '') + '">' + (i + 1) + '</span><div class="device-rank-info"><div class="device-rank-name">' + item[0] + '</div></div><span class="device-rank-count">' + item[1] + '</span></div>';
+                html += '<div class="device-rank-item"><span class="device-rank-num' + (i < 3 ? ' top3' : '') + '">' + (i + 1) + '</span><div class="device-rank-info"><div class="device-rank-name"><span class="device-id-link" onclick="showDeviceInfo(\'' + item[0] + '\')">' + item[0] + '</span></div></div><span class="device-rank-count">' + item[1] + '</span></div>';
             });
             
             container.innerHTML = html;
