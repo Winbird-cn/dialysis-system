@@ -3274,7 +3274,7 @@ async function engLoadMaintHistory() {
     }
     
     try {
-        var records = await sbRpc('get_maintenance_records', { pwd: SYSTEM_PWD });
+        var records = await sbRpc('get_maintenance_records', { pwd: SYSTEM_PWD, limit_count: 200 });
         if (!records || records.length === 0) {
             container.innerHTML = '<div class="empty-state"><p>暂无保养记录</p></div>';
             return;
@@ -3307,8 +3307,8 @@ if (!isSupabaseConfigured) {
 var container = document.getElementById('engHistoryList');
 container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">从云端加载中...</div>';
 try {
-                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
-                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
+                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr });
+                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr });
                 var repairMap = {};
                 (repairs || []).forEach(function(r) {
                     var key = r.work_log_id;
@@ -3961,7 +3961,7 @@ try {
             container.innerHTML = '<div class="empty-state">加载中...</div>';
             
             // 通过RPC获取单设备维修记录
-            sbRpc('get_repair_items', { pwd: SYSTEM_PWD, device_id: deviceId }, 1)
+            sbRpc('get_repair_items', { pwd: SYSTEM_PWD, limit_count: 500 }, 1)
                 .then(function(data) {
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div class="empty-state">该设备暂无维修记录</div>';
@@ -4282,7 +4282,7 @@ try {
             
             try {
                 // 直接从repair_items查数据，不依赖work_logs关联
-                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
+                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr });
             } catch(e) {
                 document.getElementById('engStatFaultCount').textContent = '加载失败';
                 document.getElementById('engStatDeviceCount').textContent = '-';
@@ -4311,7 +4311,7 @@ try {
             // 治疗中断需要从work_logs查
             var totalInterruptions = 0;
             try {
-                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
+                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr });
                 var filteredLogs = (logs || []).filter(function(log) { return log.date >= startStr && log.date <= endStr; });
                 totalInterruptions = filteredLogs.reduce(function(sum, log) { return sum + (log.treatment_interruptions || 0); }, 0);
             } catch(e) {}
@@ -4409,8 +4409,8 @@ try {
             var endStr = engLocalDate(engStatsCustomEnd);
             
             try {
-                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
-                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
+                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD, limit_count: 500 });
+                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD, limit_count: 500 });
                 
                 var repairMap = {};
                 (repairs || []).forEach(function(r) {
@@ -4697,7 +4697,7 @@ try {
             if (!itemName) return;
             
             try {
-                var allConsumables = await sbRpc('get_water_consumables', { pwd: SYSTEM_PWD });
+                var allConsumables = await sbRpc('get_water_consumables', { pwd: SYSTEM_PWD, limit_count: 500 });
                 var data = allConsumables.filter(function(c) { return c.item_name === itemName; }).sort(function(a, b) { return (b.replace_date || '').localeCompare(a.replace_date || ''); }).slice(0, 1);
                 
                 if (data && data.length > 0) {
@@ -4897,7 +4897,7 @@ try {
             container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">加载中...</div>';
             
             try {
-                var data = await sbRpc('get_water_maintenance', { pwd: SYSTEM_PWD });
+                var data = await sbRpc('get_water_maintenance', { pwd: SYSTEM_PWD, limit_count: 200 });
                 
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div class="empty-state">暂无保养记录</div>';
