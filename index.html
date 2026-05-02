@@ -3376,16 +3376,27 @@ if (!isSupabaseConfigured) {
 var container = document.getElementById('engHistoryList');
 container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">从云端加载中...</div>';
 try {
-                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr });
-                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr });
+                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
+                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
                 var repairMap = {};
+                var repairDateMap = {};
                 (repairs || []).forEach(function(r) {
-                    var key = r.work_log_id;
-                    if (!repairMap[key]) repairMap[key] = [];
-                    repairMap[key].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+                    // 按work_log_id匹配
+                    if (r.work_log_id) {
+                        var key = r.work_log_id;
+                        if (!repairMap[key]) repairMap[key] = [];
+                        repairMap[key].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+                    }
+                    // 按日期匹配作为fallback
+                    if (r.repair_date) {
+                        var dkey = r.repair_date;
+                        if (!repairDateMap[dkey]) repairDateMap[dkey] = [];
+                        repairDateMap[dkey].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+                    }
                 });
                 var localLogs = (logs || []).map(function(log) {
-                    return {id: log.local_id || log.id, date: log.date, runningDevices: log.running_devices || 0, inspectionCount: log.inspection_count || 0, selfCheckAbnormal: log.self_check_abnormal || 0, repairCount: log.repair_count || 0, midTreatmentFaults: log.mid_treatment_faults || 0, treatmentInterruptions: log.treatment_interruptions || 0, patientSwitch: log.patient_switch || 0, forcedOffline: log.forced_offline || 0, patientWaitTime: log.patient_wait_time || 0, notes: log.notes || '', repairs: repairMap[log.id] || [], createdAt: log.created_at || '', synced: true};
+                    var logRepairs = repairMap[log.id] || repairDateMap[log.date] || [];
+                    return {id: log.local_id || log.id, date: log.date, runningDevices: log.running_devices || 0, inspectionCount: log.inspection_count || 0, selfCheckAbnormal: log.self_check_abnormal || 0, repairCount: log.repair_count || 0, midTreatmentFaults: log.mid_treatment_faults || 0, treatmentInterruptions: log.treatment_interruptions || 0, patientSwitch: log.patient_switch || 0, forcedOffline: log.forced_offline || 0, patientWaitTime: log.patient_wait_time || 0, notes: log.notes || '', repairs: logRepairs, createdAt: log.created_at || '', synced: true};
                 });
                 engSaveLogs(localLogs);
                 engRenderHistory();
