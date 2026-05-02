@@ -774,6 +774,50 @@
             overflow-x: auto;
         }
         
+        .monthly-year-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .monthly-year-header:active {
+            background: var(--border);
+        }
+        
+        .monthly-year-header .year-arrow {
+            transition: transform 0.2s;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .monthly-year-header.expanded .year-arrow {
+            transform: rotate(90deg);
+        }
+        
+        .monthly-year-summary {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        .monthly-year-body {
+            display: none;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+        
+        .monthly-year-body.show {
+            display: block;
+        }
+        
         .monthly-detail-table table {
             width: 100%;
             border-collapse: collapse;
@@ -782,15 +826,19 @@
         
         .monthly-detail-table th,
         .monthly-detail-table td {
-            padding: 10px 8px;
+            padding: 8px 6px;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
         
         .monthly-detail-table th {
-            background: var(--bg);
             font-weight: 600;
             color: var(--text-secondary);
+            font-size: 11px;
+        }
+        
+        .monthly-detail-table td {
+            font-size: 12px;
         }
         
         /* ====== 统计分析过滤器 ====== */
@@ -4600,21 +4648,63 @@ try {
                 return;
             }
             
-            var html = '<table><thead><tr><th>月份</th><th>故障数</th><th>涉及设备</th><th>更换配件</th></tr></thead><tbody>';
-            
+            // Group by year
+            var yearMap = {};
             logs.forEach(function(log) {
-                var deviceSet = {};
-                var partsCount = 0;
-                (log.repairs || []).forEach(function(r) {
-                    if (r.deviceId) deviceSet[r.deviceId] = true;
-                    if (r.partsReplaced) partsCount++;
-                });
-                var month = log.date.substring(0, 7);
-                html += '<tr><td>' + month + '</td><td>' + log.repairCount + '</td><td>' + Object.keys(deviceSet).length + '</td><td>' + partsCount + '</td></tr>';
+                var year = log.date.substring(0, 4);
+                if (!yearMap[year]) yearMap[year] = [];
+                yearMap[year].push(log);
             });
             
-            html += '</tbody></table>';
+            var html = '';
+            var years = Object.keys(yearMap).sort().reverse();
+            
+            years.forEach(function(year) {
+                var yearLogs = yearMap[year];
+                var totalRepairs = 0;
+                var totalDevices = {};
+                var totalParts = 0;
+                yearLogs.forEach(function(log) {
+                    totalRepairs += log.repairCount;
+                    (log.repairs || []).forEach(function(r) {
+                        if (r.deviceId) totalDevices[r.deviceId] = true;
+                        if (r.partsReplaced) totalParts++;
+                    });
+                });
+                
+                html += '<div class="monthly-year-header" onclick="this.classList.toggle(\'expanded\');this.nextElementSibling.classList.toggle(\'show\')">';
+                html += '<span><span class="year-arrow">▶</span> ' + year + '年</span>';
+                html += '<span class="monthly-year-summary">' + totalRepairs + '次故障 · ' + Object.keys(totalDevices).length + '台设备 · ' + totalParts + '次换件</span>';
+                html += '</div>';
+                
+                html += '<div class="monthly-year-body">';
+                html += '<table><thead><tr><th>月份</th><th>故障数</th><th>设备数</th><th>换件数</th></tr></thead><tbody>';
+                yearLogs.forEach(function(log) {
+                    var deviceSet = {};
+                    var partsCount = 0;
+                    (log.repairs || []).forEach(function(r) {
+                        if (r.deviceId) deviceSet[r.deviceId] = true;
+                        if (r.partsReplaced) partsCount++;
+                    });
+                    var month = log.date.substring(5, 7);
+                    html += '<tr><td>' + month + '月</td><td>' + log.repairCount + '</td><td>' + Object.keys(deviceSet).length + '</td><td>' + partsCount + '</td></tr>';
+                });
+                html += '</tbody></table></div>';
+            });
+            
             container.innerHTML = html;
+            
+            // Auto-expand current year and last year
+            var now = new Date();
+            var currentYear = String(now.getFullYear());
+            var headers = container.querySelectorAll('.monthly-year-header');
+            headers.forEach(function(h) {
+                var yearText = h.textContent.substring(0, 4);
+                if (yearText === currentYear || yearText === String(parseInt(currentYear) - 1)) {
+                    h.classList.add('expanded');
+                    h.nextElementSibling.classList.add('show');
+                }
+            });
         }
         
         function engFormatDate(dateStr) {
