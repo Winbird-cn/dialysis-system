@@ -774,48 +774,51 @@
             overflow-x: auto;
         }
         
-        .monthly-year-header {
+        .monthly-year-tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 12px;
-            background: var(--bg);
-            border-radius: 8px;
-            margin-bottom: 4px;
+            overflow-x: auto;
+            gap: 4px;
+            padding: 6px 0;
+            margin-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .monthly-year-tab {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-        
-        .monthly-year-header:active {
-            background: var(--border);
-        }
-        
-        .monthly-year-header .year-arrow {
-            transition: transform 0.2s;
-            font-size: 12px;
+            border: 1px solid var(--border);
+            background: var(--card);
             color: var(--text-secondary);
+            transition: all 0.2s;
         }
         
-        .monthly-year-header.expanded .year-arrow {
-            transform: rotate(90deg);
+        .monthly-year-tab:active {
+            opacity: 0.7;
+        }
+        
+        .monthly-year-tab.active {
+            background: var(--active-primary);
+            color: white;
+            border-color: var(--active-primary);
+        }
+        
+        .monthly-year-content {
+            display: none;
+        }
+        
+        .monthly-year-content.active {
+            display: block;
         }
         
         .monthly-year-summary {
             font-size: 12px;
             color: var(--text-secondary);
-            font-weight: 400;
-        }
-        
-        .monthly-year-body {
-            display: none;
             margin-bottom: 8px;
-            padding-left: 8px;
-        }
-        
-        .monthly-year-body.show {
-            display: block;
+            text-align: center;
         }
         
         .monthly-detail-table table {
@@ -827,7 +830,7 @@
         .monthly-detail-table th,
         .monthly-detail-table td {
             padding: 8px 6px;
-            text-align: left;
+            text-align: center;
             border-bottom: 1px solid var(--border);
         }
         
@@ -839,6 +842,15 @@
         
         .monthly-detail-table td {
             font-size: 12px;
+        }
+        
+        .monthly-detail-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .monthly-detail-table th:first-child {
+            text-align: left;
         }
         
         /* ====== 统计分析过滤器 ====== */
@@ -4395,7 +4407,7 @@ try {
             engRenderDeviceRanking(mappedLogs);
             engRenderFaultTypeChart(mappedLogs);
             engRenderPartsStats(partsMap);
-            engRenderMonthlyDetail(mappedLogs);
+            engLoadMonthlyDetailAll();
             
             // 缓存数据供展开详情使用
             window._engStatFilteredRepairs = filteredRepairs;
@@ -4504,7 +4516,7 @@ try {
                 engRenderDeviceRanking(mappedLogs);
                 engRenderFaultTypeChart(mappedLogs);
                 engRenderPartsStats(partsMap);
-                engRenderMonthlyDetail(mappedLogs);
+                engLoadMonthlyDetailAll();
                 engStatsRetryCount = 0;
             } catch(e) {
                 engStatsRetryCount = 0;
@@ -4656,9 +4668,19 @@ try {
                 yearMap[year].push(log);
             });
             
-            var html = '';
             var years = Object.keys(yearMap).sort().reverse();
+            var now = new Date();
+            var currentYear = String(now.getFullYear());
             
+            // Year tabs
+            var html = '<div class="monthly-year-tabs">';
+            years.forEach(function(year) {
+                var cls = (year === currentYear) ? ' active' : '';
+                html += '<div class="monthly-year-tab' + cls + '" onclick="engSwitchMonthlyYear('' + year + '')">' + year + '</div>';
+            });
+            html += '</div>';
+            
+            // Year content panels
             years.forEach(function(year) {
                 var yearLogs = yearMap[year];
                 var totalRepairs = 0;
@@ -4672,12 +4694,9 @@ try {
                     });
                 });
                 
-                html += '<div class="monthly-year-header" onclick="this.classList.toggle(\'expanded\');this.nextElementSibling.classList.toggle(\'show\')">';
-                html += '<span><span class="year-arrow">▶</span> ' + year + '年</span>';
-                html += '<span class="monthly-year-summary">' + totalRepairs + '次故障 · ' + Object.keys(totalDevices).length + '台设备 · ' + totalParts + '次换件</span>';
-                html += '</div>';
-                
-                html += '<div class="monthly-year-body">';
+                var cls = (year === currentYear) ? ' active' : '';
+                html += '<div class="monthly-year-content' + cls + '" data-year="' + year + '">';
+                html += '<div class="monthly-year-summary">' + year + '年：' + totalRepairs + '次故障 · ' + Object.keys(totalDevices).length + '台设备 · ' + totalParts + '次换件</div>';
                 html += '<table><thead><tr><th>月份</th><th>故障数</th><th>设备数</th><th>换件数</th></tr></thead><tbody>';
                 yearLogs.forEach(function(log) {
                     var deviceSet = {};
@@ -4693,18 +4712,45 @@ try {
             });
             
             container.innerHTML = html;
-            
-            // Auto-expand current year and last year
-            var now = new Date();
-            var currentYear = String(now.getFullYear());
-            var headers = container.querySelectorAll('.monthly-year-header');
-            headers.forEach(function(h) {
-                var yearText = h.textContent.substring(0, 4);
-                if (yearText === currentYear || yearText === String(parseInt(currentYear) - 1)) {
-                    h.classList.add('expanded');
-                    h.nextElementSibling.classList.add('show');
-                }
+        }
+        
+        function engSwitchMonthlyYear(year) {
+            var container = document.getElementById('engMonthlyDetailTable');
+            container.querySelectorAll('.monthly-year-tab').forEach(function(t) {
+                t.classList.toggle('active', t.textContent === year);
             });
+            container.querySelectorAll('.monthly-year-content').forEach(function(p) {
+                p.classList.toggle('active', p.getAttribute('data-year') === year);
+            });
+        }
+
+        async function engLoadMonthlyDetailAll() {
+            var container = document.getElementById('engMonthlyDetailTable');
+            container.innerHTML = '<div class="empty-state">加载中...</div>';
+            try {
+                var allRepairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD }, 2);
+                if (!allRepairs || allRepairs.length === 0) {
+                    container.innerHTML = '<div class="empty-state">暂无数据</div>';
+                    return;
+                }
+                // Filter out 中央供液室
+                allRepairs = allRepairs.filter(function(r) {
+                    return r.device_id !== '中央供液室' && r.repair_date;
+                });
+                // Build monthly data
+                var monthlyRepairs = {};
+                allRepairs.forEach(function(r) {
+                    var month = r.repair_date.substring(0, 7);
+                    if (!monthlyRepairs[month]) monthlyRepairs[month] = {date: month + '-01', repairCount: 0, repairs: []};
+                    monthlyRepairs[month].repairCount++;
+                    monthlyRepairs[month].repairs.push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+                });
+                var mappedLogs = Object.values(monthlyRepairs).sort(function(a, b) { return a.date.localeCompare(b.date); });
+                engRenderMonthlyDetail(mappedLogs);
+            } catch(e) {
+                console.error('月度明细加载失败:', e);
+                container.innerHTML = '<div class="empty-state">加载失败，请刷新重试</div>';
+            }
         }
         
         function engFormatDate(dateStr) {
