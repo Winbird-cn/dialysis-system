@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v16</title>
+    <title>中山大学附属第五医院透析工程管理系统 v21</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -3621,8 +3621,39 @@ try {
                         notes: log.notes || null
                     }
                 });
-                return data[0];
+                if (!logData || !logData[0]) return null;
+                var cloudLogId = logData[0].id;
+                
+                // 保存维修项目到Supabase
+                if (log.repairs && log.repairs.length > 0) {
+                    for (var i = 0; i < log.repairs.length; i++) {
+                        var r = log.repairs[i];
+                        try {
+                            var itemResult = await sbRpc('insert_repair_item', {
+                                pwd: SYSTEM_PWD,
+                                item_data: {
+                                    work_log_id: cloudLogId,
+                                    device_id: r.deviceId || null,
+                                    fault_type: r.faultType || null,
+                                    fault_desc: r.faultDesc || null,
+                                    parts_replaced: r.partsReplaced || null,
+                                    result: r.result || null,
+                                    repair_date: log.date
+                                }
+                            });
+                            // 保存cloud item id到本地
+                            if (itemResult && itemResult[0]) {
+                                r.cloudId = itemResult[0].id;
+                            }
+                        } catch (e) {
+                            console.log('保存维修项目失败:', e);
+                        }
+                    }
+                }
+                
+                return logData[0];
             } catch (e) {
+                console.log('保存work_log失败:', e);
                 return null;
             }
         }
@@ -3791,9 +3822,13 @@ try {
                             html += '</div>';
                             if (r.faultDesc) html += '<div style="margin-bottom:4px;">故障描述: ' + engEscapeHtml(r.faultDesc) + '</div>';
                             if (log.notes) html += '<div style="margin-bottom:4px;">备注: ' + engEscapeHtml(log.notes) + '</div>';
+                            html += '<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">';
+                            html += '<button class="history-btn edit" style="flex:1;min-width:45%;padding:6px;font-size:12px;" onclick="engEditRepairItem(' + log.id + ',' + rIdx + ')">✏️ 编辑维修</button>';
+                            html += '<button class="history-btn delete" style="flex:1;min-width:45%;padding:6px;font-size:12px;" onclick="engDeleteRepairItem(' + log.id + ',' + rIdx + ')">🗑️ 删除维修</button>';
+                            html += '</div>';
                             html += '<div style="display:flex;gap:8px;margin-top:4px;">';
-                            html += '<button class="history-btn edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑</button>';
-                            html += '<button class="history-btn delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除</button>';
+                            html += '<button class="history-btn edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑日志</button>';
+                            html += '<button class="history-btn delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除日志</button>';
                             html += '</div></div>';
                         });
                     } else {
@@ -3822,8 +3857,8 @@ try {
                         html += '</div>';
                         if (log.notes) html += '<div style="margin-bottom:4px;">备注: ' + engEscapeHtml(log.notes) + '</div>';
                         html += '<div style="display:flex;gap:8px;margin-top:4px;">';
-                        html += '<button class="history-btn edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑</button>';
-                        html += '<button class="history-btn delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除</button>';
+                        html += '<button class="history-btn edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑日志</button>';
+                        html += '<button class="history-btn delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除日志</button>';
                         html += '</div></div>';
                     }
                 });
@@ -3891,6 +3926,7 @@ try {
             if (!log) return;
             
             currentEditLogId = id;
+            currentEditingRepairItem = false;
             
             var body = '<input type="hidden" id="editLogId" value="' + log.id + '"><div class="card"><div class="card-title">📅 基本信息</div><div class="form-group"><label class="form-label">日期</label><input type="date" id="editLogDate" class="form-input" value="' + log.date + '"></div></div><div class="card"><div class="card-title">⚙️ 设备运行</div><div class="form-row"><div class="form-group"><label class="form-label">当日运行设备数</label><input type="number" id="editRunningDevices" class="form-input" value="' + (log.runningDevices || '') + '"></div><div class="form-group"><label class="form-label">日常巡检台数</label><input type="number" id="editInspectionCount" class="form-input" value="' + (log.inspectionCount || '') + '"></div></div></div><div class="card"><div class="card-title">🔧 故障维修</div><div class="form-row"><div class="form-group"><label class="form-label">故障报修次数</label><input type="number" id="editRepairCount" class="form-input" value="' + (log.repairCount || '') + '"></div><div class="form-group"><label class="form-label">治疗中故障次数</label><input type="number" id="editMidTreatmentFaults" class="form-input" value="' + (log.midTreatmentFaults || '') + '"></div></div><div class="form-row"><div class="form-group"><label class="form-label">导致治疗中断次数</label><input type="number" id="editTreatmentInterruptions" class="form-input" value="' + (log.treatmentInterruptions || '') + '"></div><div class="form-group"><label class="form-label">患者转机台次</label><input type="number" id="editPatientSwitch" class="form-input" value="' + (log.patientSwitch || '') + '"></div></div></div><div class="card"><div class="card-title">📝 备注</div><div class="form-group"><textarea id="editNotes" class="form-input" rows="3">' + (log.notes || '') + '</textarea></div></div>';
             
@@ -3901,23 +3937,60 @@ try {
         function closeEditModal() {
             document.getElementById('editModal').classList.remove('show');
             currentEditLogId = null;
+            currentEditRepairLogId = null;
+            currentEditRepairIdx = null;
+            currentEditingRepairItem = false;
         }
         
         function saveEditLog() {
+            if (currentEditingRepairItem) {
+                engSaveRepairItemEdit();
+                return;
+            }
+            
             if (!currentEditLogId) return;
             
             var logs = engGetLogs();
             var idx = logs.findIndex(function(l) { return l.id === currentEditLogId; });
             if (idx !== -1) {
-                logs[idx].date = document.getElementById('editLogDate').value;
-                logs[idx].runningDevices = parseInt(document.getElementById('editRunningDevices').value) || 0;
-                logs[idx].inspectionCount = parseInt(document.getElementById('editInspectionCount').value) || 0;
-                logs[idx].repairCount = parseInt(document.getElementById('editRepairCount').value) || 0;
-                logs[idx].midTreatmentFaults = parseInt(document.getElementById('editMidTreatmentFaults').value) || 0;
-                logs[idx].treatmentInterruptions = parseInt(document.getElementById('editTreatmentInterruptions').value) || 0;
-                logs[idx].patientSwitch = parseInt(document.getElementById('editPatientSwitch').value) || 0;
-                logs[idx].notes = document.getElementById('editNotes').value.trim();
+                var log = logs[idx];
+                log.date = document.getElementById('editLogDate').value;
+                log.runningDevices = parseInt(document.getElementById('editRunningDevices').value) || 0;
+                log.inspectionCount = parseInt(document.getElementById('editInspectionCount').value) || 0;
+                log.repairCount = parseInt(document.getElementById('editRepairCount').value) || 0;
+                log.midTreatmentFaults = parseInt(document.getElementById('editMidTreatmentFaults').value) || 0;
+                log.treatmentInterruptions = parseInt(document.getElementById('editTreatmentInterruptions').value) || 0;
+                log.patientSwitch = parseInt(document.getElementById('editPatientSwitch').value) || 0;
+                log.notes = document.getElementById('editNotes').value.trim();
+                
                 engSaveLogs(logs);
+                
+                // 同步到Supabase
+                if (log.cloudId && isSupabaseConfigured && isOnline) {
+                    (async function() {
+                        try {
+                            await sbRpc('update_work_log', {
+                                pwd: SYSTEM_PWD,
+                                log_id: log.cloudId,
+                                log_data: {
+                                    date: log.date,
+                                    running_devices: log.runningDevices,
+                                    inspection_count: log.inspectionCount,
+                                    self_check_abnormal: log.selfCheckAbnormal,
+                                    repair_count: log.repairCount,
+                                    mid_treatment_faults: log.midTreatmentFaults,
+                                    treatment_interruptions: log.treatmentInterruptions,
+                                    patient_switch: log.patientSwitch,
+                                    forced_offline: log.forcedOffline,
+                                    patient_wait_time: log.patientWaitTime,
+                                    notes: log.notes || null
+                                }
+                            });
+                        } catch (e) {
+                            console.log('更新Supabase work_log失败:', e);
+                        }
+                    })();
+                }
             }
             
             closeEditModal();
@@ -3931,6 +4004,185 @@ try {
             engSaveLogs(logs);
             engRenderHistory();
             showToast('已删除', 'success');
+        }
+        
+        // ====== 维修项目编辑功能 ======
+        var currentEditRepairLogId = null;
+        var currentEditRepairIdx = null;
+        var currentEditingRepairItem = false;
+        
+        function engEditRepairItem(logId, repairIdx) {
+            var logs = engGetLogs();
+            var log = logs.find(function(l) { return l.id === logId; });
+            if (!log || !log.repairs || !log.repairs[repairIdx]) return;
+            
+            var r = log.repairs[repairIdx];
+            currentEditRepairLogId = logId;
+            currentEditRepairIdx = repairIdx;
+            currentEditingRepairItem = true;
+            
+            var deviceSelectHtml = '<select id="editRepairDeviceId" class="form-select">' + deviceOptionsHTML + '</select>';
+            var faultSelectHtml = '<select id="editRepairFaultType" class="form-select" onchange="engToggleOtherInput(this,\'editRepairFaultTypeOther\')">' + faultTypeOptionsHTML + '</select>';
+            var partsSelectHtml = '<select id="editRepairParts" class="form-select" onchange="engToggleOtherInput(this,\'editRepairPartsOther\')">' + partsOptionsHTML + '</select>';
+            var resultSelectHtml = '<select id="editRepairResult" class="form-select">' + resultOptionsHTML + '</select>';
+            
+            var body = '<div class="card"><div class="card-title">✏️ 编辑维修项目</div>';
+            body += '<div class="form-group"><label class="form-label">设备区号-编号</label>' + deviceSelectHtml + '</div>';
+            body += '<div class="form-group"><label class="form-label">故障类型</label>' + faultSelectHtml + '</div>';
+            body += '<div class="form-group" id="editRepairFaultTypeOther" style="display:none;"><label class="form-label">请输入故障类型</label><input type="text" id="editRepairFaultTypeOtherInput" class="form-input" placeholder="请输入故障类型"></div>';
+            body += '<div class="form-group"><label class="form-label">更换配件</label>' + partsSelectHtml + '</div>';
+            body += '<div class="form-group" id="editRepairPartsOther" style="display:none;"><label class="form-label">请输入配件名称</label><input type="text" id="editRepairPartsOtherInput" class="form-input" placeholder="请输入配件名称"></div>';
+            body += '<div class="form-group"><label class="form-label">故障描述</label><input type="text" id="editRepairFaultDesc" class="form-input" placeholder="简要描述故障现象" value="' + engEscapeHtml(r.faultDesc || '') + '"></div>';
+            body += '<div class="form-group"><label class="form-label">处理结果</label>' + resultSelectHtml + '</div>';
+            body += '</div>';
+            
+            document.getElementById('editModalBody').innerHTML = body;
+            document.getElementById('editModal').classList.add('show');
+            
+            var deviceSelect = document.getElementById('editRepairDeviceId');
+            var faultSelect = document.getElementById('editRepairFaultType');
+            var partsSelect = document.getElementById('editRepairParts');
+            var resultSelect = document.getElementById('editRepairResult');
+            
+            if (deviceSelect && r.deviceId) {
+                for (var i = 0; i < deviceSelect.options.length; i++) {
+                    if (deviceSelect.options[i].value === r.deviceId) {
+                        deviceSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (faultSelect && r.faultType) {
+                var found = false;
+                for (var i = 0; i < faultSelect.options.length; i++) {
+                    if (faultSelect.options[i].value === r.faultType) {
+                        faultSelect.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found && r.faultType) {
+                    faultSelect.value = '其他';
+                    document.getElementById('editRepairFaultTypeOther').style.display = 'block';
+                    document.getElementById('editRepairFaultTypeOtherInput').value = r.faultType;
+                }
+            }
+            if (partsSelect && r.partsReplaced) {
+                var found = false;
+                for (var i = 0; i < partsSelect.options.length; i++) {
+                    if (partsSelect.options[i].value === r.partsReplaced) {
+                        partsSelect.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found && r.partsReplaced) {
+                    partsSelect.value = '其他';
+                    document.getElementById('editRepairPartsOther').style.display = 'block';
+                    document.getElementById('editRepairPartsOtherInput').value = r.partsReplaced;
+                }
+            }
+            if (resultSelect && r.result) {
+                for (var i = 0; i < resultSelect.options.length; i++) {
+                    if (resultSelect.options[i].value === r.result) {
+                        resultSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        function engSaveRepairItemEdit() {
+            if (currentEditRepairLogId === null || currentEditRepairIdx === null) return;
+            
+            var logs = engGetLogs();
+            var idx = logs.findIndex(function(l) { return l.id === currentEditRepairLogId; });
+            if (idx === -1) return;
+            
+            var log = logs[idx];
+            var r = log.repairs[currentEditRepairIdx];
+            
+            var deviceId = document.getElementById('editRepairDeviceId').value;
+            var faultType = document.getElementById('editRepairFaultType').value;
+            if (faultType === '其他') {
+                faultType = document.getElementById('editRepairFaultTypeOtherInput').value.trim() || faultType;
+            }
+            var partsReplaced = document.getElementById('editRepairParts').value;
+            if (partsReplaced === '其他') {
+                partsReplaced = document.getElementById('editRepairPartsOtherInput').value.trim() || partsReplaced;
+            }
+            var faultDesc = document.getElementById('editRepairFaultDesc').value.trim();
+            var result = document.getElementById('editRepairResult').value;
+            
+            r.deviceId = deviceId;
+            r.faultType = faultType;
+            r.partsReplaced = partsReplaced;
+            r.faultDesc = faultDesc;
+            r.result = result;
+            
+            if (r.cloudId && isSupabaseConfigured && isOnline) {
+                (async function() {
+                    try {
+                        await fetch(SUPABASE_URL + '/rest/v1/repair_items?id=eq.' + r.cloudId, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                                'Prefer': 'return=minimal'
+                            },
+                            body: JSON.stringify({
+                                device_id: deviceId,
+                                fault_type: faultType,
+                                parts_replaced: partsReplaced,
+                                fault_desc: faultDesc,
+                                result: result
+                            })
+                        });
+                    } catch (e) {
+                        console.log('更新Supabase维修项目失败:', e);
+                    }
+                })();
+            }
+            
+            engSaveLogs(logs);
+            closeEditModal();
+            engRenderHistory();
+            showToast('✅ 维修项目已更新', 'success');
+        }
+        
+        function engDeleteRepairItem(logId, repairIdx) {
+            if (!confirm('确定要删除这条维修记录吗？')) return;
+            
+            var logs = engGetLogs();
+            var idx = logs.findIndex(function(l) { return l.id === logId; });
+            if (idx === -1) return;
+            
+            var log = logs[idx];
+            if (!log.repairs || !log.repairs[repairIdx]) return;
+            
+            var r = log.repairs[repairIdx];
+            
+            if (r.cloudId && isSupabaseConfigured && isOnline) {
+                (async function() {
+                    try {
+                        await fetch(SUPABASE_URL + '/rest/v1/repair_items?id=eq.' + r.cloudId, {
+                            method: 'DELETE',
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                            }
+                        });
+                    } catch (e) {
+                        console.log('从Supabase删除维修项目失败:', e);
+                    }
+                })();
+            }
+            
+            log.repairs.splice(repairIdx, 1);
+            engSaveLogs(logs);
+            engRenderHistory();
+            showToast('✅ 维修项目已删除', 'success');
         }
         
         function engSetStatsRange(range) {
