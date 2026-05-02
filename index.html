@@ -794,10 +794,14 @@
             background: var(--card);
             color: var(--text-secondary);
             transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         
         .monthly-year-tab:active {
             opacity: 0.7;
+            transform: scale(0.95);
         }
         
         .monthly-year-tab.active {
@@ -4676,7 +4680,7 @@ try {
             var html = '<div class="monthly-year-tabs">';
             years.forEach(function(year) {
                 var cls = (year === currentYear) ? ' active' : '';
-                html += '<div class="monthly-year-tab' + cls + '" onclick="engSwitchMonthlyYear('' + year + '')">' + year + '</div>';
+                html += '<button class="monthly-year-tab' + cls + '" onclick="engSwitchMonthlyYear('' + year + '')">' + year + '</button>';
             });
             html += '</div>';
             
@@ -4716,11 +4720,22 @@ try {
         
         function engSwitchMonthlyYear(year) {
             var container = document.getElementById('engMonthlyDetailTable');
-            container.querySelectorAll('.monthly-year-tab').forEach(function(t) {
-                t.classList.toggle('active', t.textContent === year);
+            if (!container) return;
+            var tabs = container.querySelectorAll('.monthly-year-tab');
+            var panels = container.querySelectorAll('.monthly-year-content');
+            tabs.forEach(function(t) {
+                if (t.textContent.trim() === year) {
+                    t.classList.add('active');
+                } else {
+                    t.classList.remove('active');
+                }
             });
-            container.querySelectorAll('.monthly-year-content').forEach(function(p) {
-                p.classList.toggle('active', p.getAttribute('data-year') === year);
+            panels.forEach(function(p) {
+                if (p.getAttribute('data-year') === year) {
+                    p.classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                }
             });
         }
 
