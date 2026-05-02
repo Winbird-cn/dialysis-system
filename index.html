@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v11</title>
+    <title>中山大学附属第五医院透析工程管理系统 v12</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -1229,6 +1229,321 @@ border-color: var(--water-primary);
             .form-row,
             .form-row-3 {
                 grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ====== 6.7寸手机屏幕适配 (375px-430px) ====== */
+        @media (max-width: 430px) {
+            /* 主Header适配 */
+            #appHeader {
+                padding: 12px 12px 14px;
+            }
+            
+            .header-title {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            
+            .header-subtitle {
+                font-size: 10px;
+            }
+            
+            /* 一级模块切换按钮 - 小屏适配 */
+            .mod-switch {
+                gap: 8px;
+            }
+            
+            .mod-btn {
+                min-height: 44px;
+                padding: 8px 10px;
+                font-size: 12px;
+                border-radius: 20px;
+            }
+            
+            /* 子Tab栏适配 */
+            .sub-tabs {
+                padding: 0 4px;
+            }
+            
+            .sub-btn {
+                min-width: 56px;
+                min-height: 36px;
+                padding: 4px;
+                font-size: 11px;
+            }
+            
+            .sub-btn-icon {
+                font-size: 18px;
+            }
+            
+            /* 内容区域 */
+            .page-content {
+                padding: 10px 8px;
+            }
+            
+            /* 卡片适配 */
+            .card {
+                padding: 12px 10px;
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .card-title {
+                font-size: 13px;
+                margin-bottom: 10px;
+                padding-bottom: 6px;
+            }
+            
+            /* 表单适配 */
+            .form-group {
+                margin-bottom: 10px;
+            }
+            
+            .form-label {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+            
+            .form-input,
+            .form-select {
+                padding: 10px 12px;
+                font-size: 15px;
+                border-radius: 8px;
+            }
+            
+            /* 表单行 - 小屏单列 */
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .form-row-3 {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            
+            /* 统计卡片 - 小屏适配 */
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            
+            .stat-card {
+                padding: 10px 6px;
+                border-radius: 8px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
+            }
+            
+            /* 批量录入设备列表 - 手机端两行布局 */
+            .qc-device-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+                margin-bottom: 6px;
+            }
+            
+            .qc-device-item input[type="checkbox"] {
+                position: absolute;
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            
+            /* 设备选择行的第一个子元素显示自定义checkbox */
+            .qc-device-item::before {
+                content: '';
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: 20px;
+                height: 20px;
+                border: 2px solid var(--border);
+                border-radius: 4px;
+                background: var(--card-bg);
+                cursor: pointer;
+            }
+            
+            .qc-device-item.selected::before {
+                background: var(--qc-primary);
+                border-color: var(--qc-primary);
+            }
+            
+            .qc-device-item.selected::after {
+                content: '✓';
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            
+            /* 第一行：设备ID */
+            .qc-device-item .device-id {
+                width: 100%;
+                padding-left: 30px;
+                margin-bottom: 8px;
+                font-size: 13px;
+            }
+            
+            /* 第二行：合格下拉 + 检测值输入 */
+            .qc-device-item .device-controls {
+                display: flex;
+                width: 100%;
+                gap: 8px;
+            }
+            
+            .qc-device-item select,
+            .qc-device-item input[type="text"] {
+                flex: 1;
+                padding: 8px 10px;
+                font-size: 14px;
+                border-radius: 6px;
+            }
+            
+            .qc-device-item select {
+                max-width: 100px;
+            }
+            
+            /* 设备选中行添加padding-left */
+            .qc-device-item.selected {
+                position: relative;
+                padding-left: 38px;
+            }
+            
+            /* 质控设备列表头部选择按钮 */
+            .qc-select-all-btns {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .qc-select-all-btns button {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            /* 选中数量显示 */
+            #qcSelectedCount {
+                width: 100%;
+                text-align: center;
+                margin-top: 8px;
+                font-size: 13px;
+            }
+            
+            /* 历史记录 - 小屏适配 */
+            .compact-record {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+            
+            .compact-record .record-device {
+                font-size: 13px;
+            }
+            
+            .compact-record .record-fault {
+                font-size: 11px;
+            }
+            
+            /* 提交栏适配 */
+            #submitBar {
+                padding: 12px;
+            }
+            
+            .submit-btn {
+                padding: 14px;
+                font-size: 16px;
+                border-radius: 10px;
+            }
+            
+            /* Toast提示 */
+            #toast {
+                top: 80px;
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+            
+            /* Modal弹窗 */
+            .modal-header {
+                padding: 14px 16px;
+            }
+            
+            .modal-header h3 {
+                font-size: 15px;
+            }
+            
+            .modal-body {
+                padding: 14px;
+            }
+            
+            /* 筛选按钮 */
+            .filter-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+                border-radius: 6px;
+            }
+            
+            /* 统计过滤按钮 */
+            .stats-filter-btn {
+                flex: 1 1 calc(50% - 6px);
+                min-width: 60px;
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+            
+            /* 故障类型柱状图 */
+            .fault-type-label {
+                width: 70px;
+                font-size: 11px;
+            }
+            
+            .fault-type-percent {
+                width: 40px;
+                font-size: 11px;
+            }
+            
+            /* 水处理维护项 */
+            .maintenance-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .maintenance-item {
+                padding: 8px 10px;
+            }
+            
+            .maintenance-item span {
+                font-size: 12px;
+            }
+            
+            /* 压力值网格 */
+            .pressure-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pressure-grid-3col {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* ====== 设备列表手机端两行布局支持 ====== */
+        .qc-device-item .device-controls {
+            display: none;
+        }
+        
+        @media (max-width: 430px) {
+            .qc-device-item .device-controls {
+                display: flex;
             }
         }
         
@@ -5075,6 +5390,9 @@ function qcUpdateSampleTypes() {
     }
     
     sampleSelect.innerHTML = options;
+    
+    // 更新已有设备列表的placeholder和默认值
+    qcUpdateTestValueHints();
 }
 
 // ====== 加载设备列表 ======
@@ -5161,12 +5479,25 @@ async function qcLoadDeviceList() {
     // 生成设备列表HTML
     var html = '';
     
-    // 水处理单独一行
+    // 根据检测类型设置placeholder和默认值
+    var placeholder = '检测值';
+    var defaultValue = '';
+    if (testType === '细菌检测') {
+        placeholder = 'CFU/mL';
+        defaultValue = '0';
+    } else if (testType === '内毒素检测') {
+        placeholder = 'EU/mL';
+        defaultValue = '0';
+    }
+    
+    // 水处理单独一行 - 手机端两行布局
     html += '<div class="qc-device-item water-row selected" data-device-id="水处理" onclick="qcToggleDevice(this)">';
     html += '<input type="checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest(\'.qc-device-item\'))">';
     html += '<span class="device-id water">💧 水处理</span>';
+    html += '<div class="device-controls">';
     html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
-    html += '<input type="text" class="qc-test-value" placeholder="检测值">';
+    html += '<input type="text" class="qc-test-value" placeholder="' + placeholder + '" value="' + defaultValue + '">';
+    html += '</div>';
     html += '</div>';
     
     // 分区显示透析机
@@ -5188,8 +5519,10 @@ async function qcLoadDeviceList() {
         html += '<div class="qc-device-item selected" data-device-id="' + device.id + '" data-zone="' + zone + '" onclick="qcToggleDevice(this)">';
         html += '<input type="checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest(\'.qc-device-item\'))">';
         html += '<span class="device-id">' + device.id + '</span>';
+        html += '<div class="device-controls">';
         html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
-        html += '<input type="text" class="qc-test-value" placeholder="检测值">';
+        html += '<input type="text" class="qc-test-value" placeholder="' + placeholder + '" value="' + defaultValue + '">';
+        html += '</div>';
         html += '</div>';
     });
     
@@ -5199,6 +5532,31 @@ async function qcLoadDeviceList() {
     
     container.innerHTML = html;
     qcUpdateSelectedCount();
+    qcUpdateTestValueHints();
+}
+
+// ====== 更新检测值输入框的placeholder和默认值 ======
+function qcUpdateTestValueHints() {
+    var testType = document.getElementById('qcTestType').value;
+    var inputs = document.querySelectorAll('.qc-test-value');
+    
+    var placeholder = '检测值';
+    var defaultValue = '';
+    if (testType === '细菌检测') {
+        placeholder = 'CFU/mL';
+        defaultValue = '0';
+    } else if (testType === '内毒素检测') {
+        placeholder = 'EU/mL';
+        defaultValue = '0';
+    }
+    
+    inputs.forEach(function(input) {
+        input.placeholder = placeholder;
+        // 只有当输入框为空时才设置默认值
+        if (!input.value || input.value === '0' || input.value === 'CFU/mL' || input.value === 'EU/mL') {
+            input.value = defaultValue;
+        }
+    });
 }
 
 // ====== 切换设备选中状态 ======
