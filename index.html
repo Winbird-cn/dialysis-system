@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v15</title>
+    <title>中山大学附属第五医院透析工程管理系统 v16</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -2927,7 +2927,7 @@ async function initDialysisDevices() {
         return;
     }
     try {
-        var devices = await sbGet('dialysis_devices', 'select=*&order=device_id.asc', 3);
+        var devices = await sbRpc('get_dialysis_devices', { pwd: SYSTEM_PWD }, 3);
         if (devices && devices.length > 0) {
             window._dialysisDevicesMap = {};
             devices.forEach(function(d) {
@@ -3107,7 +3107,7 @@ async function sbPost(table, body) {
         case 'dialysis_maintenance': return await sbRpc('insert_maintenance_record', params);
         case 'water_daily_log': return await sbRpc('insert_water_daily', params);
         case 'water_disinfection': return await sbRpc('insert_water_disinfection', params);
-        case 'water_consumables': return await sbRpc('insert_water_consumable', params);
+        case 'water_consumables': return await sbRpc('insert_water_consumables', params);
         case 'water_maintenance': return await sbRpc('insert_water_maintenance', params);
         case 'water_microbio_test': return await sbRpc('insert_water_microbio', params);
         case 'water_chem_test': return await sbRpc('insert_water_chem', params);
@@ -3225,13 +3225,16 @@ async function engSubmitMaint() {
     // 保存到Supabase
     if (isSupabaseConfigured) {
         try {
-            await sbPost('dialysis_maintenance', {
-                maint_date: date,
-                maint_item: item,
-                maint_scope: scope,
-                device_id: deviceId || null,
-                operator: operator || null,
-                notes: notes || null
+            await sbRpc('insert_maintenance_record', {
+                pwd: SYSTEM_PWD,
+                record_data: {
+                    maint_date: date,
+                    maint_item: item,
+                    maint_scope: scope,
+                    device_id: deviceId || null,
+                    operator: operator || null,
+                    notes: notes || null
+                }
             });
             showToast('✅ 保养记录已提交', 'success');
         } catch(e) {
@@ -3271,7 +3274,7 @@ async function engLoadMaintHistory() {
     }
     
     try {
-        var records = await sbGet('dialysis_maintenance', 'select=*&order=maint_date.desc&limit=100');
+        var records = await sbRpc('get_maintenance_records', { pwd: SYSTEM_PWD });
         if (!records || records.length === 0) {
             container.innerHTML = '<div class="empty-state"><p>暂无保养记录</p></div>';
             return;
@@ -3304,8 +3307,8 @@ if (!isSupabaseConfigured) {
 var container = document.getElementById('engHistoryList');
 container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">从云端加载中...</div>';
 try {
-                var logs = await sbGet('work_logs', 'select=*&order=date.desc&limit=1000');
-                var repairs = await sbGet('repair_items', 'select=*&order=repair_date.desc');
+                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
+                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
                 var repairMap = {};
                 (repairs || []).forEach(function(r) {
                     var key = r.work_log_id;
@@ -3533,18 +3536,21 @@ function engLocalDate(date) {
 async function engSaveToCloud(log) {
 if (!isSupabaseConfigured || !isOnline) return null;
 try {
-                var logData = await sbPost('work_logs', {
-                    date: log.date,
-                    running_devices: log.runningDevices,
-                    inspection_count: log.inspectionCount,
-                    self_check_abnormal: log.selfCheckAbnormal,
-                    repair_count: log.repairCount,
-                    mid_treatment_faults: log.midTreatmentFaults,
-                    treatment_interruptions: log.treatmentInterruptions,
-                    patient_switch: log.patientSwitch,
-                    forced_offline: log.forcedOffline,
-                    patient_wait_time: log.patientWaitTime,
-                    notes: log.notes || null
+                var logData = await sbRpc('insert_work_log', {
+                    pwd: SYSTEM_PWD,
+                    log_data: {
+                        date: log.date,
+                        running_devices: log.runningDevices,
+                        inspection_count: log.inspectionCount,
+                        self_check_abnormal: log.selfCheckAbnormal,
+                        repair_count: log.repairCount,
+                        mid_treatment_faults: log.midTreatmentFaults,
+                        treatment_interruptions: log.treatmentInterruptions,
+                        patient_switch: log.patientSwitch,
+                        forced_offline: log.forcedOffline,
+                        patient_wait_time: log.patientWaitTime,
+                        notes: log.notes || null
+                    }
                 });
                 return data[0];
             } catch (e) {
@@ -4069,7 +4075,7 @@ try {
             
             if (isSupabaseConfigured) {
                 try {
-                    var repairs = await sbGet('repair_items', 'select=*&repair_date=gte.' + startInput + '&repair_date=lte.' + endInput + '&order=repair_date.desc');
+                    var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD, start_date: startInput, end_date: endInput });
                     (repairs || []).forEach(function(r) {
                         if (r.device_id && r.device_id !== '中央供液室') {
                             exportData.push({
@@ -4276,7 +4282,7 @@ try {
             
             try {
                 // 直接从repair_items查数据，不依赖work_logs关联
-                var repairs = await sbGet('repair_items', 'select=*&order=repair_date.desc');
+                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
             } catch(e) {
                 document.getElementById('engStatFaultCount').textContent = '加载失败';
                 document.getElementById('engStatDeviceCount').textContent = '-';
@@ -4305,7 +4311,7 @@ try {
             // 治疗中断需要从work_logs查
             var totalInterruptions = 0;
             try {
-                var logs = await sbGet('work_logs', 'select=treatment_interruptions,date&order=date.desc&limit=1000');
+                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
                 var filteredLogs = (logs || []).filter(function(log) { return log.date >= startStr && log.date <= endStr; });
                 totalInterruptions = filteredLogs.reduce(function(sum, log) { return sum + (log.treatment_interruptions || 0); }, 0);
             } catch(e) {}
@@ -4403,8 +4409,8 @@ try {
             var endStr = engLocalDate(engStatsCustomEnd);
             
             try {
-                var logs = await sbGet('work_logs', 'select=*&order=date.desc&limit=1000');
-                var repairs = await sbGet('repair_items', 'select=*&order=repair_date.desc');
+                var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
+                var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
                 
                 var repairMap = {};
                 (repairs || []).forEach(function(r) {
@@ -4691,7 +4697,8 @@ try {
             if (!itemName) return;
             
             try {
-                var data = await sbGet('water_consumables', 'select=replace_date&item_name=eq.' + encodeURIComponent(itemName) + '&order=replace_date.desc&limit=1');
+                var allConsumables = await sbRpc('get_water_consumables', { pwd: SYSTEM_PWD });
+                var data = allConsumables.filter(function(c) { return c.item_name === itemName; }).sort(function(a, b) { return (b.replace_date || '').localeCompare(a.replace_date || ''); }).slice(0, 1);
                 
                 if (data && data.length > 0) {
                     document.getElementById('wPrevReplaceDate').value = data[0].replace_date;
@@ -4742,7 +4749,7 @@ try {
             }
             
             try {
-                await sbPost('water_daily_log', data);
+                await sbRpc('insert_water_daily', { pwd: SYSTEM_PWD, record_data: data });
                 showToast('记录已保存', 'success');
             } catch (e) {
                 showToast('保存失败', 'error');
@@ -4763,7 +4770,7 @@ try {
             };
             
             try {
-                await sbPost('water_disinfection', data);
+                await sbRpc('insert_water_disinfection', { pwd: SYSTEM_PWD, record_data: data });
                 showToast('记录已保存', 'success');
             } catch (e) {
                 showToast('保存失败', 'error');
@@ -4789,7 +4796,7 @@ try {
             };
             
             try {
-                await sbPost('water_consumables', data);
+                await sbRpc('insert_water_consumables', { pwd: SYSTEM_PWD, record_data: data });
                 showToast('记录已保存', 'success');
             } catch (e) {
                 showToast('保存失败', 'error');
@@ -4867,7 +4874,7 @@ try {
             }
             
             try {
-                await sbPost('water_maintenance', data);
+                await sbRpc('insert_water_maintenance', { pwd: SYSTEM_PWD, record_data: data });
                 showToast('记录已保存', 'success');
                 // 重置表单
                 document.getElementById('wMaintDate').value = '';
@@ -4890,7 +4897,7 @@ try {
             container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">加载中...</div>';
             
             try {
-                var data = await sbGet('water_maintenance', 'select=*&order=maint_date.desc&limit=50');
+                var data = await sbRpc('get_water_maintenance', { pwd: SYSTEM_PWD });
                 
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div class="empty-state">暂无保养记录</div>';
@@ -4978,9 +4985,9 @@ try {
         async function wLoadStats(start, end) {
             try {
                 var results = await Promise.all([
-                    sbGet('water_daily_log', 'select=*&record_date=gte.' + start + '&record_date=lte.' + end + '&order=record_date.asc'),
-                    sbGet('water_disinfection', 'select=*&date=gte.' + start + '&date=lte.' + end),
-                    sbGet('water_consumables', 'select=*&replace_date=gte.' + start + '&replace_date=lte.' + end)
+                    sbRpc('get_water_daily', { pwd: SYSTEM_PWD, start_date: start, end_date: end }),
+                    sbRpc('get_water_disinfection', { pwd: SYSTEM_PWD, start_date: start, end_date: end }),
+                    sbRpc('get_water_consumables', { pwd: SYSTEM_PWD, start_date: start, end_date: end })
                 ]);
                 
                 var dailyData = results[0] || [];
@@ -5066,9 +5073,9 @@ try {
             var startStr = engLocalDate(start);
             var endStr = engLocalDate(end);
             Promise.all([
-                sbGet('water_daily_log', 'select=*&record_date=gte.' + startStr + '&record_date=lte.' + endStr + '&order=record_date.asc'),
-                sbGet('water_disinfection', 'select=*&date=gte.' + startStr + '&date=lte.' + endStr),
-                sbGet('water_consumables', 'select=*&replace_date=gte.' + startStr + '&replace_date=lte.' + endStr)
+                sbRpc('get_water_daily', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr }),
+                sbRpc('get_water_disinfection', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr }),
+                sbRpc('get_water_consumables', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr })
             ]).then(function(results) {
                 var dailyData = results[0] || [];
                 var disinfectionData = results[1] || [];
@@ -5122,9 +5129,9 @@ try {
             var startStr = engLocalDate(start);
             var endStr = engLocalDate(end);
             Promise.all([
-                sbGet('water_daily_log', 'select=*&record_date=gte.' + startStr + '&record_date=lte.' + endStr + '&order=record_date.asc'),
-                sbGet('water_disinfection', 'select=*&date=gte.' + startStr + '&date=lte.' + endStr),
-                sbGet('water_consumables', 'select=*&replace_date=gte.' + startStr + '&replace_date=lte.' + endStr)
+                sbRpc('get_water_daily', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr }),
+                sbRpc('get_water_disinfection', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr }),
+                sbRpc('get_water_consumables', { pwd: SYSTEM_PWD, start_date: startStr, end_date: endStr })
             ]).then(function(results) {
                 var dailyData = results[0] || [];
                 var disinfectionData = results[1] || [];
@@ -5534,7 +5541,7 @@ async function qcLoadDeviceList() {
             // 备选：从repair_items获取
             if (qcDeviceList.length === 0) {
                 try {
-                    var repairs = await sbGet('repair_items', 'select=device_id&order=device_id.asc');
+                    var repairs = await sbRpc('get_repair_device_ids', { pwd: SYSTEM_PWD });
                     var deviceMap = {};
                     (repairs || []).forEach(function(r) {
                         if (r.device_id && r.device_id !== '中央供液室') {
@@ -5832,7 +5839,7 @@ async function qcBatchSubmit() {
     if (isSupabaseConfigured) {
         for (var i = 0; i < records.length; i++) {
             try {
-                await sbPost('dialysis_qc', records[i]);
+                await sbRpc('insert_qc_record', { pwd: SYSTEM_PWD, record_data: records[i] });
                 successCount++;
             } catch(e) {
                 failCount++;
@@ -5895,7 +5902,7 @@ async function qcLoadHistory() {
     }
     
     try {
-        var records = await sbGet('dialysis_qc', 'select=*&order=test_date.desc&limit=500');
+        var records = await sbRpc('get_qc_records', { pwd: SYSTEM_PWD });
         qcAllRecords = records || [];
         qcRenderHistory();
     } catch(e) {
@@ -6041,7 +6048,7 @@ async function qcLoadReminders() {
     
     if (isSupabaseConfigured) {
         try {
-            records = await sbGet('dialysis_qc', 'select=*&order=test_date.desc&limit=500') || [];
+            records = await sbRpc('get_qc_records', { pwd: SYSTEM_PWD }) || [];
         } catch(e) {
             records = JSON.parse(localStorage.getItem('qc_local_records') || '[]');
         }
@@ -6118,7 +6125,7 @@ async function qcExportData() {
     
     if (isSupabaseConfigured) {
         try {
-            var records = await sbGet('dialysis_qc', 'select=*&order=test_date.desc') || [];
+            var records = await sbRpc('get_qc_records', { pwd: SYSTEM_PWD }) || [];
             records.forEach(function(r) {
                 exportData.push({
                     '检测日期': r.test_date || '',
