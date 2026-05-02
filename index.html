@@ -4680,7 +4680,7 @@ try {
             var html = '<div class="monthly-year-tabs">';
             years.forEach(function(year) {
                 var cls = (year === currentYear) ? ' active' : '';
-                html += '<button class="monthly-year-tab' + cls + '" onclick="engSwitchMonthlyYear('' + year + '')">' + year + '</button>';
+                html += '\u003cbutton class="monthly-year-tab' + cls + '" data-year="' + year + '">\u003cspan>' + year + '\u003c/span>\u003c/button>';
             });
             html += '</div>';
             
@@ -4724,7 +4724,7 @@ try {
             var tabs = container.querySelectorAll('.monthly-year-tab');
             var panels = container.querySelectorAll('.monthly-year-content');
             tabs.forEach(function(t) {
-                if (t.textContent.trim() === year) {
+                if (t.getAttribute('data-year') === year) {
                     t.classList.add('active');
                 } else {
                     t.classList.remove('active');
@@ -4738,6 +4738,15 @@ try {
                 }
             });
         }
+        
+        // Event delegation for monthly year tabs
+        document.addEventListener('click', function(e) {
+            var tab = e.target.closest('.monthly-year-tab');
+            if (tab) {
+                var year = tab.getAttribute('data-year');
+                if (year) engSwitchMonthlyYear(year);
+            }
+        });
 
         async async function engLoadMonthlyDetailAll() {
             var container = document.getElementById('engMonthlyDetailTable');
