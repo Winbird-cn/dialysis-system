@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v12</title>
+    <title>中山大学附属第五医院透析工程管理系统 v13</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -1407,7 +1407,6 @@ border-color: var(--water-primary);
             
             .qc-device-item select,
             .qc-device-item input[type="text"] {
-                flex: 1;
                 padding: 8px 10px;
                 font-size: 14px;
                 border-radius: 6px;
@@ -1415,6 +1414,27 @@ border-color: var(--water-primary);
             
             .qc-device-item select {
                 max-width: 100px;
+                flex-shrink: 0;
+            }
+            
+            .qc-test-value-wrap {
+                display: flex;
+                flex: 1;
+                align-items: center;
+                gap: 4px;
+                min-width: 0;
+            }
+            
+            .qc-test-value-wrap input[type="text"] {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .qc-test-unit {
+                font-size: 11px;
+                color: var(--text-secondary);
+                white-space: nowrap;
+                font-weight: 500;
             }
             
             /* 设备选中行添加padding-left */
@@ -5479,15 +5499,18 @@ async function qcLoadDeviceList() {
     // 生成设备列表HTML
     var html = '';
     
-    // 根据检测类型设置placeholder和默认值
+    // 根据检测类型设置placeholder、默认值和单位标签
     var placeholder = '检测值';
     var defaultValue = '';
+    var unitLabel = '';
     if (testType === '细菌检测') {
         placeholder = 'CFU/mL';
         defaultValue = '0';
+        unitLabel = 'CFU/mL';
     } else if (testType === '内毒素检测') {
         placeholder = 'EU/mL';
         defaultValue = '0';
+        unitLabel = 'EU/mL';
     }
     
     // 水处理单独一行 - 手机端两行布局
@@ -5496,7 +5519,10 @@ async function qcLoadDeviceList() {
     html += '<span class="device-id water">💧 水处理</span>';
     html += '<div class="device-controls">';
     html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
+    html += '<div class="qc-test-value-wrap">';
     html += '<input type="text" class="qc-test-value" placeholder="' + placeholder + '" value="' + defaultValue + '">';
+    if (unitLabel) html += '<span class="qc-test-unit">' + unitLabel + '</span>';
+    html += '</div>';
     html += '</div>';
     html += '</div>';
     
@@ -5521,7 +5547,10 @@ async function qcLoadDeviceList() {
         html += '<span class="device-id">' + device.id + '</span>';
         html += '<div class="device-controls">';
         html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
+        html += '<div class="qc-test-value-wrap">';
         html += '<input type="text" class="qc-test-value" placeholder="' + placeholder + '" value="' + defaultValue + '">';
+        if (unitLabel) html += '<span class="qc-test-unit">' + unitLabel + '</span>';
+        html += '</div>';
         html += '</div>';
         html += '</div>';
     });
@@ -5542,12 +5571,15 @@ function qcUpdateTestValueHints() {
     
     var placeholder = '检测值';
     var defaultValue = '';
+    var unitLabel = '';
     if (testType === '细菌检测') {
         placeholder = 'CFU/mL';
         defaultValue = '0';
+        unitLabel = 'CFU/mL';
     } else if (testType === '内毒素检测') {
         placeholder = 'EU/mL';
         defaultValue = '0';
+        unitLabel = 'EU/mL';
     }
     
     inputs.forEach(function(input) {
@@ -5555,6 +5587,23 @@ function qcUpdateTestValueHints() {
         // 只有当输入框为空时才设置默认值
         if (!input.value || input.value === '0' || input.value === 'CFU/mL' || input.value === 'EU/mL') {
             input.value = defaultValue;
+        }
+        // 更新单位标签
+        var wrap = input.closest('.qc-test-value-wrap');
+        if (wrap) {
+            var unitSpan = wrap.querySelector('.qc-test-unit');
+            if (unitLabel) {
+                if (unitSpan) {
+                    unitSpan.textContent = unitLabel;
+                } else {
+                    var newSpan = document.createElement('span');
+                    newSpan.className = 'qc-test-unit';
+                    newSpan.textContent = unitLabel;
+                    wrap.appendChild(newSpan);
+                }
+            } else {
+                if (unitSpan) unitSpan.remove();
+            }
         }
     });
 }
