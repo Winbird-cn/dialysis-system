@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v14</title>
+    <title>中山大学附属第五医院透析工程管理系统 v15</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -5511,26 +5511,48 @@ async function qcLoadDeviceList() {
     qcDeviceList = [];
     
     try {
-        // 从repair_items获取去重的device_id列表
+        // 优先从dialysis_devices获取设备列表
         if (isSupabaseConfigured) {
-            var repairs = await sbGet('repair_items', 'select=device_id&order=device_id.asc');
-            var deviceMap = {};
-            (repairs || []).forEach(function(r) {
-                if (r.device_id && r.device_id !== '中央供液室') {
-                    // 提取区号用于排序
-                    var match = r.device_id.match(/^(\d+)-/);
-                    var zone = match ? parseInt(match[1]) : 99;
-                    if (!deviceMap[r.device_id]) {
-                        deviceMap[r.device_id] = { zone: zone, id: r.device_id, name: r.device_id };
-                    }
+            try {
+                var devices = await sbRpc('get_dialysis_devices', { pwd: SYSTEM_PWD });
+                if (devices && devices.length > 0) {
+                    qcDeviceList = devices.filter(function(d) {
+                        return d.area_bed && d.area_bed !== '中央供液室';
+                    }).map(function(d) {
+                        var match = d.area_bed.match(/^(\d+)-/);
+                        var zone = match ? parseInt(match[1]) : 99;
+                        return { zone: zone, id: d.area_bed, name: d.area_bed };
+                    }).sort(function(a, b) {
+                        if (a.zone !== b.zone) return a.zone - b.zone;
+                        return a.id.localeCompare(b.id, undefined, { numeric: true });
+                    });
                 }
-            });
+            } catch(e) {
+                console.log('从dialysis_devices获取失败，尝试repair_items');
+            }
             
-            // 转换为数组并按区号排序
-            qcDeviceList = Object.values(deviceMap).sort(function(a, b) {
-                if (a.zone !== b.zone) return a.zone - b.zone;
-                return a.id.localeCompare(b.id, undefined, { numeric: true });
-            });
+            // 备选：从repair_items获取
+            if (qcDeviceList.length === 0) {
+                try {
+                    var repairs = await sbGet('repair_items', 'select=device_id&order=device_id.asc');
+                    var deviceMap = {};
+                    (repairs || []).forEach(function(r) {
+                        if (r.device_id && r.device_id !== '中央供液室') {
+                            var match = r.device_id.match(/^(\d+)-/);
+                            var zone = match ? parseInt(match[1]) : 99;
+                            if (!deviceMap[r.device_id]) {
+                                deviceMap[r.device_id] = { zone: zone, id: r.device_id, name: r.device_id };
+                            }
+                        }
+                    });
+                    qcDeviceList = Object.values(deviceMap).sort(function(a, b) {
+                        if (a.zone !== b.zone) return a.zone - b.zone;
+                        return a.id.localeCompare(b.id, undefined, { numeric: true });
+                    });
+                } catch(e2) {
+                    console.log('获取设备列表失败，使用默认列表');
+                }
+            }
         }
     } catch(e) {
         console.log('获取设备列表失败，使用默认列表');
