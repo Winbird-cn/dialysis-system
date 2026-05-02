@@ -3966,8 +3966,10 @@ try {
             container.innerHTML = '<div class="empty-state">加载中...</div>';
             
             // 通过RPC获取单设备维修记录
-            sbRpc('get_repair_items', { pwd: SYSTEM_PWD, limit_count: 500 }, 1)
+            sbRpc('get_repair_items', { pwd: SYSTEM_PWD, device_id: deviceId }, 1)
                 .then(function(data) {
+                // 只保留当前设备的记录
+                data = (data || []).filter(function(r) { return r.device_id === deviceId; });
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div class="empty-state">该设备暂无维修记录</div>';
                     return;
