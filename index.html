@@ -4080,11 +4080,34 @@ try {
             }
             if (partsSelect && r.partsReplaced) {
                 var found = false;
+                // 1. 精确匹配
                 for (var i = 0; i < partsSelect.options.length; i++) {
                     if (partsSelect.options[i].value === r.partsReplaced) {
                         partsSelect.selectedIndex = i;
                         found = true;
                         break;
+                    }
+                }
+                // 2. 模糊匹配：下拉选项值包含在partsReplaced中
+                if (!found) {
+                    for (var i = 0; i < partsSelect.options.length; i++) {
+                        var optVal = partsSelect.options[i].value;
+                        if (optVal && r.partsReplaced.indexOf(optVal) !== -1) {
+                            partsSelect.selectedIndex = i;
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                // 3. 反向模糊匹配：partsReplaced包含在下拉选项值中
+                if (!found) {
+                    for (var i = 0; i < partsSelect.options.length; i++) {
+                        var optVal = partsSelect.options[i].value;
+                        if (optVal && optVal.indexOf(r.partsReplaced) !== -1) {
+                            partsSelect.selectedIndex = i;
+                            found = true;
+                            break;
+                        }
                     }
                 }
                 if (!found && r.partsReplaced) {
