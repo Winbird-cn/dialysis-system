@@ -4411,11 +4411,12 @@ try {
             engRenderDeviceRanking(mappedLogs);
             engRenderFaultTypeChart(mappedLogs);
             engRenderPartsStats(partsMap);
-            engLoadMonthlyDetailAll();
             
             // 缓存数据供展开详情使用
             window._engStatFilteredRepairs = filteredRepairs;
             window._engStatDeviceSet = deviceSet;
+            
+            engLoadMonthlyDetailAll();
         }
         
         // 点击统计卡片展开详情
@@ -4749,32 +4750,22 @@ try {
         });
 
         async async function engLoadMonthlyDetailAll() {
-            var container = document.getElementById('engMonthlyDetailTable');
-            container.innerHTML = '<div class="empty-state">加载中...</div>';
-            try {
-                var allRepairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD }, 2);
-                if (!allRepairs || allRepairs.length === 0) {
-                    container.innerHTML = '<div class="empty-state">暂无数据</div>';
-                    return;
-                }
-                // Filter out 中央供液室
-                allRepairs = allRepairs.filter(function(r) {
-                    return r.device_id !== '中央供液室' && r.repair_date;
-                });
-                // Build monthly data
-                var monthlyRepairs = {};
-                allRepairs.forEach(function(r) {
-                    var month = r.repair_date.substring(0, 7);
-                    if (!monthlyRepairs[month]) monthlyRepairs[month] = {date: month + '-01', repairCount: 0, repairs: []};
-                    monthlyRepairs[month].repairCount++;
-                    monthlyRepairs[month].repairs.push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
-                });
-                var mappedLogs = Object.values(monthlyRepairs).sort(function(a, b) { return a.date.localeCompare(b.date); });
-                engRenderMonthlyDetail(mappedLogs);
-            } catch(e) {
-                console.error('月度明细加载失败:', e);
-                container.innerHTML = '<div class="empty-state">加载失败，请刷新重试</div>';
+            // Reuse the cached filtered data from stats
+            var filteredRepairs = window._engStatFilteredRepairs || [];
+            if (filteredRepairs.length === 0) {
+                document.getElementById('engMonthlyDetailTable').innerHTML = '<div class="empty-state">暂无数据</div>';
+                return;
             }
+            // Build monthly data from cached data
+            var monthlyRepairs = {};
+            filteredRepairs.forEach(function(r) {
+                var month = r.repair_date.substring(0, 7);
+                if (!monthlyRepairs[month]) monthlyRepairs[month] = {date: month + '-01', repairCount: 0, repairs: []};
+                monthlyRepairs[month].repairCount++;
+                monthlyRepairs[month].repairs.push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+            });
+            var mappedLogs = Object.values(monthlyRepairs).sort(function(a, b) { return a.date.localeCompare(b.date); });
+            engRenderMonthlyDetail(mappedLogs);
         }
         
         function engFormatDate(dateStr) {
