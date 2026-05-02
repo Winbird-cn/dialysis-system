@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v10</title>
+    <title>中山大学附属第五医院透析工程管理系统 v11</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -2484,6 +2484,9 @@ border-color: var(--water-primary);
 const SUPABASE_URL = 'https://sthqzmxtkgnzuvpzxohn.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0aHF6bXh0a2duenV2cHp4b2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Mzg1OTcsImV4cCI6MjA5MzExNDU5N30.0KkEAhEHBSXrxwD42QnOpxNM6lvnE-lG3I2rMwSXdUc';
 
+// SECURITY DEFINER 密码（与登录密码一致）
+const SYSTEM_PWD = 'abcd1234';
+
 var currentModule = 'engineer';
 var currentEngTab = 'form';
 var currentWaterTab = 'daily';
@@ -2606,33 +2609,106 @@ return {
 };
 }
 
-async function sbGet(table, query, retries) {
-retries = retries || 3;
-var url = SUPABASE_URL + '/rest/v1/' + table + '?' + query;
-for (var i = 0; i < retries; i++) {
-    try {
-        var r = await fetch(url, { headers: sbHeaders(), signal: AbortSignal.timeout(30000) });
-        if (!r.ok) throw new Error(r.status);
-        return r.json();
-    } catch(e) {
-        if (i < retries - 1) { await new Promise(function(res) { setTimeout(res, 2000); }); continue; }
-        throw e;
+// ====== SECURITY DEFINER RPC API ======
+// 所有数据库操作通过RPC函数执行，包含密码验证
+
+async function sbRpc(funcName, params, retries) {
+    retries = retries || 3;
+    var url = SUPABASE_URL + '/rest/v1/rpc/' + funcName;
+    for (var i = 0; i < retries; i++) {
+        try {
+            var r = await fetch(url, {
+                method: 'POST',
+                headers: sbHeaders(),
+                body: JSON.stringify(params),
+                signal: AbortSignal.timeout(30000)
+            });
+            if (!r.ok) {
+                var errText = await r.text();
+                throw new Error(r.status + ': ' + errText);
+            }
+            return r.json();
+        } catch(e) {
+            if (i < retries - 1) { await new Promise(function(res) { setTimeout(res, 2000); }); continue; }
+            throw e;
+        }
     }
 }
+
+// 通用查询函数（兼容旧接口，内部调用RPC）
+async function sbGet(table, query, retries) {
+    var params = { pwd: SYSTEM_PWD };
+    
+    // 解析query字符串
+    var queryParts = query.split('&');
+    for (var j = 0; j < queryParts.length; j++) {
+        var part = queryParts[j];
+        var kv = part.split('=');
+        if (kv.length === 2) {
+            var key = decodeURIComponent(kv[0]);
+            var val = decodeURIComponent(kv[1]);
+            
+            if (key === 'select') params.columns = val;
+            else if (key === 'limit') params.limit_count = parseInt(val, 10);
+            else if (key === 'order') {
+                var m = val.match(/(\w+)\.(desc|asc)/);
+                if (m) { params.order_by = m[1]; params.order_dir = m[2]; }
+            }
+            else if (key.endsWith('.gte') || key.endsWith('.lte') || key.endsWith('.eq')) {
+                var fm = key.match(/(.+)\.(gte|lte|eq)$/);
+                if (fm) {
+                    var f = fm[1];
+                    if (['record_date','repair_date','maint_date','date','test_date'].indexOf(f) >= 0) {
+                        if (fm[2] === 'gte') params.start_date = val;
+                        if (fm[2] === 'lte') params.end_date = val;
+                    }
+                    if (f === 'device_id' && fm[2] === 'eq') params.device_id = val;
+                }
+            }
+        }
+    }
+    
+    // 根据表名调用对应RPC
+    switch(table) {
+        case 'dialysis_devices': return await sbRpc('get_dialysis_devices', params, retries);
+        case 'work_logs': return await sbRpc('get_work_logs', params, retries);
+        case 'repair_items': return await sbRpc('get_repair_items', params, retries);
+        case 'dialysis_maintenance': return await sbRpc('get_maintenance_records', {pwd: SYSTEM_PWD, limit_count: params.limit_count || 100}, retries);
+        case 'water_daily_log': return await sbRpc('get_water_daily', params, retries);
+        case 'water_disinfection': return await sbRpc('get_water_disinfection', params, retries);
+        case 'water_consumables': return await sbRpc('get_water_consumables', params, retries);
+        case 'water_maintenance': return await sbRpc('get_water_maintenance', params, retries);
+        case 'water_microbio_test': return await sbRpc('get_water_microbio', params, retries);
+        case 'water_chem_test': return await sbRpc('get_water_chem', params, retries);
+        case 'dialysis_qc': return await sbRpc('get_qc_records', {pwd: SYSTEM_PWD, limit_count: params.limit_count || 500}, retries);
+        default: console.error('未知表名:', table); return [];
+    }
 }
 
-        async function sbPost(table, body) {
-const url = SUPABASE_URL + '/rest/v1/' + table;
-const r = await fetch(url, { method: 'POST', headers: sbHeaders(), body: JSON.stringify(body), signal: AbortSignal.timeout(10000) });
-if (!r.ok) throw new Error(r.status);
-return r.json();
+// 通用插入函数（兼容旧接口，内部调用RPC）
+async function sbPost(table, body) {
+    var params = { pwd: SYSTEM_PWD, data: body };
+    switch(table) {
+        case 'work_logs': return await sbRpc('insert_work_log', params);
+        case 'repair_items': return await sbRpc('insert_repair_item', params);
+        case 'dialysis_maintenance': return await sbRpc('insert_maintenance_record', params);
+        case 'water_daily_log': return await sbRpc('insert_water_daily', params);
+        case 'water_disinfection': return await sbRpc('insert_water_disinfection', params);
+        case 'water_consumables': return await sbRpc('insert_water_consumable', params);
+        case 'water_maintenance': return await sbRpc('insert_water_maintenance', params);
+        case 'water_microbio_test': return await sbRpc('insert_water_microbio', params);
+        case 'water_chem_test': return await sbRpc('insert_water_chem', params);
+        case 'dialysis_qc': return await sbRpc('insert_qc_record', params);
+        default: console.error('未知表名:', table); return [];
+    }
 }
 
-        async function sbPatch(table, query, body) {
-const url = SUPABASE_URL + '/rest/v1/' + table + '?' + query;
-const r = await fetch(url, { method: 'PATCH', headers: sbHeaders(), body: JSON.stringify(body), signal: AbortSignal.timeout(10000) });
-if (!r.ok) throw new Error(r.status);
-return r.json();
+// sbPatch保留原样
+async function sbPatch(table, query, body) {
+    var url = SUPABASE_URL + '/rest/v1/' + table + '?' + query;
+    var r = await fetch(url, { method: 'PATCH', headers: sbHeaders(), body: JSON.stringify(body), signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
 }
 
 // ====== 核心修复：简化的模块切换 ======
@@ -3429,23 +3505,18 @@ try {
             var select = document.getElementById('engSingleDeviceSelect');
             if (!select) return;
             
-            var apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0aHF6bXh0a2duenV2cHp4b2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Mzg1OTcsImV4cCI6MjA5MzExNDU5N30.0KkEAhEHBSXrxwD42QnOpxNM6lvnE-lG3I2rMwSXdUc';
-            
-            fetch('https://sthqzmxtkgnzuvpzxohn.supabase.co/rest/v1/repair_items?select=device_id', {
-                headers: {
-                    'apikey': apiKey,
-                    'Authorization': 'Bearer ' + apiKey
-                }
-            })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
+            // 通过RPC获取设备ID列表
+            sbRpc('get_repair_device_ids', { pwd: SYSTEM_PWD })
+                .then(function(data) {
                 var deviceIds = [];
-                data.forEach(function(item) {
-                    // 过滤掉中央供液室
-                    if (item.device_id && item.device_id !== '中央供液室' && deviceIds.indexOf(item.device_id) === -1) {
-                        deviceIds.push(item.device_id);
-                    }
-                });
+                if (data && Array.isArray(data)) {
+                    data.forEach(function(item) {
+                        // 过滤掉中央供液室
+                        if (item.device_id && item.device_id !== '中央供液室' && deviceIds.indexOf(item.device_id) === -1) {
+                            deviceIds.push(item.device_id);
+                        }
+                    });
+                }
                 
                 deviceIds.sort();
                 select.innerHTML = '<option value="">-- 选择设备编号 --</option>';
@@ -3468,18 +3539,11 @@ try {
                 return;
             }
             
-            var apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0aHF6bXh0a2duenV2cHp4b2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Mzg1OTcsImV4cCI6MjA5MzExNDU5N30.0KkEAhEHBSXrxwD42QnOpxNM6lvnE-lG3I2rMwSXdUc';
-            
             container.innerHTML = '<div class="empty-state">加载中...</div>';
             
-            fetch('https://sthqzmxtkgnzuvpzxohn.supabase.co/rest/v1/repair_items?device_id=eq.' + encodeURIComponent(deviceId) + '&order=repair_date.asc', {
-                headers: {
-                    'apikey': apiKey,
-                    'Authorization': 'Bearer ' + apiKey
-                }
-            })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
+            // 通过RPC获取单设备维修记录
+            sbRpc('get_repair_items', { pwd: SYSTEM_PWD, device_id: deviceId }, 1)
+                .then(function(data) {
                 if (!data || data.length === 0) {
                     container.innerHTML = '<div class="empty-state">该设备暂无维修记录</div>';
                     return;
