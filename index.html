@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>中山大学附属第五医院透析工程管理系统 v13</title>
+    <title>中山大学附属第五医院透析工程管理系统 v14</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231a73e8' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
@@ -1435,6 +1435,84 @@ border-color: var(--water-primary);
                 color: var(--text-secondary);
                 white-space: nowrap;
                 font-weight: 500;
+            }
+            
+            /* 区号选择器 */
+            .qc-zone-selector {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 8px 0;
+                margin-bottom: 4px;
+            }
+            
+            .qc-zone-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 8px 12px;
+                border: 1.5px solid var(--qc-primary);
+                border-radius: 8px;
+                background: rgba(123, 31, 162, 0.06);
+                color: var(--qc-primary);
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                min-width: 56px;
+            }
+            
+            .qc-zone-btn:active {
+                background: rgba(123, 31, 162, 0.15);
+                transform: scale(0.96);
+            }
+            
+            .qc-zone-btn.active {
+                background: var(--qc-primary);
+                color: white;
+                border-color: var(--qc-primary);
+            }
+            
+            .qc-zone-btn.active .qc-zone-count {
+                color: rgba(255,255,255,0.8);
+            }
+            
+            .qc-zone-count {
+                font-size: 10px;
+                font-weight: 400;
+                color: var(--text-secondary);
+                margin-top: 2px;
+            }
+            
+            /* 区设备面板 */
+            .qc-zone-panel {
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 8px;
+                margin-bottom: 8px;
+                background: rgba(123, 31, 162, 0.03);
+            }
+            
+            .qc-zone-panel-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 4px 4px 8px;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--qc-primary);
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 8px;
+            }
+            
+            .qc-zone-close {
+                font-size: 12px;
+                color: var(--text-secondary);
+                background: none;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 2px 10px;
+                cursor: pointer;
             }
             
             /* 设备选中行添加padding-left */
@@ -5513,7 +5591,7 @@ async function qcLoadDeviceList() {
         unitLabel = 'EU/mL';
     }
     
-    // 水处理单独一行 - 手机端两行布局
+    // 水处理单独一行
     html += '<div class="qc-device-item water-row selected" data-device-id="水处理" onclick="qcToggleDevice(this)">';
     html += '<input type="checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest(\'.qc-device-item\'))">';
     html += '<span class="device-id water">💧 水处理</span>';
@@ -5526,38 +5604,53 @@ async function qcLoadDeviceList() {
     html += '</div>';
     html += '</div>';
     
-    // 分区显示透析机
-    var currentZone = '';
-    qcDeviceList.forEach(function(device, idx) {
+    // 分区选择按钮 - 先选区再展开设备
+    var zones = [];
+    var zoneMap = {};
+    qcDeviceList.forEach(function(device) {
         var zoneMatch = device.id.match(/^(\d+)-/);
         var zone = zoneMatch ? zoneMatch[1] : '';
-        
-        // 区号变化时添加区标题
-        if (zone !== currentZone) {
-            if (currentZone !== '') {
-                html += '</div>';
-            }
-            currentZone = zone;
-            html += '<div class="qc-section-header">第' + zone + '区</div>';
-            html += '<div class="qc-zone-devices" data-zone="' + zone + '">';
+        if (!zoneMap[zone]) {
+            zoneMap[zone] = [];
+            zones.push(zone);
         }
-        
-        html += '<div class="qc-device-item selected" data-device-id="' + device.id + '" data-zone="' + zone + '" onclick="qcToggleDevice(this)">';
-        html += '<input type="checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest(\'.qc-device-item\'))">';
-        html += '<span class="device-id">' + device.id + '</span>';
-        html += '<div class="device-controls">';
-        html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
-        html += '<div class="qc-test-value-wrap">';
-        html += '<input type="text" class="qc-test-value" placeholder="' + placeholder + '" value="' + defaultValue + '">';
-        if (unitLabel) html += '<span class="qc-test-unit">' + unitLabel + '</span>';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
+        zoneMap[zone].push(device);
     });
     
-    if (currentZone !== '') {
+    html += '<div class="qc-zone-selector">';
+    zones.forEach(function(zone) {
+        var count = zoneMap[zone].length;
+        html += '<button class="qc-zone-btn" data-zone="' + zone + '" onclick="qcToggleZone(\'' + zone + '\')">';
+        html += '第' + zone + '区';
+        html += '<span class="qc-zone-count">' + count + '台</span>';
+        html += '</button>';
+    });
+    html += '</div>';
+    
+    // 各区设备列表（默认隐藏，点击区号展开）
+    zones.forEach(function(zone) {
+        html += '<div class="qc-zone-panel" id="qcZone_' + zone + '" style="display:none;">';
+        html += '<div class="qc-zone-panel-header">';
+        html += '<span>第' + zone + '区（' + zoneMap[zone].length + '台）</span>';
+        html += '<button class="qc-zone-close" onclick="qcCloseZone(\'' + zone + '\')">收起</button>';
         html += '</div>';
-    }
+        
+        zoneMap[zone].forEach(function(device) {
+            html += '<div class="qc-device-item selected" data-device-id="' + device.id + '" data-zone="' + zone + '" onclick="qcToggleDevice(this)">';
+            html += '<input type="checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest(\'.qc-device-item\'))">';
+            html += '<span class="device-id">' + device.id + '</span>';
+            html += '<div class="device-controls">';
+            html += '<select class="qc-qualified-select"><option value="true">合格</option><option value="false">不合格</option></select>';
+            html += '<div class="qc-test-value-wrap">';
+            html += '<input type="text" class="qc-test-value" placeholder="' + placeholder + '" value="' + defaultValue + '">';
+            if (unitLabel) html += '<span class="qc-test-unit">' + unitLabel + '</span>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+        });
+        
+        html += '</div>';
+    });
     
     container.innerHTML = html;
     qcUpdateSelectedCount();
@@ -5606,6 +5699,28 @@ function qcUpdateTestValueHints() {
             }
         }
     });
+}
+
+// ====== 展开/收起区设备 ======
+function qcToggleZone(zone) {
+    var panel = document.getElementById('qcZone_' + zone);
+    var btn = document.querySelector('.qc-zone-btn[data-zone="' + zone + '"]');
+    if (!panel) return;
+    
+    if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+        if (btn) btn.classList.add('active');
+    } else {
+        panel.style.display = 'none';
+        if (btn) btn.classList.remove('active');
+    }
+}
+
+function qcCloseZone(zone) {
+    var panel = document.getElementById('qcZone_' + zone);
+    var btn = document.querySelector('.qc-zone-btn[data-zone="' + zone + '"]');
+    if (panel) panel.style.display = 'none';
+    if (btn) btn.classList.remove('active');
 }
 
 // ====== 切换设备选中状态 ======
