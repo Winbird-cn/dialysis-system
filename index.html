@@ -2030,11 +2030,16 @@ border-color: var(--water-primary);
 </div>
     
     <!-- ====== 水处理设备信息 ====== -->
-    <div id="waterDeviceInfo" style="display:none;background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:12px;padding:12px 16px;margin:0 12px 8px;color:#fff;font-size:13px;">
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
-            <span style="font-weight:bold;font-size:14px;">💧 双级反渗透水处理系统</span>
-            <span>型号：劳铒/Ro Dia II3600</span>
-            <span>启用日期：2018-03-19</span>
+    <div id="waterDeviceInfo" style="display:none;margin:0 12px 8px;">
+        <div onclick="toggleWaterInfo()" style="background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:12px;padding:8px 16px;color:#fff;font-size:13px;cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-weight:bold;font-size:13px;">💧 双级反渗透水处理系统</span>
+                <span id="waterInfoArrow" style="font-size:12px;transition:transform 0.2s;">▼</span>
+            </div>
+        </div>
+        <div id="waterInfoDetail" style="display:none;background:linear-gradient(135deg,#0d47a1,#1565c0);border-radius:0 0 12px 12px;padding:0 16px 10px;color:#fff;font-size:12px;margin-top:-2px;">
+            <div style="padding:6px 0;border-top:1px solid rgba(255,255,255,0.2);">型号：劳铒/Ro Dia II3600</div>
+            <div style="padding:4px 0;">启用日期：2018-03-19</div>
         </div>
     </div>
     <!-- ====== 水处理模块子Tab ====== -->
@@ -6176,6 +6181,18 @@ async function qcExportData() {
     var filename = '质控检测记录_' + new Date().toISOString().split('T')[0] + '.csv';
     engShowExportData(csvContent, filename, 'csv');
     showToast('已导出 ' + exportData.length + ' 条记录', 'success');
+}
+
+function toggleWaterInfo() {
+    var detail = document.getElementById('waterInfoDetail');
+    var arrow = document.getElementById('waterInfoArrow');
+    if (detail.style.display === 'none') {
+        detail.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        detail.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
 }
 </script>
 </body>
