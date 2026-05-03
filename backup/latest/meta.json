@@ -1,0 +1,16 @@
+{
+  "backup_time": "2026-05-04T02:35:44.756721",
+  "tables": {
+    "water_daily_log": 0,
+    "work_logs": 387,
+    "repair_items": 803,
+    "water_maintenance": 0,
+    "water_consumables": 0,
+    "water_chem_test": 0,
+    "dialysis_qc": 0,
+    "water_disinfection": 0,
+    "dialysis_devices": 0,
+    "water_microbio_test": 0,
+    "dialysis_maintenance": 0
+  }
+}
