@@ -1,5 +1,5 @@
 {
-  "backup_time": "2026-05-04T02:35:44.756721",
+  "backup_time": "2026-05-04T03:15:00.000000",
   "tables": {
     "water_daily_log": 0,
     "work_logs": 387,
@@ -9,8 +9,9 @@
     "water_chem_test": 0,
     "dialysis_qc": 0,
     "water_disinfection": 0,
-    "dialysis_devices": 0,
+    "dialysis_devices": 96,
     "water_microbio_test": 0,
     "dialysis_maintenance": 0
-  }
+  },
+  "notes": "Partial backup via RPC. dialysis_devices (96) retrieved via get_dialysis_devices RPC. Other tables blocked by RLS with RPC function SQL errors (42703 column not found, 42883 operator type mismatch). water_consumables and water_maintenance have overloaded RPCs with ambiguous parameter resolution."
 }
