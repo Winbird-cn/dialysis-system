@@ -6217,6 +6217,24 @@ function toggleWaterInfo() {
 }
 </script>
 
+<!-- ====== 图表Tooltip ====== -->
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<!-- ====== 编辑 Modal ====== -->
+<div class="modal-overlay" id="editModal">
+<div class="modal-content">
+<div class="modal-header">
+                <h3>✏️ 编辑记录</h3>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+</div>
+<div class="modal-body" id="editModalBody"></div>
+<div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeEditModal()">取消</button>
+                <button class="modal-btn save" onclick="saveEditLog()">💾 保存修改</button>
+</div>
+</div>
+</div>
+
 <!-- ====== 主 Header ====== -->
     <div id="appHeader">
         <div class="header-top">
