@@ -1,1 +1,0 @@
-{"code":"42702","details":"It could refer to either a PL/pgSQL variable or a table column.","hint":null,"message":"column reference \"item_name\" is ambiguous"}
