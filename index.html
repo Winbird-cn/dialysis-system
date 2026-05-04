@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1B4965">
+    <meta name="theme-color" content="#0A5294">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>中山大学附属第五医院透析工程管理系统 v22</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231B4965' rx='20'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230A5294' rx='20'/></svg>">
     
     <!-- PWA Manifest (inline) -->
     
@@ -19,7 +19,7 @@
          * 透析工程管理系统 UI 样式表 v22.1 - 设计体系重构版
          * ========================================
          * 设计规范：
-         * - 主色：#1B4965（深青蓝 H:207 S:59 L:30）
+         * - 主色：#0A5294（中大五院深蓝）
          * - 所有颜色从主色推导
          * - 字体层级：14px基准，1.25倍率
          * - 间距体系：4px网格
@@ -29,18 +29,18 @@
          */
         :root {
             /* ===== 配色体系：从主色推导 ===== */
-            --primary: #1B4965;
-            --primary-dark: #153a50;
-            --primary-light: #2A6B8E;
-            --primary-lighter: #3A8DB2;
-            --primary-hover: #7BB5D0;
-            --primary-bg: #B8D8E8;
-            --primary-bg-light: #DFF0F7;
+            --primary: #0A5294;
+            --primary-dark: #003D7C;
+            --primary-light: #1A6AAF;
+            --primary-lighter: #3D8FCA;
+            --primary-hover: #6BB0DE;
+            --primary-bg: #A3D1EF;
+            --primary-bg-light: #DFF0F8;
             
             /* 水处理主题色（从主色推导） */
-            --water-primary: #3A8DB2;
-            --water-dark: #2A6B8E;
-            --water-light: #5FA8D3;
+            --water-primary: #3D8FCA;
+            --water-dark: #1A6AAF;
+            --water-light: #6BB0DE;
             
             /* 质控检测主题色（从主色推导） */
             --qc-primary: #5A7A9E;
@@ -57,7 +57,7 @@
             --warning: #F4845F;
             --warning-bg: rgba(244,132,95,0.12);
             --warning-text: #D2691E;
-            --info: #3A8DB2;
+            --info: #3D8FCA;
             
             /* 页面底色 */
             --bg: #F8FAFC;
@@ -80,10 +80,10 @@
             --shadow-float: 0 10px 25px rgba(0,0,0,0.1);
             
             /* 渐变配置 */
-            --gradient-primary: linear-gradient(135deg, #1B4965, #2A6B8E);
-            --gradient-btn: linear-gradient(135deg, #1B4965, #2A6B8E);
-            --gradient-header: linear-gradient(135deg, #1B4965, #2A6B8E);
-            --gradient-water: linear-gradient(135deg, #3A8DB2, #5FA8D3);
+            --gradient-primary: linear-gradient(135deg, #0A5294, #1A6AAF);
+            --gradient-btn: linear-gradient(135deg, #0A5294, #1A6AAF);
+            --gradient-header: linear-gradient(135deg, #0A5294, #1A6AAF);
+            --gradient-water: linear-gradient(135deg, #3D8FCA, #6BB0DE);
             --gradient-qc: linear-gradient(135deg, #5A7A9E, #7B9BBE);
             
             /* 当前活跃模块颜色 */
@@ -93,11 +93,11 @@
         
         @media (prefers-color-scheme: dark) {
             :root {
-                --primary: #5FA8D3;
-                --primary-dark: #3A8DB2;
-                --primary-light: #7BB5D0;
-                --water-primary: #7BB5D0;
-                --water-dark: #5FA8D3;
+                --primary: #3D8FCA;
+                --primary-dark: #1A6AAF;
+                --primary-light: #6BB0DE;
+                --water-primary: #6BB0DE;
+                --water-dark: #3D8FCA;
                 --qc-primary: #8BA4C4;
                 --qc-dark: #6B849E;
                 --success: #4ADE80;
@@ -183,7 +183,7 @@
         }
         
         .mod-btn.active {
-            color: #1B4965;
+            color: #0A5294;
             background: rgba(255,255,255,0.98);
             border-color: rgba(255,255,255,0.5);
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -370,7 +370,7 @@
         .form-input:focus {
             outline: none;
             border-color: var(--active-primary);
-            box-shadow: 0 0 0 3px rgba(27,73,101,0.08);
+            box-shadow: 0 0 0 3px rgba(10,82,148,0.08);
         }
         
         .form-input::placeholder {
@@ -421,7 +421,7 @@
         .form-select:focus {
             outline: none;
             border-color: var(--active-primary);
-            box-shadow: 0 0 0 3px rgba(27,73,101,0.08);
+            box-shadow: 0 0 0 3px rgba(10,82,148,0.08);
         }
         
         /* ====== 维修条目 ====== */
@@ -436,7 +436,7 @@
         }
         
         .repair-item:hover {
-            background: rgba(27,73,101,0.04);
+            background: rgba(10,82,148,0.04);
         }
         
         .repair-item.warning {
@@ -495,7 +495,7 @@
         }
         
         .add-repair-btn:hover {
-            background: rgba(27,73,101,0.04);
+            background: rgba(10,82,148,0.04);
             border-color: var(--active-primary);
         }
         
@@ -571,7 +571,7 @@
         .history-btn.edit {
             color: var(--active-primary);
             border-color: var(--active-primary);
-            background: rgba(27,73,101,0.04);
+            background: rgba(10,82,148,0.04);
         }
         
         .history-btn.edit:hover {
@@ -677,7 +677,7 @@
         
         .history-search-input:focus {
             border-color: var(--active-primary);
-            box-shadow: 0 0 0 3px rgba(27,73,101,0.08);
+            box-shadow: 0 0 0 3px rgba(10,82,148,0.08);
         }
         
         .date-group {
@@ -746,7 +746,7 @@
         }
         
         .compact-record:hover {
-            background: rgba(27,73,101,0.03);
+            background: rgba(10,82,148,0.03);
             border-left-color: var(--active-primary);
             box-shadow: var(--shadow-card);
         }
@@ -925,7 +925,7 @@
         }
         
         .device-rank-item:hover {
-            background: rgba(27,73,101,0.03);
+            background: rgba(10,82,148,0.03);
             border-left-color: var(--active-primary);
         }
         
@@ -1593,11 +1593,11 @@
         }
         
         .maintenance-item:hover {
-            background: rgba(58,141,178,0.06);
+            background: rgba(61,143,202,0.06);
         }
         
         .maintenance-item.checked {
-            background: rgba(58,141,178,0.1);
+            background: rgba(61,143,202,0.1);
             border: 1.5px solid var(--water-primary);
         }
         
@@ -2279,7 +2279,7 @@
         }
         
         .qc-device-item.water-row {
-            background: rgba(58,141,178,0.06);
+            background: rgba(61,143,202,0.06);
             border: 1px dashed var(--water-primary);
         }
         
@@ -2416,7 +2416,7 @@
         .device-info-tag {
             display: inline-block;
             padding: 4px 12px;
-            background: rgba(27,73,101,0.08);
+            background: rgba(10,82,148,0.08);
             color: var(--active-primary);
             border-radius: 6px;
             font-size: 12px;
@@ -2454,7 +2454,7 @@
             border-radius: 50%;
             background: var(--gradient-btn);
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(27,73,101,0.25);
+            box-shadow: 0 2px 6px rgba(10,82,148,0.25);
             transition: all 0.2s ease;
         }
         
@@ -2509,16 +2509,30 @@
 </head>
 <body>
     <!-- ====== 登录页 ====== -->
-    <div id="loginPage" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#1B4965 0%,#2A6B8E 50%,#3A8DB2 100%);display:flex;align-items:center;justify-content:center;z-index:99999;">
-        <div style="background:white;border-radius:16px;padding:32px 24px;width:90%;max-width:320px;box-shadow:0 10px 30px rgba(27,73,101,0.3);text-align:center;position:relative;overflow:hidden;">
+    <div id="loginPage" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#002855 0%,#0A5294 50%,#1A6AAF 100%);display:flex;align-items:center;justify-content:center;z-index:99999;">
+        <div style="background:white;border-radius:16px;padding:32px 24px;width:90%;max-width:320px;box-shadow:0 10px 30px rgba(0,40,85,0.3);text-align:center;position:relative;overflow:hidden;">
             <!-- 装饰性顶部渐变条 -->
-            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1B4965,#2A6B8E,#3A8DB2);"></div>
-            <div style="font-size:48px;margin-bottom:12px;line-height:1;">🏥</div>
-            <h2 style="color:#1B4965;margin:0 0 6px;font-size:20px;font-weight:700;letter-spacing:-0.01em;">透析工程管理系统</h2>
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#002855,#0A5294,#1A6AAF);"></div>
+            <!-- 医院Logo SVG -->
+            <div style="margin-bottom:12px;">
+                <svg viewBox="0 0 100 100" width="56" height="56">
+                  <!-- 外圈 -->
+                  <circle cx="50" cy="50" r="48" fill="#0A5294" stroke="#003D7C" stroke-width="1"/>
+                  <!-- 内圈 -->
+                  <circle cx="50" cy="50" r="38" fill="#0A5294"/>
+                  <!-- 八边形 -->
+                  <polygon points="50,14 76,28 76,56 50,70 24,56 24,28" fill="#003D7C" stroke="#6BB0DE" stroke-width="1.5"/>
+                  <!-- 中心十字/几何符号 -->
+                  <path d="M42,35 L50,25 L58,35 L58,50 L50,60 L42,50 Z" fill="white" opacity="0.9"/>
+                  <!-- 上方文字 -->
+                  <text x="50" y="20" text-anchor="middle" fill="white" font-size="7" font-weight="600" letter-spacing="2">中山大学</text>
+                </svg>
+            </div>
+            <h2 style="color:#0A5294;margin:0 0 6px;font-size:20px;font-weight:700;letter-spacing:-0.01em;">透析工程管理系统</h2>
             <p style="color:#64748B;font-size:12px;margin:0 0 24px;font-weight:500;">中山大学附属第五医院透析中心</p>
-            <input type="password" id="loginPassword" placeholder="请输入登录密码" style="width:100%;padding:14px 16px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:15px;outline:none;box-sizing:border-box;transition:all 0.2s ease;height:48px;" onfocus="this.style.borderColor='#1B4965';this.style.boxShadow='0 0 0 3px rgba(27,73,101,0.08)'" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none'" onkeydown="if(event.key==='Enter')doLogin()">
+            <input type="password" id="loginPassword" placeholder="请输入登录密码" style="width:100%;padding:14px 16px;border:1.5px solid #E2E8F0;border-radius:10px;font-size:15px;outline:none;box-sizing:border-box;transition:all 0.2s ease;height:48px;" onfocus="this.style.borderColor='#0A5294';this.style.boxShadow='0 0 0 3px rgba(10,82,148,0.08)'" onblur="this.style.borderColor='#E2E8F0';this.style.boxShadow='none'" onkeydown="if(event.key==='Enter')doLogin()">
             <div id="loginError" style="color:#E74C3C;font-size:12px;margin-top:8px;display:none;font-weight:500;">⚠️ 密码错误，请重试</div>
-            <button onclick="doLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1B4965,#2A6B8E);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;box-shadow:0 2px 6px rgba(27,73,101,0.2);transition:all 0.2s ease;letter-spacing:0.02em;" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter='brightness(1)'">登 录</button>
+            <button onclick="doLogin()" style="width:100%;padding:14px;background:linear-gradient(135deg,#0A5294,#1A6AAF);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;box-shadow:0 2px 6px rgba(10,82,148,0.2);transition:all 0.2s ease;letter-spacing:0.02em;" onmouseover="this.style.filter='brightness(1.08)'" onmouseout="this.style.filter='brightness(1)'">登 录</button>
         </div>
     </div>
     
@@ -6238,7 +6252,16 @@ function toggleWaterInfo() {
 <!-- ====== 主 Header ====== -->
     <div id="appHeader">
         <div class="header-top">
-            <span class="header-subtitle">中山大学附属第五医院透析中心</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <!-- 小Logo SVG -->
+                <svg viewBox="0 0 100 100" width="24" height="24">
+                  <circle cx="50" cy="50" r="48" fill="#0A5294"/>
+                  <circle cx="50" cy="50" r="38" fill="#0A5294"/>
+                  <polygon points="50,14 76,28 76,56 50,70 24,56 24,28" fill="#003D7C"/>
+                  <path d="M42,35 L50,25 L58,35 L58,50 L50,60 L42,50 Z" fill="white" opacity="0.9"/>
+                </svg>
+                <span class="header-subtitle">中山大学附属第五医院透析中心</span>
+            </div>
             <span id="syncStatus">📡 初始化中...</span>
         </div>
         <div class="header-title">透析工程管理系统</div>
@@ -6247,8 +6270,7 @@ function toggleWaterInfo() {
             <button class="mod-btn" id="btnWater" onclick="switchModule('water')">💧 水处理管理</button>
             <button class="mod-btn" id="btnQC" onclick="switchModule('qc')">📋 质控检测</button>
         </div>
-</div>
-    
+    </div>
     <!-- ====== 工程师模块子Tab ====== -->
 <div class="sub-tabs" id="engSubTabs">
         <button class="sub-btn active" onclick="switchEngTab('form')">
@@ -6267,13 +6289,13 @@ function toggleWaterInfo() {
     
     <!-- ====== 水处理设备信息 ====== -->
     <div id="waterDeviceInfo" style="display:none;margin:0 12px 12px;">
-        <div onclick="toggleWaterInfo()" style="background:linear-gradient(135deg,#3A8DB2,#5FA8D3);border-radius:12px;padding:12px 16px;color:#fff;font-size:14px;cursor:pointer;box-shadow:0 2px 6px rgba(58,141,178,0.2);transition:all 0.2s ease;">
+        <div onclick="toggleWaterInfo()" style="background:linear-gradient(135deg,#3D8FCA,#6BB0DE);border-radius:12px;padding:12px 16px;color:#fff;font-size:14px;cursor:pointer;box-shadow:0 2px 6px rgba(61,143,202,0.2);transition:all 0.2s ease;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="font-weight:600;font-size:14px;">💧 双级反渗透水处理系统</span>
                 <span id="waterInfoArrow" style="font-size:12px;transition:transform 0.2s ease;">▼</span>
             </div>
         </div>
-        <div id="waterInfoDetail" style="display:none;background:linear-gradient(135deg,#3A8DB2,#5FA8D3);border-radius:0 0 12px 12px;padding:0 16px 12px;color:#fff;font-size:12px;margin-top:-2px;box-shadow:0 2px 6px rgba(58,141,178,0.2);">
+        <div id="waterInfoDetail" style="display:none;background:linear-gradient(135deg,#3D8FCA,#6BB0DE);border-radius:0 0 12px 12px;padding:0 16px 12px;color:#fff;font-size:12px;margin-top:-2px;box-shadow:0 2px 6px rgba(61,143,202,0.2);">
             <div style="padding:8px 0;border-top:1px solid rgba(255,255,255,0.2);">型号：劳铒/Ro Dia II3600</div>
             <div style="padding:6px 0;">启用日期：2018-03-19</div>
         </div>
