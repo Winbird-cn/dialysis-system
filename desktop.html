@@ -1864,7 +1864,7 @@
                     <div class="charts-row">
                         <div class="chart-card">
                             <div class="chart-header">
-                                <h3 class="chart-title">最近7天维修趋势</h3>
+                                <h3 class="chart-title">最近30天维修趋势</h3>
                             </div>
                             <div class="chart-container">
                                 <canvas id="repairTrendChart"></canvas>
@@ -2706,6 +2706,17 @@
                 coreSuccess = true;
                 showToast('核心数据加载完成', 'success');
                 
+                // ===== 核心数据到齐，先渲染仪表盘和表格 =====
+                updateDeviceSelects();
+                fillMonthSelect();
+                updateStats();
+                renderRepairTrendChart();
+                renderFaultTypeChart();
+                renderRecentRepairs();
+                renderDeviceBoard();
+                renderWorkLogTable();
+                renderRepairTable();
+                
                 // ===== 第2组：QC、维护、设备（逐个加载避免超时） =====
                 showToast('正在加载QC和维护数据...', 'default');
                 try {
@@ -2765,20 +2776,14 @@
                     }
                 });
                 
-                // ===== 渲染页面 =====
-                updateDeviceSelects();
-                fillMonthSelect();
-                updateStats();
-                renderRepairTrendChart();
-                renderFaultTypeChart();
-                renderRecentRepairs();
-                renderDeviceBoard();
-                renderWorkLogTable();
-                renderRepairTable();
+                // ===== 渲染第2组数据相关页面 =====
                 renderQCTable();
                 renderDeviceCards();
                 renderMaintenanceTable();
                 renderWaterTable();
+                // 刷新设备看板（用最新的设备数据）
+                renderDeviceBoard();
+                updateStats();
                 
                 // 显示最终提示
                 if (partialFailure) {
@@ -2844,7 +2849,7 @@
         function renderRepairTrendChart() {
             const ctx = $('repairTrendChart').getContext('2d');
             const days = [];
-            for (let i = 6; i >= 0; i--) {
+            for (let i = 29; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 days.push(d.toISOString().split('T')[0]);
@@ -2856,7 +2861,7 @@
             window.repairTrendChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: days.map(d => d.slice(5).replace('-', '/')),
+                    labels: days.map(d => { const parts = d.slice(5).split('-'); return parts[0] + '/' + parts[1]; }),
                     datasets: [{
                         label: '维修次数',
                         data: counts,
