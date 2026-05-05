@@ -2140,22 +2140,35 @@
         }
 
         // ====== Supabase RPC ======
-        async function sbRpc(fn, params = {}) {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                },
-                body: JSON.stringify({ ...params, pwd: SYSTEM_PWD })
-            });
-            if (!res.ok) throw new Error(await res.text());
-            return res.json();
+        // 带重试的 RPC 调用
+        async function sbRpc(fn, params = {}, retries = 2) {
+            const lastError = new Error();
+            for (let i = 0; i <= retries; i++) {
+                try {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        },
+                        body: JSON.stringify({ ...params, pwd: SYSTEM_PWD }),
+                        signal: AbortSignal.timeout(30000)
+                    });
+                    if (!res.ok) throw new Error(await res.text());
+                    return await res.json();
+                } catch (e) {
+                    lastError = e;
+                    if (i < retries) {
+                        await new Promise(r => setTimeout(r, 2000));
+                    }
+                }
+            }
+            throw lastError;
         }
 
         // ====== 登录 ======
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             const pwd = $('loginPassword').value;
             const btn = $('loginBtn');
@@ -2165,15 +2178,32 @@
             btn.textContent = '验证中...';
             errEl.style.display = 'none';
 
-            if (pwd === SYSTEM_PWD) {
-                localStorage.setItem('auth_token', '1');
-                localStorage.setItem('auth_time', Date.now().toString());
-                showApp();
-                showToast('登录成功', 'success');
-            } else {
-                errEl.style.display = 'block';
-                btn.disabled = false;
-                btn.textContent = '登 录';
+            try {
+                // 通过 RPC 验证密码，确认 Supabase 连通性
+                const result = await sbRpc('verify_password', { pwd: pwd });
+                if (result && result.success) {
+                    localStorage.setItem('auth_token', '1');
+                    localStorage.setItem('auth_time', Date.now().toString());
+                    showApp();
+                    showToast('登录成功', 'success');
+                } else {
+                    errEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = '登 录';
+                }
+            } catch (e) {
+                console.error('登录验证失败:', e);
+                // 降级为本地验证
+                if (pwd === SYSTEM_PWD) {
+                    localStorage.setItem('auth_token', '1');
+                    localStorage.setItem('auth_time', Date.now().toString());
+                    showApp();
+                    showToast('登录成功', 'success');
+                } else {
+                    errEl.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = '登 录';
+                }
             }
         }
 
@@ -2238,46 +2268,82 @@
             loadAllData();
         }
 
+        // 分组串行加载数据
         async function loadAllData() {
-            showToast('正在加载数据...', 'default');
+            showToast('正在加载核心数据...', 'default');
+            
+            // 状态追踪
+            let coreSuccess = false;
+            let partialFailure = false;
+            
             try {
-                const [logs, repairs, qc, maintenance, water, devs] = await Promise.all([
+                // ===== 第1组：核心数据（必须成功） =====
+                const group1Results = await Promise.allSettled([
                     sbRpc('get_work_logs', { limit_count: 1000 }),
-                    sbRpc('get_repair_items', { limit_count: 500 }),
+                    sbRpc('get_repair_items', { limit_count: 500 })
+                ]);
+                
+                const [logsResult, repairsResult] = group1Results;
+                workLogs = logsResult.status === 'fulfilled' ? (logsResult.value || []) : [];
+                repairItems = repairsResult.status === 'fulfilled' ? (repairsResult.value || []) : [];
+                
+                // 第1组失败则阻止渲染
+                if (logsResult.status === 'rejected' || repairsResult.status === 'rejected') {
+                    console.error('核心数据加载失败:', group1Results);
+                    showToast('核心数据加载失败，请检查网络后刷新重试', 'error');
+                    return;
+                }
+                
+                coreSuccess = true;
+                showToast('核心数据加载完成', 'success');
+                
+                // ===== 第2组：QC、维护、设备 =====
+                const group2Results = await Promise.allSettled([
                     sbRpc('get_qc_records', { limit_count: 500 }),
                     sbRpc('get_maintenance_records', { limit_count: 500 }),
-                    Promise.all([
-                        sbRpc('get_water_daily', { limit_count: 200 }),
-                        sbRpc('get_water_disinfection', { limit_count: 200 }),
-                        sbRpc('get_water_consumables', { limit_count: 200 }),
-                        sbRpc('get_water_maintenance', { limit_count: 200 }),
-                        sbRpc('get_water_microbio', { limit_count: 200 }),
-                        sbRpc('get_water_chem', { limit_count: 200 })
-                    ]),
                     sbRpc('get_dialysis_devices', {})
                 ]);
                 
-                workLogs = logs || [];
-                repairItems = repairs || [];
-                qcRecords = qc || [];
-                maintenanceRecords = maintenance || [];
-                waterData = { 
-                    daily: water[0] || [],
-                    disinfection: water[1] || [],
-                    consumables: water[2] || [],
-                    maintenance: water[3] || [],
-                    microbio: water[4] || [],
-                    chem: water[5] || []
-                };
-                devices = devs || [];
+                const [qcResult, maintenanceResult, devsResult] = group2Results;
+                qcRecords = qcResult.status === 'fulfilled' ? (qcResult.value || []) : [];
+                maintenanceRecords = maintenanceResult.status === 'fulfilled' ? (maintenanceResult.value || []) : [];
+                devices = devsResult.status === 'fulfilled' ? (devsResult.value || []) : [];
                 
-                // 更新设备下拉
+                // 检查第2组是否有失败
+                if (group2Results.some(r => r.status === 'rejected')) {
+                    partialFailure = true;
+                    console.warn('部分数据加载失败:', group2Results);
+                }
+                
+                // ===== 第3组：水处理数据 =====
+                const waterRpcs = [
+                    { key: 'daily', fn: 'get_water_daily', params: { limit_count: 200 } },
+                    { key: 'disinfection', fn: 'get_water_disinfection', params: { limit_count: 200 } },
+                    { key: 'consumables', fn: 'get_water_consumables', params: { limit_count: 200 } },
+                    { key: 'maintenance', fn: 'get_water_maintenance', params: { limit_count: 200 } },
+                    { key: 'microbio', fn: 'get_water_microbio', params: { limit_count: 200 } },
+                    { key: 'chem', fn: 'get_water_chem', params: { limit_count: 200 } }
+                ];
+                
+                const waterResults = await Promise.allSettled(
+                    waterRpcs.map(r => sbRpc(r.fn, r.params))
+                );
+                
+                // 初始化水处理数据
+                waterData = { daily: [], disinfection: [], consumables: [], maintenance: [], microbio: [], chem: [] };
+                
+                waterResults.forEach((result, idx) => {
+                    if (result.status === 'fulfilled') {
+                        waterData[waterRpcs[idx].key] = result.value || [];
+                    } else {
+                        partialFailure = true;
+                        console.warn(`水处理数据[${waterRpcs[idx].key}]加载失败:`, result.reason);
+                    }
+                });
+                
+                // ===== 渲染页面 =====
                 updateDeviceSelects();
-                
-                // 填充月份筛选
                 fillMonthSelect();
-                
-                // 渲染各页面
                 updateStats();
                 renderRepairTrendChart();
                 renderFaultTypeChart();
@@ -2290,10 +2356,16 @@
                 renderMaintenanceTable();
                 renderWaterTable();
                 
-                showToast('数据加载完成', 'success');
+                // 显示最终提示
+                if (partialFailure) {
+                    showToast('部分数据加载失败，可刷新重试', 'warning');
+                } else {
+                    showToast('数据加载完成', 'success');
+                }
+                
             } catch (e) {
                 console.error('加载数据失败:', e);
-                showToast('部分数据加载失败', 'error');
+                showToast('部分数据加载失败，可刷新重试', 'error');
             }
         }
 
