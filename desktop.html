@@ -2181,7 +2181,7 @@
             try {
                 // 通过 RPC 验证密码，确认 Supabase 连通性
                 const result = await sbRpc('verify_password', { pwd: pwd });
-                if (result && result.success) {
+                if (result === true) {
                     localStorage.setItem('auth_token', '1');
                     localStorage.setItem('auth_time', Date.now().toString());
                     showApp();
