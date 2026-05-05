@@ -1,0 +1,11 @@
+{
+  "backup_time": "2026-05-05T18:22:47Z",
+  "tables": {
+    "repair_items": {
+      "bytes": 167047,
+      "records": 643
+    }
+  },
+  "total_bytes": 167047,
+  "note": "work_logs returned empty; other tables (dialysis_*, water_*) are empty or RPC functions not available"
+}
