@@ -1244,6 +1244,32 @@
             color: var(--text-muted);
         }
         
+        .device-card-mfr {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        /* ===== 设备分组样式 ===== */
+        .area-group {
+            margin-bottom: 24px;
+        }
+        
+        .area-group-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+        
+        .area-group-devices {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        
         /* ===== 水处理子tab ===== */
         .sub-tabs {
             display: flex;
@@ -2298,22 +2324,37 @@
                 coreSuccess = true;
                 showToast('核心数据加载完成', 'success');
                 
-                // ===== 第2组：QC、维护、设备 =====
-                const group2Results = await Promise.allSettled([
-                    sbRpc('get_qc_records', { limit_count: 500 }),
-                    sbRpc('get_maintenance_records', { limit_count: 500 }),
-                    sbRpc('get_dialysis_devices', {})
-                ]);
-                
-                const [qcResult, maintenanceResult, devsResult] = group2Results;
-                qcRecords = qcResult.status === 'fulfilled' ? (qcResult.value || []) : [];
-                maintenanceRecords = maintenanceResult.status === 'fulfilled' ? (maintenanceResult.value || []) : [];
-                devices = devsResult.status === 'fulfilled' ? (devsResult.value || []) : [];
-                
-                // 检查第2组是否有失败
-                if (group2Results.some(r => r.status === 'rejected')) {
+                // ===== 第2组：QC、维护、设备（逐个加载避免超时） =====
+                showToast('正在加载QC和维护数据...', 'default');
+                try {
+                    qcRecords = await sbRpc('get_qc_records', { limit_count: 500 });
+                    showToast('QC数据加载完成', 'success');
+                } catch (e) {
+                    qcRecords = [];
                     partialFailure = true;
-                    console.warn('部分数据加载失败:', group2Results);
+                    console.warn('QC数据加载失败:', e);
+                }
+                await new Promise(r => setTimeout(r, 1000));
+                
+                showToast('正在加载维护记录...', 'default');
+                try {
+                    maintenanceRecords = await sbRpc('get_maintenance_records', { limit_count: 500 });
+                    showToast('维护记录加载完成', 'success');
+                } catch (e) {
+                    maintenanceRecords = [];
+                    partialFailure = true;
+                    console.warn('维护记录加载失败:', e);
+                }
+                await new Promise(r => setTimeout(r, 1000));
+                
+                showToast('正在加载设备数据（96台）...', 'default');
+                try {
+                    devices = await sbRpc('get_dialysis_devices', {});
+                    showToast('设备数据加载完成', 'success');
+                } catch (e) {
+                    devices = [];
+                    partialFailure = true;
+                    console.warn('设备数据加载失败:', e);
                 }
                 
                 // ===== 第3组：水处理数据 =====
@@ -2544,30 +2585,47 @@
         }
 
         // ====== 设备看板 ======
+        // ====== 设备状态看板（仪表盘） ======
+        function getDeviceStatus(deviceId) {
+            // 获取该设备最近一次维修记录
+            const deviceRepairs = repairItems.filter(r => r.device_id === deviceId);
+            if (deviceRepairs.length === 0) return 'normal';
+            
+            const today = new Date().toISOString().split('T')[0];
+            const recentRepair = deviceRepairs.sort((a, b) => (b.repair_date || '').localeCompare(a.repair_date || ''))[0];
+            const repairDate = recentRepair.repair_date;
+            
+            if (!repairDate) return 'normal';
+            
+            const daysDiff = Math.floor((new Date(today) - new Date(repairDate)) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff <= 3) return 'fault';  // 3天内有维修-红色
+            if (daysDiff <= 7) return 'maintenance';  // 7天内有维修-黄色
+            return 'normal';  // 无近期维修-绿色
+        }
+        
         function renderDeviceBoard() {
             const container = $('deviceGrid');
-            const deviceNames = ['A区-1', 'A区-2', 'A区-3', 'A区-4', 'A区-5', 'B区-1', 'B区-2', 'B区-3', 'B区-4', 'B区-5', 'C区-1', 'C区-2', 'C区-3', 'C区-4', 'C区-5'];
-            const statuses = ['normal', 'normal', 'normal', 'normal', 'maintenance', 'normal', 'normal', 'normal', 'fault', 'normal', 'normal', 'normal', 'normal', 'offline', 'normal'];
-            
             const icons = { normal: 'check_circle', maintenance: 'schedule', fault: 'error', offline: 'power_off' };
             
             if (devices.length > 0) {
-                container.innerHTML = devices.slice(0, 15).map((d, i) => {
-                    const status = d.status || 'normal';
+                // 按device_id排序（按区号和床号排序）
+                const sortedDevices = [...devices].sort((a, b) => (a.device_id || '').localeCompare(b.device_id || ''));
+                
+                container.innerHTML = sortedDevices.map(d => {
+                    const status = getDeviceStatus(d.device_id);
+                    // 显示格式：区号-床号-序号
+                    const displayId = d.device_id ? d.device_id.split('-').slice(1).join('-') : '';
+                    const title = `${d.device_id} (${d.device_type || '血液透析机'})`;
                     return `
-                        <div class="device-item ${status}" title="${d.device_name || d.device_id}">
+                        <div class="device-item ${status}" title="${title}">
                             <span class="material-icons-round">${icons[status]}</span>
-                            ${(d.device_id || `D${i+1}`).split('-').pop()}
+                            ${displayId}
                         </div>
                     `;
                 }).join('');
             } else {
-                container.innerHTML = deviceNames.map((name, i) => `
-                    <div class="device-item ${statuses[i]}" title="${name}">
-                        <span class="material-icons-round">${icons[statuses[i]]}</span>
-                        ${name.split('-').pop()}
-                    </div>
-                `).join('');
+                container.innerHTML = '<div style="padding:20px;text-align:center;color:#64748B;">暂无设备数据</div>';
             }
         }
 
@@ -2724,22 +2782,84 @@
         // ====== 设备维护 ======
         let selectedDeviceId = '';
 
+        // ====== 设备维护卡片 ======
+        function getDeviceMaintenanceStatus(deviceId) {
+            // 获取该设备最近一次维修记录
+            const deviceRepairs = repairItems.filter(r => r.device_id === deviceId);
+            if (deviceRepairs.length === 0) return 'normal';
+            
+            const today = new Date().toISOString().split('T')[0];
+            const recentRepair = deviceRepairs.sort((a, b) => (b.repair_date || '').localeCompare(a.repair_date || ''))[0];
+            const repairDate = recentRepair.repair_date;
+            
+            if (!repairDate) return 'normal';
+            
+            const daysDiff = Math.floor((new Date(today) - new Date(repairDate)) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff <= 3) return 'fault';  // 3天内有维修-红色
+            if (daysDiff <= 7) return 'maintenance';  // 7天内有维修-黄色
+            return 'normal';  // 无近期维修-绿色
+        }
+        
         function renderDeviceCards() {
             const container = $('deviceCardsGrid');
-            const deviceNames = ['A区-01', 'A区-02', 'A区-03', 'A区-04', 'A区-05', 'B区-01', 'B区-02', 'B区-03', 'B区-04', 'B区-05', 'C区-01', 'C区-02', 'C区-03', 'C区-04', 'C区-05'];
-            const models = ['DBB-27', 'DBB-27', 'DBB-27', '4008S', '4008S', '5008S', '5008S', '5008S', '4008S', '4008S', '5008S', '5008S', 'DBB-27', 'DBB-27', '5008S'];
-            const statuses = ['normal', 'normal', 'normal', 'normal', 'maintenance', 'normal', 'normal', 'normal', 'fault', 'normal', 'normal', 'normal', 'normal', 'offline', 'normal'];
             
-            container.innerHTML = deviceNames.map((name, i) => `
-                <div class="device-card ${selectedDeviceId === name ? 'active' : ''}" onclick="selectDeviceCard('${name}')">
-                    <div class="device-card-header">
-                        <span class="device-card-id">${name}</span>
-                        <span class="device-card-status ${statuses[i]}"></span>
-                    </div>
-                    <div class="device-card-model">${models[i]}</div>
-                    <div class="device-card-date">启用: 2022-01-${String(i+1).padStart(2,'0')}</div>
-                </div>
-            `).join('');
+            if (devices.length === 0) {
+                container.innerHTML = '<div style="padding:40px;text-align:center;color:#64748B;">暂无设备数据</div>';
+                return;
+            }
+            
+            // 按area_bed分组（区号-床号）
+            const areaGroups = {};
+            const sortedDevices = [...devices].sort((a, b) => {
+                const areaA = a.area_bed || a.device_id || '';
+                const areaB = b.area_bed || b.device_id || '';
+                return areaA.localeCompare(areaB);
+            });
+            
+            sortedDevices.forEach(d => {
+                const areaNum = d.area_bed ? d.area_bed.split('-')[0] : '00';
+                if (!areaGroups[areaNum]) areaGroups[areaNum] = [];
+                areaGroups[areaNum].push(d);
+            });
+            
+            // 生成HTML
+            let html = '';
+            const sortedAreas = Object.keys(areaGroups).sort();
+            
+            sortedAreas.forEach(areaNum => {
+                const areaDevices = areaGroups[areaNum];
+                const areaLabel = `第${areaNum}区`;
+                
+                html += `<div class="area-group">`;
+                html += `<div class="area-group-header">${areaLabel} (${areaDevices.length}台)</div>`;
+                html += `<div class="area-group-devices">`;
+                
+                areaDevices.forEach(d => {
+                    const deviceId = d.device_id || '';
+                    const isActive = selectedDeviceId === deviceId;
+                    const status = getDeviceMaintenanceStatus(deviceId);
+                    const deviceType = d.device_type || '血液透析机';
+                    const startDate = d.start_date ? d.start_date.split('-').slice(0, 2).join('.') : '';
+                    const manufacturer = d.manufacturer ? d.manufacturer.split(' ')[0] : '';
+                    
+                    html += `
+                        <div class="device-card ${isActive ? 'active' : ''}" onclick="selectDeviceCard('${deviceId}')">
+                            <div class="device-card-header">
+                                <span class="device-card-id">${deviceId}</span>
+                                <span class="device-card-status ${status}"></span>
+                            </div>
+                            <div class="device-card-model">${deviceType}</div>
+                            ${startDate ? `<div class="device-card-date">启用: ${startDate}</div>` : ''}
+                            ${manufacturer ? `<div class="device-card-mfr">${manufacturer}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            });
+            
+            container.innerHTML = html;
         }
 
         function selectDeviceCard(deviceId) {
