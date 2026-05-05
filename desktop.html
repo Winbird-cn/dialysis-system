@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中山大学附属第五医院 - 透析工程管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            /* 品牌色系 */
+            --brand-dark: #003D7C;
+            --primary: #0A5294;
+            --primary-light: #1A6AAF;
+            --primary-lighter: #3D8FCA;
+            --primary-bg: #E8F4FC;
+            --cta: #E8793A;
+            --success: #2D9F63;
+            --danger: #D94040;
+            --warning: #E8A33A;
+            
+            /* 背景与文字 */
+            --bg: #F5F7FA;
+            --card-bg: #FFFFFF;
+            --text: #1E293B;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            
+            /* 边框与阴影 */
+            --border: #E2E8F0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+            
+            /* 布局 */
+            --sidebar-width: 260px;
+            --topbar-height: 64px;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        /* ===== 登录页 ===== */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--brand-dark) 0%, var(--primary) 100%);
+        }
+        
+        .login-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-logo svg { width: 50px; height: 50px; }
+        
+        .login-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+        
+        .login-form { text-align: left; }
+        
+        .form-group { margin-bottom: 20px; }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10,82,148,0.1);
+            background: var(--card-bg);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .login-btn:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .login-btn:active { transform: translateY(0); }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .login-error {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+        
+        /* ===== 主布局 ===== */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* ===== 左侧导航 ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--brand-dark);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+        
+        .sidebar-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-logo-text {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        .sidebar-logo-sub {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.7;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .nav-item .material-icons-round {
+            font-size: 22px;
+        }
+        
+        .nav-item span:last-child {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* ===== 右侧主区 ===== */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+        }
+        
+        /* ===== 顶部工具栏 ===== */
+        .topbar {
+            height: var(--topbar-height);
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+        
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .breadcrumb .material-icons-round {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+        
+        .breadcrumb span:last-child {
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            gap: 8px;
+            width: 280px;
+        }
+        
+        .search-box .material-icons-round {
+            font-size: 20px;
+            color: var(--text-muted);
+        }
+        
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--text);
+            width: 100%;
+        }
+        
+        .search-box input::placeholder { color: var(--text-muted); }
+        
+        .topbar-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .topbar-icon-btn:hover { background: var(--border); transform: scale(1.05); }
+        .topbar-icon-btn:active { transform: scale(0.95); }
+        
+        .topbar-icon-btn .material-icons-round {
+            font-size: 22px;
+            color: var(--text-secondary);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px 6px 6px;
+            background: var(--bg);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .user-name { font-size: 13px; font-weight: 600; color: var(--text); }
+        .user-role { font-size: 11px; color: var(--text-muted); }
+        
+        /* ===== 主内容区 ===== */
+        .main-content {
+            padding: 24px;
+            min-height: calc(100vh - var(--topbar-height));
+        }
+        
+        /* ===== 页面切换动画 ===== */
+        .page {
+            display: none;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+        .page.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ===== 页面标题 ===== */
+        .page-header {
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* ===== KPI 卡片 ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+        }
+        
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .stat-icon .material-icons-round { font-size: 24px; color: white; }
+        .stat-icon.blue { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
+        .stat-icon.orange { background: linear-gradient(135deg, var(--cta), #F59B6B); }
+        .stat-icon.green { background: linear-gradient(135deg, var(--success), #4ADE80); }
+        .stat-icon.purple { background: linear-gradient(135deg, #8B5CF6, #A78BFA); }
+        
+        .stat-content { text-align: right; }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.1;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        
+        .stat-change.up { color: var(--success); background: rgba(45,159,99,0.1); }
+        .stat-change.down { color: var(--danger); background: rgba(217,64,64,0.1); }
+        
+        /* ===== 图表区 ===== */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .chart-container {
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-container-donut {
+            height: 280px;
+            position: relative;
+        }
+        
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+        
+        .donut-center-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        .donut-center-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* ===== 记录列表 ===== */
+        .records-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .records-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .records-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .records-link {
+            font-size: 13px;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        
+        .records-link:hover { color: var(--primary-light); transform: translateX(4px); }
+        
+        .record-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            padding-left: 16px;
+            transition: all 0.2s;
+        }
+        
+        .record-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 4px;
+            border-radius: 2px;
+        }
+        
+        .record-item.success::before { background: var(--success); }
+        .record-item.warning::before { background: var(--warning); }
+        .record-item.danger::before { background: var(--danger); }
+        
+        .record-item:hover { background: rgba(0,0,0,0.02); margin: 0 -8px; padding: 14px 8px 14px 24px; }
+        .record-item:last-child { border-bottom: none; }
+        
+        .record-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .record-icon .material-icons-round { font-size: 18px; color: white; }
+        .record-icon.success { background: var(--success); }
+        .record-icon.warning { background: var(--warning); }
+        .record-icon.danger { background: var(--danger); }
+        
+        .record-info { flex: 1; min-width: 0; }
+        
+        .record-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .record-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .record-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        
+        .record-status.success { background: rgba(45,159,99,0.1); color: var(--success); }
+        .record-status.warning { background: rgba(232,163,58,0.1); color: var(--warning); }
+        .record-status.danger { background: rgba(217,64,64,0.1); color: var(--danger); }
+        
+        /* ===== 设备状态看板 ===== */
+        .device-board {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+        
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .device-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .device-item:hover { transform: scale(1.1); z-index: 10; }
+        .device-item .material-icons-round { font-size: 20px; margin-bottom: 2px; }
+        
+        .device-item.normal { background: rgba(45,159,99,0.15); color: var(--success); }
+        .device-item.maintenance { background: rgba(232,163,58,0.15); color: var(--warning); }
+        .device-item.fault { 
+            background: rgba(217,64,64,0.15); 
+            color: var(--danger);
+            animation: blink 1.5s infinite;
+        }
+        .device-item.offline { background: var(--border); color: var(--text-muted); }
+        
+        @keyframes blink {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(217,64,64,0); }
+            50% { box-shadow: 0 0 12px 4px rgba(217,64,64,0.4); }
+        }
+        
+        .device-legend {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 16px;
+        }
+        
+        .device-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .device-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        /* ===== 质控概览 ===== */
+        .qc-overview {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .qc-item {
+            padding: 16px;
+            border-radius: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+        
+        .qc-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .qc-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .qc-item-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        
+        .qc-item-status.ok { background: rgba(45,159,99,0.1); color: var(--success); }
+        .qc-item-status.warning { background: rgba(232,163,58,0.1); color: var(--warning); }
+        .qc-item-status.overdue { background: rgba(217,64,64,0.1); color: var(--danger); }
+        
+        /* 环形进度条 */
+        .qc-ring-progress {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .qc-ring-progress svg {
+            transform: rotate(-90deg);
+        }
+        
+        .qc-ring-bg {
+            fill: none;
+            stroke: var(--border);
+            stroke-width: 8;
+        }
+        
+        .qc-ring-fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .qc-ring-fill.ok { stroke: var(--success); }
+        .qc-ring-fill.warning { stroke: var(--warning); }
+        .qc-ring-fill.overdue { stroke: var(--danger); }
+        
+        .qc-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .qc-ring-percent {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        .qc-ring-label {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        
+        /* ===== 通用表格样式 ===== */
+        .data-table-wrapper {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .data-table th {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--bg);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        
+        .data-table th:hover { background: var(--border); }
+        .data-table th.sorted { color: var(--primary); }
+        
+        .data-table th .sort-icon {
+            font-size: 14px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+        
+        .data-table tbody tr {
+            transition: all 0.2s;
+        }
+        
+        .data-table tbody tr:hover {
+            background: var(--primary-bg);
+        }
+        
+        .data-table tbody tr:nth-child(even) {
+            background: rgba(0,0,0,0.01);
+        }
+        
+        .data-table tbody tr:nth-child(even):hover {
+            background: var(--primary-bg);
+        }
+        
+        .data-table td { font-size: 14px; color: var(--text); }
+        
+        /* 状态徽章 */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success { background: rgba(45,159,99,0.1); color: var(--success); }
+        .badge-warning { background: rgba(232,163,58,0.1); color: var(--warning); }
+        .badge-danger { background: rgba(217,64,64,0.1); color: var(--danger); }
+        .badge-info { background: var(--primary-bg); color: var(--primary); }
+        
+        /* ===== 工具栏 ===== */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 10px 32px 10px 12px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card-bg);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            min-width: 140px;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* ===== 按钮 ===== */
+        .btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(10,82,148,0.3); }
+        .btn-primary:active { transform: translateY(0); }
+        
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover { background: var(--border); }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover { background: #C53030; }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-icon:hover { background: var(--border); transform: scale(1.05); }
+        .btn-icon:active { transform: scale(0.95); }
+        .btn-icon .material-icons-round { font-size: 20px; color: var(--text-secondary); }
+        .btn-icon.danger:hover { background: rgba(217,64,64,0.1); }
+        .btn-icon.danger:hover .material-icons-round { color: var(--danger); }
+        
+        /* ===== 模态框 ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.show { display: flex; }
+        
+        .modal {
+            background: var(--card-bg);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease;
+        }
+        
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: white;
+        }
+        
+        .modal-close:hover { background: rgba(255,255,255,0.3); }
+        
+        .modal-body {
+            padding: 24px;
+            max-height: calc(90vh - 140px);
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        /* ===== 表单 ===== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-group { margin-bottom: 16px; }
+        
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* ===== 分页 ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .pagination-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card-bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .pagination-btn:hover:not(:disabled) { background: var(--primary-bg); border-color: var(--primary); }
+        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .pagination-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 0 12px;
+        }
+        
+        /* ===== Toast ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+        
+        .toast {
+            background: var(--text);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); }
+        
+        @keyframes toastIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state .material-icons-round {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h4 {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+        }
+        
+        /* ===== 加载状态 ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-title {
+            height: 24px;
+            width: 60%;
+            margin-bottom: 16px;
+        }
+        
+        /* ===== 设备维护页面 ===== */
+        .device-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .device-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .device-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .device-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10,82,148,0.2);
+        }
+        
+        .device-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .device-card-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .device-card-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .device-card-status.normal { background: var(--success); }
+        .device-card-status.maintenance { background: var(--warning); }
+        .device-card-status.fault { background: var(--danger); animation: blink 1.5s infinite; }
+        
+        .device-card-model {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .device-card-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        /* ===== 水处理子tab ===== */
+        .sub-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--bg);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .sub-tab {
+            flex: 1;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .sub-tab:hover {
+            color: var(--text);
+            background: var(--card-bg);
+        }
+        
+        .sub-tab.active {
+            color: white;
+            background: var(--primary);
+            box-shadow: 0 2px 8px rgba(10,82,148,0.3);
+        }
+        
+        /* ===== 确认对话框 ===== */
+        .confirm-modal .modal {
+            max-width: 400px;
+        }
+        
+        .confirm-body {
+            text-align: center;
+            padding: 24px;
+        }
+        
+        .confirm-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(217,64,64,0.1);
+        }
+        
+        .confirm-icon .material-icons-round {
+            font-size: 32px;
+            color: var(--danger);
+        }
+        
+        .confirm-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .confirm-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .confirm-actions {
+            display: flex;
+            gap: 12px;
+            padding: 16px 24px 24px;
+            justify-content: center;
+        }
+        
+        /* ===== 数字滚动动画 ===== */
+        .stat-value {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页 -->
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <div class="login-logo">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 10L85 30V70L50 90L15 70V30L50 10Z" fill="white" fill-opacity="0.9"/>
+                    <path d="M50 25L70 37V63L50 75L30 63V37L50 25Z" fill="#0A5294"/>
+                    <path d="M50 40L58 45V55L50 60L42 55V45L50 40Z" fill="white"/>
+                </svg>
+            </div>
+            <h1 class="login-title">透析工程管理系统</h1>
+            <p class="login-subtitle">中山大学附属第五医院</p>
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">系统密码</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="请输入系统密码" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">登 录</button>
+                <p class="login-error" id="loginError">密码错误，请重试</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 主应用 -->
+    <div id="appLayout" class="app-layout" style="display:none;">
+        <!-- 左侧导航 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                            <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" fill="white" fill-opacity="0.9"/>
+                            <path d="M20 10L28 15V25L20 30L12 25V15L20 10Z" fill="#0A5294"/>
+                            <path d="M20 16L24 18V22L20 24L16 22V18L20 16Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        <div>透析工程管理</div>
+                        <div class="sidebar-logo-sub">中大五院</div>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-page="dashboard">
+                    <span class="material-icons-round">dashboard</span>
+                    <span>总览仪表盘</span>
+                </div>
+                <div class="nav-item" data-page="worklog">
+                    <span class="material-icons-round">edit_note</span>
+                    <span>工作日志</span>
+                </div>
+                <div class="nav-item" data-page="repair">
+                    <span class="material-icons-round">build</span>
+                    <span>维修管理</span>
+                </div>
+                <div class="nav-item" data-page="qc">
+                    <span class="material-icons-round">verified</span>
+                    <span>质控检测</span>
+                </div>
+                <div class="nav-item" data-page="maintenance">
+                    <span class="material-icons-round">medical_services</span>
+                    <span>设备维护</span>
+                </div>
+                <div class="nav-item" data-page="water">
+                    <span class="material-icons-round">water_drop</span>
+                    <span>水处理管理</span>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="nav-item" onclick="logout()">
+                    <span class="material-icons-round">logout</span>
+                    <span>退出登录</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 右侧主区 -->
+        <div class="main-wrapper">
+            <!-- 顶部工具栏 -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="breadcrumb">
+                        <span class="material-icons-round">home</span>
+                        <span class="material-icons-round">chevron_right</span>
+                        <span id="breadcrumbCurrent">总览仪表盘</span>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="topbar-icon-btn" onclick="loadAllData()">
+                        <span class="material-icons-round">refresh</span>
+                    </button>
+                    <div class="user-info">
+                        <div class="user-avatar">工</div>
+                        <div class="user-details">
+                            <div class="user-name">工程人员</div>
+                            <div class="user-role">管理员</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 主内容区 -->
+            <main class="main-content">
+                <!-- 总览仪表盘 -->
+                <div id="page-dashboard" class="page active">
+                    <div class="page-header">
+                        <h1 class="page-title">总览仪表盘</h1>
+                        <p class="page-subtitle">实时监控系统运行状态</p>
+                    </div>
+                    
+                    <!-- KPI卡片 -->
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <span class="material-icons-round">edit_note</span>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="todayLogs">0</div>
+                                <div class="stat-label">今日工作日志</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange">
+                                <span class="material-icons-round">build</span>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="monthRepairs">0</div>
+                                <div class="stat-label">本月维修次数</div>
+                                <span class="stat-change" id="repairChange"></span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <span class="material-icons-round">pending_actions</span>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="pendingQC">0</div>
+                                <div class="stat-label">待处理质控项</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple">
+                                <span class="material-icons-round">devices</span>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value" id="deviceOnline">0%</div>
+                                <div class="stat-label">设备在线率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图表区 -->
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">最近7天维修趋势</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="repairTrendChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">故障类型分布</h3>
+                            </div>
+                            <div class="chart-container-donut">
+                                <canvas id="faultTypeChart"></canvas>
+                                <div class="donut-center">
+                                    <div class="donut-center-value" id="faultTotal">0</div>
+                                    <div class="donut-center-label">总故障</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 记录列表 -->
+                    <div class="records-section">
+                        <div class="records-card">
+                            <div class="records-header">
+                                <h3 class="records-title">最近维修记录</h3>
+                                <a class="records-link" onclick="switchPage('repair')">
+                                    查看全部 <span class="material-icons-round" style="font-size:14px;">arrow_forward</span>
+                                </a>
+                            </div>
+                            <div id="recentRepairs">
+                                <div class="empty-state">
+                                    <span class="material-icons-round">build</span>
+                                    <p>加载中...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="records-card">
+                            <div class="records-header">
+                                <h3 class="records-title">质控检测状态</h3>
+                                <a class="records-link" onclick="switchPage('qc')">
+                                    查看全部 <span class="material-icons-round" style="font-size:14px;">arrow_forward</span>
+                                </a>
+                            </div>
+                            <div class="qc-overview" id="qcOverview">
+                                <div class="qc-item">
+                                    <div class="qc-item-header">
+                                        <span class="qc-item-name">透析液质量</span>
+                                        <span class="qc-item-status ok">合格</span>
+                                    </div>
+                                    <div class="qc-ring-progress">
+                                        <svg width="80" height="80">
+                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
+                                            <circle class="qc-ring-fill ok" cx="40" cy="40" r="32" 
+                                                stroke-dasharray="201" stroke-dashoffset="20"/>
+                                        </svg>
+                                        <div class="qc-ring-text">
+                                            <div class="qc-ring-percent">95%</div>
+                                            <div class="qc-ring-label">达标</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="qc-item">
+                                    <div class="qc-item-header">
+                                        <span class="qc-item-name">设备校准</span>
+                                        <span class="qc-item-status warning">待检</span>
+                                    </div>
+                                    <div class="qc-ring-progress">
+                                        <svg width="80" height="80">
+                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
+                                            <circle class="qc-ring-fill warning" cx="40" cy="40" r="32" 
+                                                stroke-dasharray="201" stroke-dashoffset="80"/>
+                                        </svg>
+                                        <div class="qc-ring-text">
+                                            <div class="qc-ring-percent">60%</div>
+                                            <div class="qc-ring-label">待检</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="qc-item">
+                                    <div class="qc-item-header">
+                                        <span class="qc-item-name">水处理系统</span>
+                                        <span class="qc-item-status ok">正常</span>
+                                    </div>
+                                    <div class="qc-ring-progress">
+                                        <svg width="80" height="80">
+                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
+                                            <circle class="qc-ring-fill ok" cx="40" cy="40" r="32" 
+                                                stroke-dasharray="201" stroke-dashoffset="0"/>
+                                        </svg>
+                                        <div class="qc-ring-text">
+                                            <div class="qc-ring-percent">100%</div>
+                                            <div class="qc-ring-label">正常</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="qc-item">
+                                    <div class="qc-item-header">
+                                        <span class="qc-item-name">消毒记录</span>
+                                        <span class="qc-item-status ok">正常</span>
+                                    </div>
+                                    <div class="qc-ring-progress">
+                                        <svg width="80" height="80">
+                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
+                                            <circle class="qc-ring-fill ok" cx="40" cy="40" r="32" 
+                                                stroke-dasharray="201" stroke-dashoffset="0"/>
+                                        </svg>
+                                        <div class="qc-ring-text">
+                                            <div class="qc-ring-percent">100%</div>
+                                            <div class="qc-ring-label">正常</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 设备状态看板 -->
+                    <div class="device-board">
+                        <div class="chart-header">
+                            <h3 class="chart-title">设备状态看板</h3>
+                        </div>
+                        <div class="device-grid" id="deviceGrid"></div>
+                        <div class="device-legend">
+                            <span><span class="device-legend-dot" style="background:rgba(45,159,99,0.5);"></span> 正常</span>
+                            <span><span class="device-legend-dot" style="background:rgba(232,163,58,0.5);"></span> 待维护</span>
+                            <span><span class="device-legend-dot" style="background:rgba(217,64,64,0.5);"></span> 故障</span>
+                            <span><span class="device-legend-dot" style="background:var(--border);"></span> 离线</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 工作日志 -->
+                <div id="page-worklog" class="page">
+                    <div class="page-header">
+                        <h1 class="page-title">工作日志</h1>
+                        <p class="page-subtitle">记录每日设备运行与维护情况</p>
+                    </div>
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <select class="filter-select" id="logMonthSelect" onchange="filterLogs()">
+                                <option value="">全部月份</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="openLogModal()">
+                            <span class="material-icons-round">add</span> 新增日志
+                        </button>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <table class="data-table" id="workLogTable">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>运行设备</th>
+                                    <th>巡检台数</th>
+                                    <th>故障报修</th>
+                                    <th>治疗中故障</th>
+                                    <th>治疗中断</th>
+                                    <th>患者转机</th>
+                                    <th>备注</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workLogTableBody">
+                            </tbody>
+                        </table>
+                        <div class="pagination" id="workLogPagination"></div>
+                    </div>
+                </div>
+
+                <!-- 维修管理 -->
+                <div id="page-repair" class="page">
+                    <div class="page-header">
+                        <h1 class="page-title">维修管理</h1>
+                        <p class="page-subtitle">设备维修记录全流程管理</p>
+                    </div>
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <div class="search-box" style="width:200px;">
+                                <span class="material-icons-round">search</span>
+                                <input type="text" placeholder="搜索设备编号..." id="repairSearch" oninput="filterRepairs()">
+                            </div>
+                            <select class="filter-select" id="repairFaultType" onchange="filterRepairs()">
+                                <option value="">全部故障类型</option>
+                                <option value="水路故障">水路故障</option>
+                                <option value="电路故障">电路故障</option>
+                                <option value="传感器故障">传感器故障</option>
+                                <option value="显示故障">显示故障</option>
+                                <option value="报警故障">报警故障</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="openRepairModal()">
+                            <span class="material-icons-round">add</span> 新增维修
+                        </button>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <table class="data-table" id="repairTable">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortRepairs('repair_date')">维修日期 <span class="material-icons-round sort-icon">unfold_more</span></th>
+                                    <th onclick="sortRepairs('device_id')">设备编号 <span class="material-icons-round sort-icon">unfold_more</span></th>
+                                    <th onclick="sortRepairs('fault_type')">故障类型 <span class="material-icons-round sort-icon">unfold_more</span></th>
+                                    <th>故障描述</th>
+                                    <th>更换配件</th>
+                                    <th onclick="sortRepairs('result')">处理结果 <span class="material-icons-round sort-icon">unfold_more</span></th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="repairTableBody"></tbody>
+                        </table>
+                        <div class="pagination" id="repairPagination"></div>
+                    </div>
+                </div>
+
+                <!-- 质控检测 -->
+                <div id="page-qc" class="page">
+                    <div class="page-header">
+                        <h1 class="page-title">质控检测</h1>
+                        <p class="page-subtitle">水质与设备质量控制检测记录</p>
+                    </div>
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <select class="filter-select" id="qcTestType" onchange="filterQC()">
+                                <option value="">全部检测类型</option>
+                                <option value="细菌">细菌检测</option>
+                                <option value="内毒素">内毒素检测</option>
+                                <option value="化学">化学检测</option>
+                            </select>
+                            <select class="filter-select" id="qcStatus" onchange="filterQC()">
+                                <option value="">全部状态</option>
+                                <option value="合格">合格</option>
+                                <option value="不合格">不合格</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="openQCModal()">
+                            <span class="material-icons-round">add</span> 新增检测
+                        </button>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <table class="data-table" id="qcTable">
+                            <thead>
+                                <tr>
+                                    <th>检测日期</th>
+                                    <th>设备/采样点</th>
+                                    <th>检测类型</th>
+                                    <th>检测值</th>
+                                    <th>标准值</th>
+                                    <th>合格状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qcTableBody"></tbody>
+                        </table>
+                        <div class="pagination" id="qcPagination"></div>
+                    </div>
+                </div>
+
+                <!-- 设备维护 -->
+                <div id="page-maintenance" class="page">
+                    <div class="page-header">
+                        <h1 class="page-title">设备维护</h1>
+                        <p class="page-subtitle">透析设备定期维护与保养记录</p>
+                    </div>
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <select class="filter-select" id="maintenanceDevice" onchange="filterMaintenance()">
+                                <option value="">全部设备</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="openMaintenanceModal()">
+                            <span class="material-icons-round">add</span> 新增维护记录
+                        </button>
+                    </div>
+                    <div class="device-cards-grid" id="deviceCardsGrid"></div>
+                    <div class="data-table-wrapper">
+                        <div class="records-header" style="padding:16px 16px 0;">
+                            <h3 class="records-title" id="maintenanceListTitle">维护记录列表</h3>
+                        </div>
+                        <table class="data-table" id="maintenanceTable">
+                            <thead>
+                                <tr>
+                                    <th>维护日期</th>
+                                    <th>设备编号</th>
+                                    <th>维护类型</th>
+                                    <th>维护内容</th>
+                                    <th>维护人员</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="maintenanceTableBody"></tbody>
+                        </table>
+                        <div class="pagination" id="maintenancePagination"></div>
+                    </div>
+                </div>
+
+                <!-- 水处理管理 -->
+                <div id="page-water" class="page">
+                    <div class="page-header">
+                        <h1 class="page-title">水处理管理</h1>
+                        <p class="page-subtitle">水处理系统监测与维护记录</p>
+                    </div>
+                    <div class="sub-tabs" id="waterTabs">
+                        <button class="sub-tab active" data-tab="daily" onclick="switchWaterTab('daily')">日常记录</button>
+                        <button class="sub-tab" data-tab="disinfection" onclick="switchWaterTab('disinfection')">消毒记录</button>
+                        <button class="sub-tab" data-tab="consumables" onclick="switchWaterTab('consumables')">耗材更换</button>
+                        <button class="sub-tab" data-tab="maintenance" onclick="switchWaterTab('maintenance')">维护记录</button>
+                        <button class="sub-tab" data-tab="microbio" onclick="switchWaterTab('microbio')">微生物检测</button>
+                        <button class="sub-tab" data-tab="chem" onclick="switchWaterTab('chem')">化学检测</button>
+                    </div>
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <select class="filter-select" id="waterDateRange" onchange="filterWater()">
+                                <option value="">全部时间</option>
+                                <option value="7">最近7天</option>
+                                <option value="30">最近30天</option>
+                                <option value="90">最近90天</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="openWaterModal()">
+                            <span class="material-icons-round">add</span> 新增记录
+                        </button>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <table class="data-table" id="waterTable">
+                            <thead id="waterTableHead"></thead>
+                            <tbody id="waterTableBody"></tbody>
+                        </table>
+                        <div class="pagination" id="waterPagination"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 模态框：工作日志 -->
+    <div class="modal-overlay" id="logModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="logModalTitle">新增工作日志</h3>
+                <button class="modal-close" onclick="closeLogModal()">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editLogId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">日期</label>
+                        <input type="date" id="logDate" class="form-input">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">当日运行设备数</label>
+                        <input type="number" id="runningDevices" class="form-input" placeholder="输入数字" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">日常巡检台数</label>
+                        <input type="number" id="inspectionCount" class="form-input" placeholder="输入数字" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">故障报修次数</label>
+                        <input type="number" id="repairCount" class="form-input" placeholder="输入数字" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">治疗中故障次数</label>
+                        <input type="number" id="midTreatmentFaults" class="form-input" placeholder="输入数字" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">导致治疗中断次数</label>
+                        <input type="number" id="treatmentInterruptions" class="form-input" placeholder="输入数字" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">患者转机台次</label>
+                        <input type="number" id="patientSwitch" class="form-input" placeholder="输入数字" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注</label>
+                    <textarea id="logNotes" class="form-input" placeholder="其他备注信息..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeLogModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveLog()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：维修记录 -->
+    <div class="modal-overlay" id="repairModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="repairModalTitle">新增维修记录</h3>
+                <button class="modal-close" onclick="closeRepairModal()">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editRepairId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">维修日期 <span style="color:red">*</span></label>
+                        <input type="date" id="repairDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">设备编号 <span style="color:red">*</span></label>
+                        <input type="text" id="repairDeviceId" class="form-input" placeholder="如：A区-01" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">故障类型 <span style="color:red">*</span></label>
+                        <select id="repairFaultType" class="form-input" required>
+                            <option value="">请选择</option>
+                            <option value="水路故障">水路故障</option>
+                            <option value="电路故障">电路故障</option>
+                            <option value="传感器故障">传感器故障</option>
+                            <option value="显示故障">显示故障</option>
+                            <option value="报警故障">报警故障</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">处理结果</label>
+                        <select id="repairResult" class="form-input">
+                            <option value="已修复">已修复</option>
+                            <option value="处理中">处理中</option>
+                            <option value="待配件">待配件</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">故障描述</label>
+                    <textarea id="repairDesc" class="form-input" placeholder="详细描述故障现象..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">更换配件</label>
+                    <input type="text" id="repairParts" class="form-input" placeholder="如：透析器、管路">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRepairModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveRepair()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：质控检测 -->
+    <div class="modal-overlay" id="qcModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="qcModalTitle">新增质控检测</h3>
+                <button class="modal-close" onclick="closeQCModal()">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editQCId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">检测日期 <span style="color:red">*</span></label>
+                        <input type="date" id="qcDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">设备/采样点</label>
+                        <input type="text" id="qcDevice" class="form-input" placeholder="如水处理系统出水口">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">检测类型 <span style="color:red">*</span></label>
+                        <select id="qcType" class="form-input" required>
+                            <option value="">请选择</option>
+                            <option value="细菌">细菌检测</option>
+                            <option value="内毒素">内毒素检测</option>
+                            <option value="化学">化学检测</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">检测值</label>
+                        <input type="text" id="qcValue" class="form-input" placeholder="如：50">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">标准值</label>
+                        <input type="text" id="qcStandard" class="form-input" placeholder="如：<100 CFU/mL">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">合格状态</label>
+                        <select id="qcQualified" class="form-input">
+                            <option value="true">合格</option>
+                            <option value="false">不合格</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeQCModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveQC()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：设备维护 -->
+    <div class="modal-overlay" id="maintenanceModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="maintenanceModalTitle">新增维护记录</h3>
+                <button class="modal-close" onclick="closeMaintenanceModal()">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editMaintenanceId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">维护日期 <span style="color:red">*</span></label>
+                        <input type="date" id="maintenanceDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">设备编号 <span style="color:red">*</span></label>
+                        <select id="maintenanceDeviceId" class="form-input" required>
+                            <option value="">请选择设备</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">维护类型</label>
+                        <select id="maintenanceType" class="form-input">
+                            <option value="日常保养">日常保养</option>
+                            <option value="定期维护">定期维护</option>
+                            <option value="专项检修">专项检修</option>
+                            <option value="年度保养">年度保养</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">维护人员</label>
+                        <input type="text" id="maintenancePerson" class="form-input" placeholder="维护人员姓名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">维护内容</label>
+                    <textarea id="maintenanceContent" class="form-input" placeholder="详细记录维护项目..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMaintenanceModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveMaintenance()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框：水处理 -->
+    <div class="modal-overlay" id="waterModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="waterModalTitle">新增记录</h3>
+                <button class="modal-close" onclick="closeWaterModal()">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body" id="waterModalBody">
+                <!-- 动态内容 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeWaterModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveWater()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除对话框 -->
+    <div class="modal-overlay confirm-modal" id="confirmModal">
+        <div class="modal">
+            <div class="confirm-body">
+                <div class="confirm-icon">
+                    <span class="material-icons-round">warning</span>
+                </div>
+                <h3 class="confirm-title">确认删除</h3>
+                <p class="confirm-message" id="confirmMessage">确定要删除这条记录吗？此操作不可撤销。</p>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn btn-secondary" onclick="closeConfirm()">取消</button>
+                <button class="btn btn-danger" id="confirmBtn" onclick="doDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ====== 配置 ======
+        const SUPABASE_URL = 'https://sthqzmxtkgnzuvpzxohn.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0aHF6bXh0a2duenV2cHp4b2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Mzg1OTcsImV4cCI6MjA5MzExNDU5N30.0KkEAhEHBSXrxwD42QnOpxNM6lvnE-lG3I2rMwSXdUc';
+        const SYSTEM_PWD = 'abcd1234';
+
+        // ====== 状态 ======
+        let currentPage = 'dashboard';
+        let currentWaterTab = 'daily';
+        let workLogs = [];
+        let repairItems = [];
+        let qcRecords = [];
+        let maintenanceRecords = [];
+        let waterData = { daily: [], disinfection: [], consumables: [], maintenance: [], microbio: [], chem: [] };
+        let devices = [];
+        
+        // 分页状态
+        let logPage = 1, repairPage = 1, qcPage = 1, maintenancePage = 1, waterPage = 1;
+        const pageSize = 10;
+        
+        // 排序状态
+        let repairSortField = 'repair_date';
+        let repairSortDir = 'desc';
+        
+        // 删除回调
+        let deleteCallback = null;
+
+        // ====== 工具函数 ======
+        function $(id) { return document.getElementById(id); }
+        
+        function showToast(msg, type = 'default') {
+            const container = $('toastContainer');
+            const toast = document.createElement('div');
+            const icons = { success: 'check_circle', error: 'error', warning: 'warning', default: 'info' };
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span class="material-icons-round">${icons[type]}</span>${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // 数字滚动动画
+        function animateNumber(el, target, duration = 1000) {
+            const start = parseInt(el.textContent) || 0;
+            const startTime = performance.now();
+            const diff = target - start;
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(start + diff * easeProgress);
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        // ====== Supabase RPC ======
+        async function sbRpc(fn, params = {}) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                },
+                body: JSON.stringify({ ...params, pwd: SYSTEM_PWD })
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        }
+
+        // ====== 登录 ======
+        function handleLogin(e) {
+            e.preventDefault();
+            const pwd = $('loginPassword').value;
+            const btn = $('loginBtn');
+            const errEl = $('loginError');
+            
+            btn.disabled = true;
+            btn.textContent = '验证中...';
+            errEl.style.display = 'none';
+
+            if (pwd === SYSTEM_PWD) {
+                localStorage.setItem('auth_token', '1');
+                localStorage.setItem('auth_time', Date.now().toString());
+                showApp();
+                showToast('登录成功', 'success');
+            } else {
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = '登 录';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_time');
+            $('loginPage').style.display = 'flex';
+            $('appLayout').style.display = 'none';
+            $('loginPassword').value = '';
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('auth_token');
+            const authTime = parseInt(localStorage.getItem('auth_time') || '0');
+            return token && Date.now() - authTime < 24 * 60 * 60 * 1000;
+        }
+
+        function showApp() {
+            $('loginPage').style.display = 'none';
+            $('appLayout').style.display = 'flex';
+            initApp();
+        }
+
+        // ====== 页面切换 ======
+        function switchPage(page) {
+            currentPage = page;
+            
+            document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+                item.classList.toggle('active', item.dataset.page === page);
+            });
+            
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+            $(`page-${page}`).classList.add('active');
+            
+            const titles = {
+                dashboard: '总览仪表盘',
+                worklog: '工作日志',
+                repair: '维修管理',
+                qc: '质控检测',
+                maintenance: '设备维护',
+                water: '水处理管理'
+            };
+            $('breadcrumbCurrent').textContent = titles[page] || page;
+            
+            // 加载页面数据
+            if (page === 'dashboard') updateStats();
+            if (page === 'worklog') renderWorkLogTable();
+            if (page === 'repair') renderRepairTable();
+            if (page === 'qc') renderQCTable();
+            if (page === 'maintenance') { renderDeviceCards(); renderMaintenanceTable(); }
+            if (page === 'water') renderWaterTable();
+        }
+
+        // ====== 初始化 ======
+        function initApp() {
+            document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+                item.addEventListener('click', () => switchPage(item.dataset.page));
+            });
+            
+            loadAllData();
+        }
+
+        async function loadAllData() {
+            showToast('正在加载数据...', 'default');
+            try {
+                const [logs, repairs, qc, maintenance, water, devs] = await Promise.all([
+                    sbRpc('get_work_logs', { limit_count: 1000 }),
+                    sbRpc('get_repair_items', { limit_count: 500 }),
+                    sbRpc('get_qc_records', { limit_count: 500 }),
+                    sbRpc('get_maintenance_records', { limit_count: 500 }),
+                    Promise.all([
+                        sbRpc('get_water_daily', { limit_count: 200 }),
+                        sbRpc('get_water_disinfection', { limit_count: 200 }),
+                        sbRpc('get_water_consumables', { limit_count: 200 }),
+                        sbRpc('get_water_maintenance', { limit_count: 200 }),
+                        sbRpc('get_water_microbio', { limit_count: 200 }),
+                        sbRpc('get_water_chem', { limit_count: 200 })
+                    ]),
+                    sbRpc('get_dialysis_devices', {})
+                ]);
+                
+                workLogs = logs || [];
+                repairItems = repairs || [];
+                qcRecords = qc || [];
+                maintenanceRecords = maintenance || [];
+                waterData = { 
+                    daily: water[0] || [],
+                    disinfection: water[1] || [],
+                    consumables: water[2] || [],
+                    maintenance: water[3] || [],
+                    microbio: water[4] || [],
+                    chem: water[5] || []
+                };
+                devices = devs || [];
+                
+                // 更新设备下拉
+                updateDeviceSelects();
+                
+                // 填充月份筛选
+                fillMonthSelect();
+                
+                // 渲染各页面
+                updateStats();
+                renderRepairTrendChart();
+                renderFaultTypeChart();
+                renderRecentRepairs();
+                renderDeviceBoard();
+                renderWorkLogTable();
+                renderRepairTable();
+                renderQCTable();
+                renderDeviceCards();
+                renderMaintenanceTable();
+                renderWaterTable();
+                
+                showToast('数据加载完成', 'success');
+            } catch (e) {
+                console.error('加载数据失败:', e);
+                showToast('部分数据加载失败', 'error');
+            }
+        }
+
+        function updateDeviceSelects() {
+            const options = devices.map(d => `<option value="${d.device_id}">${d.device_id}</option>`).join('');
+            $('maintenanceDeviceId').innerHTML = '<option value="">请选择设备</option>' + options;
+            $('maintenanceDevice').innerHTML = '<option value="">全部设备</option>' + options;
+        }
+
+        function fillMonthSelect() {
+            const months = [...new Set(workLogs.map(l => l.date?.substring(0, 7)))].filter(Boolean).sort().reverse();
+            $('logMonthSelect').innerHTML = '<option value="">全部月份</option>' + 
+                months.map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+
+        // ====== 仪表盘统计 ======
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayLogs = workLogs.filter(l => l.date === today).length;
+            animateNumber($('todayLogs'), todayLogs);
+            
+            const now = new Date();
+            const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+            const monthRepairs = repairItems.filter(r => r.repair_date && r.repair_date >= monthStart).length;
+            animateNumber($('monthRepairs'), monthRepairs);
+            
+            const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+            const lastMonthStart = `${lastMonthEnd.getFullYear()}-${String(lastMonthEnd.getMonth() + 1).padStart(2, '0')}-01`;
+            const lastMonthRepairs = repairItems.filter(r => r.repair_date && r.repair_date >= lastMonthStart && r.repair_date < monthStart).length;
+            
+            const changeEl = $('repairChange');
+            if (monthRepairs > lastMonthRepairs && lastMonthRepairs > 0) {
+                changeEl.className = 'stat-change down';
+                changeEl.innerHTML = '<span class="material-icons-round" style="font-size:12px;">arrow_upward</span> ↑' + ((monthRepairs - lastMonthRepairs)).toFixed(0);
+            } else if (monthRepairs < lastMonthRepairs && monthRepairs > 0) {
+                changeEl.className = 'stat-change up';
+                changeEl.innerHTML = '<span class="material-icons-round" style="font-size:12px;">arrow_downward</span> ↓' + ((lastMonthRepairs - monthRepairs)).toFixed(0);
+            } else {
+                changeEl.textContent = '持平';
+            }
+            
+            const onlineCount = devices.filter(d => d.status !== 'offline').length;
+            const onlineRate = devices.length > 0 ? Math.round((onlineCount / devices.length) * 100) : 95;
+            animateNumber($('deviceOnline'), onlineRate, 800);
+            $('deviceOnline').textContent = onlineRate + '%';
+            
+            const pendingQC = qcRecords.filter(q => q.test_date && q.test_date >= monthStart && q.is_qualified === false).length;
+            animateNumber($('pendingQC'), pendingQC);
+        }
+
+        // ====== 维修趋势图 ======
+        function renderRepairTrendChart() {
+            const ctx = $('repairTrendChart').getContext('2d');
+            const days = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                days.push(d.toISOString().split('T')[0]);
+            }
+            const counts = days.map(day => repairItems.filter(r => r.repair_date === day).length);
+            
+            if (window.repairTrendChart) window.repairTrendChart.destroy();
+            
+            window.repairTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days.map(d => d.slice(5).replace('-', '/')),
+                    datasets: [{
+                        label: '维修次数',
+                        data: counts,
+                        borderColor: '#0A5294',
+                        backgroundColor: 'rgba(10, 82, 148, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#0A5294',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(30,41,59,0.95)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 },
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // ====== 故障类型分布图 ======
+        function renderFaultTypeChart() {
+            const ctx = $('faultTypeChart').getContext('2d');
+            const faultCounts = {};
+            repairItems.forEach(r => {
+                const type = r.fault_type || '其他';
+                faultCounts[type] = (faultCounts[type] || 0) + 1;
+            });
+            const sorted = Object.entries(faultCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+            const total = sorted.reduce((sum, item) => sum + item[1], 0);
+            $('faultTotal').textContent = total;
+            
+            if (window.faultTypeChart) window.faultTypeChart.destroy();
+            
+            window.faultTypeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: sorted.map(s => s[0]),
+                    datasets: [{
+                        data: sorted.map(s => s[1]),
+                        backgroundColor: ['#0A5294', '#E8793A', '#2D9F63', '#8B5CF6', '#E8A33A', '#64748B'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { boxWidth: 12, padding: 12, font: { size: 12 } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(30,41,59,0.95)',
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    }
+                }
+            });
+        }
+
+        // ====== 最近维修记录 ======
+        function renderRecentRepairs() {
+            const container = $('recentRepairs');
+            const recent = [...repairItems]
+                .filter(r => r.repair_date)
+                .sort((a, b) => (b.repair_date || '').localeCompare(a.repair_date || ''))
+                .slice(0, 5);
+            
+            if (recent.length === 0) {
+                container.innerHTML = '<div class="empty-state"><span class="material-icons-round">build</span><p>暂无维修记录</p></div>';
+                return;
+            }
+            
+            container.innerHTML = recent.map(r => {
+                const status = r.result === '已修复' ? 'success' : (r.result === '处理中' ? 'warning' : 'danger');
+                return `
+                    <div class="record-item ${status}">
+                        <div class="record-icon ${status}">
+                            <span class="material-icons-round">build</span>
+                        </div>
+                        <div class="record-info">
+                            <div class="record-title">${r.device_id || '未知设备'} - ${r.fault_type || '故障'}</div>
+                            <div class="record-meta">${r.repair_date || ''} · ${r.fault_desc || '无描述'}</div>
+                        </div>
+                        <span class="record-status ${status}">${r.result || '处理中'}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ====== 设备看板 ======
+        function renderDeviceBoard() {
+            const container = $('deviceGrid');
+            const deviceNames = ['A区-1', 'A区-2', 'A区-3', 'A区-4', 'A区-5', 'B区-1', 'B区-2', 'B区-3', 'B区-4', 'B区-5', 'C区-1', 'C区-2', 'C区-3', 'C区-4', 'C区-5'];
+            const statuses = ['normal', 'normal', 'normal', 'normal', 'maintenance', 'normal', 'normal', 'normal', 'fault', 'normal', 'normal', 'normal', 'normal', 'offline', 'normal'];
+            
+            const icons = { normal: 'check_circle', maintenance: 'schedule', fault: 'error', offline: 'power_off' };
+            
+            if (devices.length > 0) {
+                container.innerHTML = devices.slice(0, 15).map((d, i) => {
+                    const status = d.status || 'normal';
+                    return `
+                        <div class="device-item ${status}" title="${d.device_name || d.device_id}">
+                            <span class="material-icons-round">${icons[status]}</span>
+                            ${(d.device_id || `D${i+1}`).split('-').pop()}
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                container.innerHTML = deviceNames.map((name, i) => `
+                    <div class="device-item ${statuses[i]}" title="${name}">
+                        <span class="material-icons-round">${icons[statuses[i]]}</span>
+                        ${name.split('-').pop()}
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ====== 工作日志表格 ======
+        function filterLogs() {
+            logPage = 1;
+            renderWorkLogTable();
+        }
+
+        function renderWorkLogTable() {
+            const monthFilter = $('logMonthSelect').value;
+            let filtered = monthFilter ? workLogs.filter(l => l.date?.startsWith(monthFilter)) : workLogs;
+            filtered = [...filtered].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            
+            const totalPages = Math.ceil(filtered.length / pageSize);
+            const start = (logPage - 1) * pageSize;
+            const pageData = filtered.slice(start, start + pageSize);
+            
+            const tbody = $('workLogTableBody');
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><span class="material-icons-round">inbox</span><p>暂无日志记录</p></td></tr>`;
+            } else {
+                tbody.innerHTML = pageData.map(log => `
+                    <tr>
+                        <td>${log.date || '-'}</td>
+                        <td>${log.running_devices ?? '-'}</td>
+                        <td>${log.inspection_count ?? '-'}</td>
+                        <td>${log.repair_count ?? '-'}</td>
+                        <td>${log.mid_treatment_faults ?? '-'}</td>
+                        <td>${log.treatment_interruptions ?? '-'}</td>
+                        <td>${log.patient_switch ?? '-'}</td>
+                        <td>${log.notes || '-'}</td>
+                        <td>
+                            <button class="btn-icon" onclick="editLog('${log.id}')" title="编辑"><span class="material-icons-round">edit</span></button>
+                            <button class="btn-icon danger" onclick="confirmDelete('log', '${log.id}')" title="删除"><span class="material-icons-round">delete</span></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            renderPagination('workLogPagination', logPage, totalPages, (p) => { logPage = p; renderWorkLogTable(); });
+        }
+
+        // ====== 维修管理表格 ======
+        function filterRepairs() {
+            repairPage = 1;
+            renderRepairTable();
+        }
+
+        function sortRepairs(field) {
+            if (repairSortField === field) {
+                repairSortDir = repairSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                repairSortField = field;
+                repairSortDir = 'desc';
+            }
+            renderRepairTable();
+        }
+
+        function renderRepairTable() {
+            const search = $('repairSearch').value.toLowerCase();
+            const faultType = $('repairFaultType').value;
+            
+            let filtered = repairItems.filter(r => {
+                const matchSearch = !search || (r.device_id || '').toLowerCase().includes(search);
+                const matchType = !faultType || r.fault_type === faultType;
+                return matchSearch && matchType;
+            });
+            
+            filtered.sort((a, b) => {
+                const valA = a[repairSortField] || '';
+                const valB = b[repairSortField] || '';
+                const cmp = String(valA).localeCompare(String(valB));
+                return repairSortDir === 'asc' ? cmp : -cmp;
+            });
+            
+            const totalPages = Math.ceil(filtered.length / pageSize);
+            const start = (repairPage - 1) * pageSize;
+            const pageData = filtered.slice(start, start + pageSize);
+            
+            const tbody = $('repairTableBody');
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><span class="material-icons-round">build</span><p>暂无维修记录</p></td></tr>`;
+            } else {
+                tbody.innerHTML = pageData.map(r => {
+                    const status = r.result === '已修复' ? 'success' : (r.result === '处理中' ? 'warning' : 'danger');
+                    return `
+                        <tr>
+                            <td>${r.repair_date || '-'}</td>
+                            <td><strong>${r.device_id || '-'}</strong></td>
+                            <td><span class="badge badge-info">${r.fault_type || '-'}</span></td>
+                            <td>${r.fault_desc || '-'}</td>
+                            <td>${r.parts_replaced || '-'}</td>
+                            <td><span class="badge badge-${status}">${r.result || '处理中'}</span></td>
+                            <td>
+                                <button class="btn-icon" onclick="editRepair('${r.repair_id}')" title="编辑"><span class="material-icons-round">edit</span></button>
+                                <button class="btn-icon danger" onclick="confirmDelete('repair', '${r.repair_id}')" title="删除"><span class="material-icons-round">delete</span></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            renderPagination('repairPagination', repairPage, totalPages, (p) => { repairPage = p; renderRepairTable(); });
+        }
+
+        // ====== 质控检测表格 ======
+        function filterQC() {
+            qcPage = 1;
+            renderQCTable();
+        }
+
+        function renderQCTable() {
+            const testType = $('qcTestType').value;
+            const status = $('qcStatus').value;
+            
+            let filtered = qcRecords.filter(r => {
+                const matchType = !testType || r.test_type === testType;
+                const matchStatus = !status || (status === '合格' && r.is_qualified) || (status === '不合格' && !r.is_qualified);
+                return matchType && matchStatus;
+            });
+            
+            filtered = [...filtered].sort((a, b) => (b.test_date || '').localeCompare(a.test_date || ''));
+            
+            const totalPages = Math.ceil(filtered.length / pageSize);
+            const start = (qcPage - 1) * pageSize;
+            const pageData = filtered.slice(start, start + pageSize);
+            
+            const tbody = $('qcTableBody');
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><span class="material-icons-round">verified</span><p>暂无检测记录</p></td></tr>`;
+            } else {
+                tbody.innerHTML = pageData.map(r => {
+                    const qualified = r.is_qualified;
+                    return `
+                        <tr>
+                            <td>${r.test_date || '-'}</td>
+                            <td>${r.device_id || '-'}</td>
+                            <td><span class="badge badge-info">${r.test_type || '-'}</span></td>
+                            <td>${r.test_value || '-'}</td>
+                            <td>${r.standard_value || '-'}</td>
+                            <td><span class="badge badge-${qualified ? 'success' : 'danger'}">${qualified ? '合格' : '不合格'}</span></td>
+                            <td>
+                                <button class="btn-icon danger" onclick="confirmDelete('qc', '${r.qc_id}')" title="删除"><span class="material-icons-round">delete</span></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            renderPagination('qcPagination', qcPage, totalPages, (p) => { qcPage = p; renderQCTable(); });
+        }
+
+        // ====== 设备维护 ======
+        let selectedDeviceId = '';
+
+        function renderDeviceCards() {
+            const container = $('deviceCardsGrid');
+            const deviceNames = ['A区-01', 'A区-02', 'A区-03', 'A区-04', 'A区-05', 'B区-01', 'B区-02', 'B区-03', 'B区-04', 'B区-05', 'C区-01', 'C区-02', 'C区-03', 'C区-04', 'C区-05'];
+            const models = ['DBB-27', 'DBB-27', 'DBB-27', '4008S', '4008S', '5008S', '5008S', '5008S', '4008S', '4008S', '5008S', '5008S', 'DBB-27', 'DBB-27', '5008S'];
+            const statuses = ['normal', 'normal', 'normal', 'normal', 'maintenance', 'normal', 'normal', 'normal', 'fault', 'normal', 'normal', 'normal', 'normal', 'offline', 'normal'];
+            
+            container.innerHTML = deviceNames.map((name, i) => `
+                <div class="device-card ${selectedDeviceId === name ? 'active' : ''}" onclick="selectDeviceCard('${name}')">
+                    <div class="device-card-header">
+                        <span class="device-card-id">${name}</span>
+                        <span class="device-card-status ${statuses[i]}"></span>
+                    </div>
+                    <div class="device-card-model">${models[i]}</div>
+                    <div class="device-card-date">启用: 2022-01-${String(i+1).padStart(2,'0')}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectDeviceCard(deviceId) {
+            selectedDeviceId = selectedDeviceId === deviceId ? '' : deviceId;
+            $('maintenanceDevice').value = selectedDeviceId;
+            renderDeviceCards();
+            renderMaintenanceTable();
+        }
+
+        function filterMaintenance() {
+            selectedDeviceId = $('maintenanceDevice').value;
+            renderDeviceCards();
+            maintenancePage = 1;
+            renderMaintenanceTable();
+        }
+
+        function renderMaintenanceTable() {
+            let filtered = selectedDeviceId 
+                ? maintenanceRecords.filter(r => r.device_id === selectedDeviceId)
+                : maintenanceRecords;
+            
+            filtered = [...filtered].sort((a, b) => (b.maintenance_date || '').localeCompare(a.maintenance_date || ''));
+            
+            const title = selectedDeviceId ? `设备 ${selectedDeviceId} 维护记录` : '维护记录列表';
+            $('maintenanceListTitle').textContent = title;
+            
+            const totalPages = Math.ceil(filtered.length / pageSize);
+            const start = (maintenancePage - 1) * pageSize;
+            const pageData = filtered.slice(start, start + pageSize);
+            
+            const tbody = $('maintenanceTableBody');
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><span class="material-icons-round">medical_services</span><p>暂无维护记录</p></td></tr>`;
+            } else {
+                tbody.innerHTML = pageData.map(r => `
+                    <tr>
+                        <td>${r.maintenance_date || '-'}</td>
+                        <td><strong>${r.device_id || '-'}</strong></td>
+                        <td><span class="badge badge-info">${r.maintenance_type || '-'}</span></td>
+                        <td>${r.description || '-'}</td>
+                        <td>${r.maintenance_person || '-'}</td>
+                        <td>
+                            <button class="btn-icon danger" onclick="confirmDelete('maintenance', '${r.maintenance_id}')" title="删除"><span class="material-icons-round">delete</span></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            renderPagination('maintenancePagination', maintenancePage, totalPages, (p) => { maintenancePage = p; renderMaintenanceTable(); });
+        }
+
+        // ====== 水处理管理 ======
+        const waterTableHeaders = {
+            daily: '<th>日期</th><th>时间</th><th>原水压力</th><th>一级压力</th><th>二级压力</th><th>透析液电导</th><th>操作</th>',
+            disinfection: '<th>日期</th><th>消毒方式</th><th>消毒液</th><th>浓度</th><th>执行人</th><th>操作</th>',
+            consumables: '<th>日期</th><th>耗材名称</th><th>型号</th><th>数量</th><th>更换位置</th><th>操作</th>',
+            maintenance: '<th>日期</th><th>设备</th><th>维护类型</th><th>维护内容</th><th>操作</th>',
+            microbio: '<th>检测日期</th><th>采样点</th><th>细菌(CFU/mL)</th><th>内毒素(EU/mL)</th><th>结果</th><th>操作</th>',
+            chem: '<th>检测日期</th><th>项目</th><th>检测值</th><th>标准值</th><th>结果</th><th>操作</th>'
+        };
+
+        function switchWaterTab(tab) {
+            currentWaterTab = tab;
+            waterPage = 1;
+            document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.sub-tab[data-tab="${tab}"]`).classList.add('active');
+            renderWaterTable();
+        }
+
+        function filterWater() {
+            waterPage = 1;
+            renderWaterTable();
+        }
+
+        function renderWaterTable() {
+            const data = waterData[currentWaterTab] || [];
+            const totalPages = Math.ceil(data.length / pageSize);
+            const start = (waterPage - 1) * pageSize;
+            const pageData = data.slice(start, start + pageSize);
+            
+            $('waterTableHead').innerHTML = waterTableHeaders[currentWaterTab];
+            
+            const tbody = $('waterTableBody');
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><span class="material-icons-round">water_drop</span><p>暂无记录</p></td></tr>`;
+            } else {
+                tbody.innerHTML = pageData.map(r => `
+                    <tr>
+                        ${getWaterRowCells(r)}
+                        <td>
+                            <button class="btn-icon danger" onclick="confirmDelete('water_${currentWaterTab}', '${r.id || r.water_id}')" title="删除"><span class="material-icons-round">delete</span></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            renderPagination('waterPagination', waterPage, totalPages, (p) => { waterPage = p; renderWaterTable(); });
+        }
+
+        function getWaterRowCells(r) {
+            switch(currentWaterTab) {
+                case 'daily':
+                    return `<td>${r.record_date || '-'}</td><td>${r.record_time || '-'}</td><td>${r.raw_water_pressure || '-'}</td><td>${r.stage1_pressure || '-'}</td><td>${r.stage2_pressure || '-'}</td><td>${r.dialysate_conductivity || '-'}</td>`;
+                case 'disinfection':
+                    return `<td>${r.disinfection_date || '-'}</td><td>${r.disinfection_method || '-'}</td><td>${r.disinfectant || '-'}</td><td>${r.concentration || '-'}</td><td>${r.operator || '-'}</td>`;
+                case 'consumables':
+                    return `<td>${r.replace_date || '-'}</td><td>${r.consumable_name || '-'}</td><td>${r.model || '-'}</td><td>${r.quantity || '-'}</td><td>${r.replace_location || '-'}</td>`;
+                case 'maintenance':
+                    return `<td>${r.maintenance_date || '-'}</td><td>${r.device || '-'}</td><td>${r.maintenance_type || '-'}</td><td>${r.description || '-'}</td>`;
+                case 'microbio':
+                    return `<td>${r.test_date || '-'}</td><td>${r.sample_point || '-'}</td><td>${r.bacteria || '-'}</td><td>${r.endotoxin || '-'}</td><td><span class="badge badge-${r.result === '合格' ? 'success' : 'danger'}">${r.result || '-'}</span></td>`;
+                case 'chem':
+                    return `<td>${r.test_date || '-'}</td><td>${r.test_item || '-'}</td><td>${r.test_value || '-'}</td><td>${r.standard_value || '-'}</td><td><span class="badge badge-${r.result === '合格' ? 'success' : 'danger'}">${r.result || '-'}</span></td>`;
+                default:
+                    return '';
+            }
+        }
+
+        // ====== 分页渲染 ======
+        function renderPagination(containerId, current, total, onPageChange) {
+            const container = $(containerId);
+            if (total <= 1) { container.innerHTML = ''; return; }
+            
+            let html = `
+                <button class="pagination-btn" onclick="arguments[0].stopPropagation()" ${current === 1 ? 'disabled' : ''}>
+                    <span class="material-icons-round" style="font-size:18px;">chevron_left</span>
+                </button>
+            `;
+            
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+                    html += `<button class="pagination-btn ${i === current ? 'active' : ''}" onclick="arguments[0].stopPropagation()">${i}</button>`;
+                } else if (i === current - 2 || i === current + 2) {
+                    html += `<span style="padding:0 4px;">...</span>`;
+                }
+            }
+            
+            html += `
+                <button class="pagination-btn" onclick="arguments[0].stopPropagation()" ${current === total ? 'disabled' : ''}>
+                    <span class="material-icons-round" style="font-size:18px;">chevron_right</span>
+                </button>
+            `;
+            
+            html += `<span class="pagination-info">第 ${current} / ${total} 页</span>`;
+            
+            container.innerHTML = html;
+            
+            container.querySelectorAll('.pagination-btn').forEach((btn, idx) => {
+                btn.onclick = () => {
+                    if (idx === 0 && current > 1) onPageChange(current - 1);
+                    else if (idx === container.querySelectorAll('.pagination-btn').length - 1 && current < total) onPageChange(current + 1);
+                    else if (!btn.disabled && btn.textContent && !isNaN(btn.textContent)) onPageChange(parseInt(btn.textContent));
+                };
+            });
+        }
+
+        // ====== 日志弹窗 ======
+        function openLogModal(id = null) {
+            $('logModal').classList.add('show');
+            $('editLogId').value = id || '';
+            $('logModalTitle').textContent = id ? '编辑工作日志' : '新增工作日志';
+            
+            if (id) {
+                const log = workLogs.find(l => l.id === id);
+                if (log) {
+                    $('logDate').value = log.date || '';
+                    $('runningDevices').value = log.running_devices || '';
+                    $('inspectionCount').value = log.inspection_count || '';
+                    $('repairCount').value = log.repair_count || '';
+                    $('midTreatmentFaults').value = log.mid_treatment_faults || '';
+                    $('treatmentInterruptions').value = log.treatment_interruptions || '';
+                    $('patientSwitch').value = log.patient_switch || '';
+                    $('logNotes').value = log.notes || '';
+                }
+            } else {
+                $('logDate').value = new Date().toISOString().split('T')[0];
+                ['runningDevices', 'inspectionCount', 'repairCount', 'midTreatmentFaults', 'treatmentInterruptions', 'patientSwitch'].forEach(id => $(id).value = '');
+                $('logNotes').value = '';
+            }
+        }
+
+        function closeLogModal() { $('logModal').classList.remove('show'); }
+        function editLog(id) { openLogModal(id); }
+
+        async function saveLog() {
+            const id = $('editLogId').value;
+            const data = {
+                date: $('logDate').value,
+                running_devices: parseInt($('runningDevices').value) || 0,
+                inspection_count: parseInt($('inspectionCount').value) || 0,
+                repair_count: parseInt($('repairCount').value) || 0,
+                mid_treatment_faults: parseInt($('midTreatmentFaults').value) || 0,
+                treatment_interruptions: parseInt($('treatmentInterruptions').value) || 0,
+                patient_switch: parseInt($('patientSwitch').value) || 0,
+                notes: $('logNotes').value || null
+            };
+            
+            try {
+                if (id) {
+                    await sbRpc('update_work_log', { log_id: id, log_data: data });
+                    showToast('日志已更新', 'success');
+                } else {
+                    await sbRpc('insert_work_log', { log_data: data });
+                    showToast('日志已保存', 'success');
+                }
+                closeLogModal();
+                await loadAllData();
+            } catch (e) {
+                console.error('保存失败:', e);
+                showToast('保存失败', 'error');
+            }
+        }
+
+        // ====== 维修弹窗 ======
+        function openRepairModal(id = null) {
+            $('repairModal').classList.add('show');
+            $('editRepairId').value = id || '';
+            $('repairModalTitle').textContent = id ? '编辑维修记录' : '新增维修记录';
+            
+            if (id) {
+                const r = repairItems.find(x => x.repair_id === id);
+                if (r) {
+                    $('repairDate').value = r.repair_date || '';
+                    $('repairDeviceId').value = r.device_id || '';
+                    $('repairFaultType').value = r.fault_type || '';
+                    $('repairResult').value = r.result || '已修复';
+                    $('repairDesc').value = r.fault_desc || '';
+                    $('repairParts').value = r.parts_replaced || '';
+                }
+            } else {
+                $('repairDate').value = new Date().toISOString().split('T')[0];
+                $('repairDeviceId').value = '';
+                $('repairFaultType').value = '';
+                $('repairResult').value = '已修复';
+                $('repairDesc').value = '';
+                $('repairParts').value = '';
+            }
+        }
+
+        function closeRepairModal() { $('repairModal').classList.remove('show'); }
+        function editRepair(id) { openRepairModal(id); }
+
+        async function saveRepair() {
+            const id = $('editRepairId').value;
+            const data = {
+                repair_date: $('repairDate').value,
+                device_id: $('repairDeviceId').value,
+                fault_type: $('repairFaultType').value,
+                result: $('repairResult').value,
+                fault_desc: $('repairDesc').value || null,
+                parts_replaced: $('repairParts').value || null
+            };
+            
+            if (!data.repair_date || !data.device_id || !data.fault_type) {
+                showToast('请填写必填项', 'error');
+                return;
+            }
+            
+            try {
+                if (id) {
+                    await sbRpc('update_repair_item', { repair_id: id, repair_data: data });
+                    showToast('维修记录已更新', 'success');
+                } else {
+                    await sbRpc('insert_repair_item', { repair_data: data });
+                    showToast('维修记录已保存', 'success');
+                }
+                closeRepairModal();
+                await loadAllData();
+            } catch (e) {
+                console.error('保存失败:', e);
+                showToast('保存失败', 'error');
+            }
+        }
+
+        // ====== 质控弹窗 ======
+        function openQCModal(id = null) {
+            $('qcModal').classList.add('show');
+            $('editQCId').value = id || '';
+            $('qcModalTitle').textContent = id ? '编辑检测记录' : '新增质控检测';
+            
+            if (id) {
+                const q = qcRecords.find(x => x.qc_id === id);
+                if (q) {
+                    $('qcDate').value = q.test_date || '';
+                    $('qcDevice').value = q.device_id || '';
+                    $('qcType').value = q.test_type || '';
+                    $('qcValue').value = q.test_value || '';
+                    $('qcStandard').value = q.standard_value || '';
+                    $('qcQualified').value = q.is_qualified ? 'true' : 'false';
+                }
+            } else {
+                $('qcDate').value = new Date().toISOString().split('T')[0];
+                $('qcDevice').value = '';
+                $('qcType').value = '';
+                $('qcValue').value = '';
+                $('qcStandard').value = '';
+                $('qcQualified').value = 'true';
+            }
+        }
+
+        function closeQCModal() { $('qcModal').classList.remove('show'); }
+
+        async function saveQC() {
+            const data = {
+                test_date: $('qcDate').value,
+                device_id: $('qcDevice').value || null,
+                test_type: $('qcType').value,
+                test_value: $('qcValue').value || null,
+                standard_value: $('qcStandard').value || null,
+                is_qualified: $('qcQualified').value === 'true'
+            };
+            
+            if (!data.test_date || !data.test_type) {
+                showToast('请填写必填项', 'error');
+                return;
+            }
+            
+            try {
+                await sbRpc('insert_qc_record', { qc_data: data });
+                showToast('检测记录已保存', 'success');
+                closeQCModal();
+                await loadAllData();
+            } catch (e) {
+                console.error('保存失败:', e);
+                showToast('保存失败', 'error');
+            }
+        }
+
+        // ====== 维护弹窗 ======
+        function openMaintenanceModal(id = null) {
+            $('maintenanceModal').classList.add('show');
+            $('editMaintenanceId').value = id || '';
+            $('maintenanceModalTitle').textContent = id ? '编辑维护记录' : '新增维护记录';
+            
+            if (!selectedDeviceId) {
+                $('maintenanceDeviceId').value = '';
+            } else {
+                $('maintenanceDeviceId').value = selectedDeviceId;
+            }
+            
+            $('maintenanceDate').value = new Date().toISOString().split('T')[0];
+            $('maintenanceType').value = '日常保养';
+            $('maintenancePerson').value = '';
+            $('maintenanceContent').value = '';
+        }
+
+        function closeMaintenanceModal() { $('maintenanceModal').classList.remove('show'); }
+
+        async function saveMaintenance() {
+            const data = {
+                maintenance_date: $('maintenanceDate').value,
+                device_id: $('maintenanceDeviceId').value,
+                maintenance_type: $('maintenanceType').value,
+                maintenance_person: $('maintenancePerson').value || null,
+                description: $('maintenanceContent').value || null
+            };
+            
+            if (!data.maintenance_date || !data.device_id) {
+                showToast('请填写必填项', 'error');
+                return;
+            }
+            
+            try {
+                await sbRpc('insert_maintenance_record', { maintenance_data: data });
+                showToast('维护记录已保存', 'success');
+                closeMaintenanceModal();
+                await loadAllData();
+            } catch (e) {
+                console.error('保存失败:', e);
+                showToast('保存失败', 'error');
+            }
+        }
+
+        // ====== 水处理弹窗 ======
+        const waterFormTemplates = {
+            daily: `
+                <input type="hidden" id="waterEditId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">日期</label>
+                        <input type="date" id="waterDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">时间</label>
+                        <input type="time" id="waterTime" class="form-input" value="08:00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">原水压力 (MPa)</label>
+                        <input type="number" step="0.01" id="waterRawPressure" class="form-input" placeholder="0.25">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">一级反渗压力 (MPa)</label>
+                        <input type="number" step="0.01" id="waterStage1" class="form-input" placeholder="1.2">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">二级反渗压力 (MPa)</label>
+                        <input type="number" step="0.01" id="waterStage2" class="form-input" placeholder="0.8">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">透析液电导 (mS/cm)</label>
+                        <input type="number" step="0.01" id="waterConductivity" class="form-input" placeholder="14.0">
+                    </div>
+                </div>
+            `,
+            disinfection: `
+                <input type="hidden" id="waterEditId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">消毒日期</label>
+                        <input type="date" id="waterDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">消毒方式</label>
+                        <select id="waterMethod" class="form-input">
+                            <option value="热消毒">热消毒</option>
+                            <option value="化学消毒">化学消毒</option>
+                            <option value="热化学消毒">热化学消毒</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">消毒液</label>
+                        <input type="text" id="waterDisinfectant" class="form-input" placeholder="次氯酸钠">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">浓度 (%)</label>
+                        <input type="number" step="0.1" id="waterConc" class="form-input" placeholder="1.0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">执行人</label>
+                    <input type="text" id="waterOperator" class="form-input" placeholder="操作人员">
+                </div>
+            `,
+            consumables: `
+                <input type="hidden" id="waterEditId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">更换日期</label>
+                        <input type="date" id="waterDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">耗材名称</label>
+                        <input type="text" id="waterConsumable" class="form-input" placeholder="反渗膜">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">型号</label>
+                        <input type="text" id="waterModel" class="form-input" placeholder="型号规格">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">数量</label>
+                        <input type="number" id="waterQty" class="form-input" placeholder="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">更换位置</label>
+                    <input type="text" id="waterLocation" class="form-input" placeholder="水处理设备">
+                </div>
+            `,
+            maintenance: `
+                <input type="hidden" id="waterEditId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">维护日期</label>
+                        <input type="date" id="waterDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">设备</label>
+                        <input type="text" id="waterDevice" class="form-input" placeholder="水处理系统">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">维护类型</label>
+                    <select id="waterMaintType" class="form-input">
+                        <option value="日常维护">日常维护</option>
+                        <option value="定期保养">定期保养</option>
+                        <option value="故障维修">故障维修</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">维护内容</label>
+                    <textarea id="waterMaintContent" class="form-input" placeholder="维护项目详情..."></textarea>
+                </div>
+            `,
+            microbio: `
+                <input type="hidden" id="waterEditId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">检测日期</label>
+                        <input type="date" id="waterDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">采样点</label>
+                        <input type="text" id="waterSample" class="form-input" placeholder="出水口">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">细菌 (CFU/mL)</label>
+                        <input type="text" id="waterBacteria" class="form-input" placeholder="<100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">内毒素 (EU/mL)</label>
+                        <input type="text" id="waterEndotoxin" class="form-input" placeholder="<0.25">
+                    </div>
+                </div>
+            `,
+            chem: `
+                <input type="hidden" id="waterEditId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">检测日期</label>
+                        <input type="date" id="waterDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">检测项目</label>
+                        <input type="text" id="waterItem" class="form-input" placeholder="pH值">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">检测值</label>
+                        <input type="text" id="waterTestValue" class="form-input" placeholder="7.0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">标准值</label>
+                        <input type="text" id="waterStandard" class="form-input" placeholder="5.0-8.0">
+                    </div>
+                </div>
+            `
+        };
+
+        const waterRpcMap = {
+            daily: 'insert_water_daily',
+            disinfection: 'insert_water_disinfection',
+            consumables: 'insert_water_consumables',
+            maintenance: 'insert_water_maintenance',
+            microbio: 'insert_water_microbio',
+            chem: 'insert_water_chem'
+        };
+
+        const waterTabTitles = {
+            daily: '新增日常记录',
+            disinfection: '新增消毒记录',
+            consumables: '新增耗材更换',
+            maintenance: '新增维护记录',
+            microbio: '新增微生物检测',
+            chem: '新增化学检测'
+        };
+
+        function openWaterModal() {
+            $('waterModal').classList.add('show');
+            $('waterModalTitle').textContent = waterTabTitles[currentWaterTab];
+            $('waterModalBody').innerHTML = waterFormTemplates[currentWaterTab];
+            $('waterDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function closeWaterModal() { $('waterModal').classList.remove('show'); }
+
+        async function saveWater() {
+            let data = { record_date: $('waterDate').value };
+            
+            switch(currentWaterTab) {
+                case 'daily':
+                    data.record_time = $('waterTime').value;
+                    data.raw_water_pressure = $('waterRawPressure').value;
+                    data.stage1_pressure = $('waterStage1').value;
+                    data.stage2_pressure = $('waterStage2').value;
+                    data.dialysate_conductivity = $('waterConductivity').value;
+                    break;
+                case 'disinfection':
+                    data.disinfection_date = $('waterDate').value;
+                    data.disinfection_method = $('waterMethod').value;
+                    data.disinfectant = $('waterDisinfectant').value;
+                    data.concentration = $('waterConc').value;
+                    data.operator = $('waterOperator').value;
+                    break;
+                case 'consumables':
+                    data.replace_date = $('waterDate').value;
+                    data.consumable_name = $('waterConsumable').value;
+                    data.model = $('waterModel').value;
+                    data.quantity = $('waterQty').value;
+                    data.replace_location = $('waterLocation').value;
+                    break;
+                case 'maintenance':
+                    data.maintenance_date = $('waterDate').value;
+                    data.device = $('waterDevice').value;
+                    data.maintenance_type = $('waterMaintType').value;
+                    data.description = $('waterMaintContent').value;
+                    break;
+                case 'microbio':
+                    data.test_date = $('waterDate').value;
+                    data.sample_point = $('waterSample').value;
+                    data.bacteria = $('waterBacteria').value;
+                    data.endotoxin = $('waterEndotoxin').value;
+                    data.result = '合格';
+                    break;
+                case 'chem':
+                    data.test_date = $('waterDate').value;
+                    data.test_item = $('waterItem').value;
+                    data.test_value = $('waterTestValue').value;
+                    data.standard_value = $('waterStandard').value;
+                    data.result = '合格';
+                    break;
+            }
+            
+            if (!data.record_date) {
+                showToast('请填写日期', 'error');
+                return;
+            }
+            
+            try {
+                await sbRpc(waterRpcMap[currentWaterTab], { water_data: data });
+                showToast('记录已保存', 'success');
+                closeWaterModal();
+                await loadAllData();
+            } catch (e) {
+                console.error('保存失败:', e);
+                showToast('保存失败', 'error');
+            }
+        }
+
+        // ====== 删除确认 ======
+        function confirmDelete(type, id) {
+            $('confirmModal').classList.add('show');
+            $('confirmMessage').textContent = '确定要删除这条记录吗？此操作不可撤销。';
+            
+            const deleteMaps = {
+                'log': { rpc: 'delete_work_log', key: 'log_id' },
+                'repair': { rpc: 'delete_repair_item', key: 'repair_id' },
+                'qc': { rpc: 'delete_qc_record', key: 'qc_id' }
+            };
+            
+            deleteCallback = async () => {
+                if (deleteMaps[type]) {
+                    try {
+                        await sbRpc(deleteMaps[type].rpc, { [deleteMaps[type].key]: id });
+                        showToast('删除成功', 'success');
+                        closeConfirm();
+                        await loadAllData();
+                    } catch (e) {
+                        showToast('删除失败', 'error');
+                    }
+                } else if (type.startsWith('water_')) {
+                    showToast('水处理记录删除功能开发中', 'warning');
+                    closeConfirm();
+                }
+            };
+        }
+
+        function closeConfirm() { $('confirmModal').classList.remove('show'); }
+        
+        async function doDelete() {
+            if (deleteCallback) await deleteCallback();
+        }
+
+        // ====== 启动 ======
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) showApp();
+        });
+    </script>
+</body>
+</html>
