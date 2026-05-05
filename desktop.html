@@ -2206,8 +2206,19 @@
             errEl.style.display = 'none';
 
             try {
-                // 通过 RPC 验证密码，确认 Supabase 连通性
-                const result = await sbRpc('verify_password', { pwd: pwd });
+                // 直接调用verify_password，不经过sbRpc（sbRpc会覆盖pwd为SYSTEM_PWD）
+                const verifyRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/verify_password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ pwd: pwd }),
+                    signal: AbortSignal.timeout(10000)
+                });
+                if (!verifyRes.ok) throw new Error(await verifyRes.text());
+                const result = await verifyRes.json();
                 if (result === true) {
                     localStorage.setItem('auth_token', '1');
                     localStorage.setItem('auth_time', Date.now().toString());
