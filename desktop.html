@@ -1354,6 +1354,358 @@
         .stat-value {
             font-variant-numeric: tabular-nums;
         }
+
+        /* ===== 质控设备选择器样式 ===== */
+        .qc-device-section {
+            margin-bottom: 16px;
+        }
+        
+        .qc-device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .qc-device-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .qc-device-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0A5294;
+        }
+        
+        .qc-selected-count {
+            font-size: 13px;
+            color: #64748b;
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        
+        .qc-select-all-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .qc-select-all-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .qc-select-all-btn:hover {
+            background: #f1f5f9;
+            border-color: #0A5294;
+            color: #0A5294;
+        }
+        
+        .qc-device-list-container {
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        
+        /* 水处理设备行 */
+        .qc-device-item-water {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .qc-device-item-water.selected {
+            background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 3px solid #0A5294;
+        }
+        
+        .qc-device-item-water .device-checkbox {
+            margin-right: 12px;
+        }
+        
+        .qc-device-item-water .device-id {
+            flex: 1;
+            font-weight: 600;
+            color: #0A5294;
+        }
+        
+        .qc-device-item-water .device-id::before {
+            content: '💧 ';
+        }
+        
+        .qc-device-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* 区域选择器 */
+        .qc-zone-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .qc-zone-btn {
+            padding: 6px 14px;
+            font-size: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            background: white;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .qc-zone-btn:hover {
+            background: #f1f5f9;
+            border-color: #0A5294;
+        }
+        
+        .qc-zone-btn.active {
+            background: #0A5294;
+            border-color: #0A5294;
+            color: white;
+        }
+        
+        .qc-zone-count {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+        
+        /* 区域设备面板 */
+        .qc-zone-panel {
+            padding: 12px;
+            background: #fafafa;
+        }
+        
+        .qc-zone-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .qc-zone-panel-header span {
+            font-size: 13px;
+            font-weight: 500;
+            color: #334155;
+        }
+        
+        .qc-zone-close-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: #64748b;
+            cursor: pointer;
+        }
+        
+        .qc-zone-close-btn:hover {
+            background: #e2e8f0;
+        }
+        
+        .qc-devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+        
+        /* 设备卡片项 */
+        .qc-device-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .qc-device-item:hover {
+            border-color: #0A5294;
+            box-shadow: 0 2px 4px rgba(10, 82, 148, 0.1);
+        }
+        
+        .qc-device-item.selected {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-color: #0A5294;
+            box-shadow: 0 2px 8px rgba(10, 82, 148, 0.15);
+        }
+        
+        .qc-device-item .device-checkbox {
+            margin-right: 10px;
+        }
+        
+        .qc-device-item .device-id {
+            flex: 1;
+            font-size: 13px;
+            color: #334155;
+        }
+        
+        .qc-device-item.selected .device-id {
+            color: #0A5294;
+            font-weight: 500;
+        }
+        
+        .qc-device-item .device-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .qc-qualified-select {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            background: white;
+            color: #475569;
+            cursor: pointer;
+        }
+        
+        .qc-qualified-select.qualified {
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #166534;
+        }
+        
+        .qc-qualified-select.unqualified {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #991b1b;
+        }
+        
+        .qc-test-value-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .qc-test-value-input {
+            width: 60px;
+            padding: 4px 8px;
+            font-size: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .qc-test-value-input:focus {
+            outline: none;
+            border-color: #0A5294;
+            box-shadow: 0 0 0 2px rgba(10, 82, 148, 0.1);
+        }
+        
+        .qc-test-unit {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        /* 标准值自动填充提示 */
+        .qc-standard-auto {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+        
+        .qc-standard-auto .icon {
+            color: #22c55e;
+        }
+        
+        .qc-standard-auto .text {
+            font-size: 12px;
+            color: #166534;
+        }
+        
+        /* 批量提交按钮 */
+        .qc-submit-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #0A5294 0%, #003D7C 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .qc-submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(10, 82, 148, 0.3);
+        }
+        
+        .qc-submit-btn:active {
+            transform: translateY(0);
+        }
+        
+                @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin { animation: spin 1s linear infinite; }
+        
+        .qc-submit-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* 质控记录列表样式增强 */
+        .qc-table-expand .qc-sample-type,
+        .qc-table-expand .qc-tester {
+            font-size: 13px;
+        }
+        
+        /* 样品类型标签 */
+        .badge-sample-type {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: #475569;
+        }
     </style>
 </head>
 <body>
@@ -1757,9 +2109,11 @@
                                     <th>检测日期</th>
                                     <th>设备/采样点</th>
                                     <th>检测类型</th>
+                                    <th>样品类型</th>
                                     <th>检测值</th>
                                     <th>标准值</th>
                                     <th>合格状态</th>
+                                    <th>检测人员</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -1966,57 +2320,85 @@
 
     <!-- 模态框：质控检测 -->
     <div class="modal-overlay" id="qcModal">
-        <div class="modal">
+        <div class="modal" style="max-width: 800px;">
             <div class="modal-header">
                 <h3 class="modal-title" id="qcModalTitle">新增质控检测</h3>
                 <button class="modal-close" onclick="closeQCModal()">
                     <span class="material-icons-round">close</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                 <input type="hidden" id="editQCId">
+                
+                <!-- 基本信息区 -->
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">检测日期 <span style="color:red">*</span></label>
                         <input type="date" id="qcDate" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">设备/采样点</label>
-                        <input type="text" id="qcDevice" class="form-input" placeholder="如水处理系统出水口">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
                         <label class="form-label">检测类型 <span style="color:red">*</span></label>
-                        <select id="qcType" class="form-input" required>
+                        <select id="qcType" class="form-input" required onchange="qcAutoFillStandard()">
                             <option value="">请选择</option>
                             <option value="细菌">细菌检测</option>
                             <option value="内毒素">内毒素检测</option>
                             <option value="化学">化学检测</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">检测值</label>
-                        <input type="text" id="qcValue" class="form-input" placeholder="如：50">
-                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">标准值</label>
-                        <input type="text" id="qcStandard" class="form-input" placeholder="如：<100 CFU/mL">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">合格状态</label>
-                        <select id="qcQualified" class="form-input">
-                            <option value="true">合格</option>
-                            <option value="false">不合格</option>
+                        <label class="form-label">样品类型 <span style="color:red">*</span></label>
+                        <select id="qcSampleType" class="form-input" required onchange="qcLoadDeviceList()">
+                            <option value="">请选择</option>
+                            <option value="透析用水">透析用水</option>
+                            <option value="透析液">透析液</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label">检测人员</label>
+                        <input type="text" id="qcTester" class="form-input" placeholder="林茂仁" value="林茂仁">
+                    </div>
+                </div>
+                
+                <!-- 标准值自动填充显示 -->
+                <div class="qc-standard-auto" id="qcStandardHint" style="display: none;">
+                    <span class="material-icons-round icon" style="font-size: 18px;">info</span>
+                    <span class="text" id="qcStandardHintText"></span>
+                </div>
+                
+                <!-- 设备选择器 -->
+                <div class="qc-device-section" style="margin-top: 16px;">
+                    <div class="qc-device-header">
+                        <div class="qc-device-header-left">
+                            <h4>设备/采样点</h4>
+                            <span class="qc-selected-count" id="qcSelectedCount">0台已选</span>
+                        </div>
+                        <div class="qc-select-all-btns">
+                            <button class="qc-select-all-btn" onclick="qcToggleSelectAll(true)">全选</button>
+                            <button class="qc-select-all-btn" onclick="qcToggleSelectAll(false)">取消全选</button>
+                        </div>
+                    </div>
+                    <div class="qc-device-list-container" id="qcDeviceListContainer">
+                        <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                            <span class="material-icons-round" style="font-size: 48px; opacity: 0.5;">water_drop</span>
+                            <p style="margin-top: 12px;">请先选择检测类型和样品类型</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 备注 -->
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">备注</label>
+                    <textarea id="qcNotes" class="form-input" rows="2" placeholder="其他说明..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeQCModal()">取消</button>
-                <button class="btn btn-primary" onclick="saveQC()">保存</button>
+                <button class="btn btn-primary qc-submit-btn" onclick="qcBatchSubmit()" id="qcSubmitBtn">
+                    <span class="material-icons-round">check_circle</span>
+                    批量提交
+                </button>
             </div>
         </div>
     </div>
@@ -2206,19 +2588,8 @@
             errEl.style.display = 'none';
 
             try {
-                // 直接调用verify_password，不经过sbRpc（sbRpc会覆盖pwd为SYSTEM_PWD）
-                const verifyRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/verify_password`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    },
-                    body: JSON.stringify({ pwd: pwd }),
-                    signal: AbortSignal.timeout(10000)
-                });
-                if (!verifyRes.ok) throw new Error(await verifyRes.text());
-                const result = await verifyRes.json();
+                // 通过 RPC 验证密码，确认 Supabase 连通性
+                const result = await sbRpc('verify_password', { pwd: pwd });
                 if (result === true) {
                     localStorage.setItem('auth_token', '1');
                     localStorage.setItem('auth_time', Date.now().toString());
@@ -2767,18 +3138,20 @@
             
             const tbody = $('qcTableBody');
             if (pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><span class="material-icons-round">verified</span><p>暂无检测记录</p></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><span class="material-icons-round">verified</span><p>暂无检测记录</p></td></tr>`;
             } else {
                 tbody.innerHTML = pageData.map(r => {
                     const qualified = r.is_qualified;
                     return `
-                        <tr>
+                        <tr class="qc-table-expand">
                             <td>${r.test_date || '-'}</td>
                             <td>${r.device_id || '-'}</td>
                             <td><span class="badge badge-info">${r.test_type || '-'}</span></td>
+                            <td><span class="badge-sample-type">${r.sample_type || '-'}</span></td>
                             <td>${r.test_value || '-'}</td>
                             <td>${r.standard_value || '-'}</td>
                             <td><span class="badge badge-${qualified ? 'success' : 'danger'}">${qualified ? '合格' : '不合格'}</span></td>
+                            <td class="qc-tester">${r.tester || '-'}</td>
                             <td>
                                 <button class="btn-icon danger" onclick="confirmDelete('qc', '${r.qc_id}')" title="删除"><span class="material-icons-round">delete</span></button>
                             </td>
@@ -3173,30 +3546,393 @@
 
         function closeQCModal() { $('qcModal').classList.remove('show'); }
 
-        async function saveQC() {
-            const data = {
-                test_date: $('qcDate').value,
-                device_id: $('qcDevice').value || null,
-                test_type: $('qcType').value,
-                test_value: $('qcValue').value || null,
-                standard_value: $('qcStandard').value || null,
-                is_qualified: $('qcQualified').value === 'true'
-            };
+        // ====== 质控模块 ======
+        
+        // 质控设备列表全局变量
+        var qcDeviceList = [];
+        var qcWaterDevice = { device_id: '水处理', device_name: '水处理设备' };
+        
+        // SOP标准值规范
+        const QC_STANDARDS = {
+            '细菌-透析用水': '<100 CFU/mL',
+            '细菌-透析液': '<100 CFU/mL',
+            '内毒素-透析用水': '<0.25 EU/mL',
+            '内毒素-透析液': '<0.25 EU/mL',
+            '化学-透析用水': '参照YY0572标准',
+            '化学-透析液': '参照YY0572标准'
+        };
+        
+        // 标准值自动填充
+        function qcAutoFillStandard() {
+            const testType = $('qcType').value;
+            const sampleType = $('qcSampleType').value;
+            const hintEl = $('qcStandardHint');
+            const hintTextEl = $('qcStandardHintText');
             
-            if (!data.test_date || !data.test_type) {
-                showToast('请填写必填项', 'error');
+            if (!testType) {
+                hintEl.style.display = 'none';
                 return;
             }
             
-            try {
-                await sbRpc('insert_qc_record', { qc_data: data });
-                showToast('检测记录已保存', 'success');
-                closeQCModal();
-                await loadAllData();
-            } catch (e) {
-                console.error('保存失败:', e);
-                showToast('保存失败', 'error');
+            const key = sampleType ? `${testType}-${sampleType}` : '';
+            const standard = QC_STANDARDS[key] || QC_STANDARDS[`${testType}-透析用水`];
+            
+            if (standard) {
+                hintEl.style.display = 'flex';
+                hintTextEl.textContent = `标准值：${standard}`;
+            } else {
+                hintEl.style.display = 'none';
             }
+            
+            // 更新设备列表中的输入框placeholder
+            qcUpdateTestValueHints();
+        }
+        
+        // 加载设备列表
+        function qcLoadDeviceList() {
+            const testType = $('qcType').value;
+            const sampleType = $('qcSampleType').value;
+            const container = $('qcDeviceListContainer');
+            
+            if (!testType || !sampleType) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <span class="material-icons-round" style="font-size: 48px; opacity: 0.5;">water_drop</span>
+                        <p style="margin-top: 12px;">请先选择检测类型和样品类型</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8;">加载设备列表...</div>';
+            
+            // 根据检测类型设置placeholder、默认值和单位标签
+            let placeholder = '检测值';
+            let defaultValue = '';
+            let unitLabel = '';
+            if (testType === '细菌') {
+                placeholder = 'CFU/mL';
+                defaultValue = '0';
+                unitLabel = 'CFU/mL';
+            } else if (testType === '内毒素') {
+                placeholder = 'EU/mL';
+                defaultValue = '0';
+                unitLabel = 'EU/mL';
+            }
+            
+            // 从全局devices变量获取设备列表
+            let deviceList = [];
+            if (typeof devices !== 'undefined' && devices.length > 0) {
+                deviceList = devices
+                    .filter(d => d.area_bed && d.area_bed !== '中央供液室')
+                    .map(d => {
+                        const match = d.area_bed.match(/^(\d+)-/);
+                        const zone = match ? parseInt(match[1]) : 99;
+                        return { zone: zone, id: d.area_bed, name: d.area_bed };
+                    })
+                    .sort((a, b) => {
+                        if (a.zone !== b.zone) return a.zone - b.zone;
+                        return a.id.localeCompare(b.id, undefined, { numeric: true });
+                    });
+            }
+            
+            // 如果没有获取到设备，使用备选方案
+            if (deviceList.length === 0 && typeof repairItems !== 'undefined' && repairItems.length > 0) {
+                const deviceMap = {};
+                repairItems.forEach(r => {
+                    if (r.device_id && r.device_id !== '中央供液室') {
+                        const match = r.device_id.match(/^(\d+)-/);
+                        const zone = match ? parseInt(match[1]) : 99;
+                        if (!deviceMap[r.device_id]) {
+                            deviceMap[r.device_id] = { zone: zone, id: r.device_id, name: r.device_id };
+                        }
+                    }
+                });
+                deviceList = Object.values(deviceMap).sort((a, b) => {
+                    if (a.zone !== b.zone) return a.zone - b.zone;
+                    return a.id.localeCompare(b.id, undefined, { numeric: true });
+                });
+            }
+            
+            // 生成HTML
+            let html = '';
+            
+            // 水处理单独一行
+            html += `<div class="qc-device-item-water selected" data-device-id="水处理" onclick="qcToggleDevice(this)">
+                <input type="checkbox" class="device-checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest('.qc-device-item-water'))">
+                <span class="device-id">水处理</span>
+                <div class="device-controls">
+                    <select class="qc-qualified-select qualified" onchange="qcUpdateQualifiedStyle(this)">
+                        <option value="true" selected>合格</option>
+                        <option value="false">不合格</option>
+                    </select>
+                    <div class="qc-test-value-wrap">
+                        <input type="text" class="qc-test-value-input" placeholder="${placeholder}" value="${defaultValue}">
+                        ${unitLabel ? `<span class="qc-test-unit">${unitLabel}</span>` : ''}
+                    </div>
+                </div>
+            </div>`;
+            
+            // 分区选择按钮
+            const zones = [];
+            const zoneMap = {};
+            deviceList.forEach(device => {
+                const zoneMatch = device.id.match(/^(\d+)-/);
+                const zone = zoneMatch ? zoneMatch[1] : '';
+                if (!zoneMap[zone]) {
+                    zoneMap[zone] = [];
+                    zones.push(zone);
+                }
+                zoneMap[zone].push(device);
+            });
+            
+            html += '<div class="qc-zone-selector">';
+            zones.sort((a, b) => parseInt(a) - parseInt(b)).forEach(zone => {
+                const count = zoneMap[zone].length;
+                html += `<button class="qc-zone-btn" data-zone="${zone}" onclick="qcToggleZone('${zone}')">
+                    第${zone}区<span class="qc-zone-count">${count}台</span>
+                </button>`;
+            });
+            html += '</div>';
+            
+            // 各区设备列表
+            zones.sort((a, b) => parseInt(a) - parseInt(b)).forEach(zone => {
+                html += `<div class="qc-zone-panel" id="qcZone_${zone}" style="display:none;">
+                    <div class="qc-zone-panel-header">
+                        <span>第${zone}区（${zoneMap[zone].length}台）</span>
+                        <button class="qc-zone-close-btn" onclick="qcCloseZone('${zone}')">收起</button>
+                    </div>
+                    <div class="qc-devices-grid">`;
+                
+                zoneMap[zone].forEach(device => {
+                    html += `<div class="qc-device-item selected" data-device-id="${device.id}" data-zone="${zone}" onclick="qcToggleDevice(this)">
+                        <input type="checkbox" class="device-checkbox" checked onclick="event.stopPropagation(); qcToggleDevice(this.closest('.qc-device-item'))">
+                        <span class="device-id">${device.id}</span>
+                        <div class="device-controls">
+                            <select class="qc-qualified-select qualified" onchange="qcUpdateQualifiedStyle(this)">
+                                <option value="true" selected>合格</option>
+                                <option value="false">不合格</option>
+                            </select>
+                            <div class="qc-test-value-wrap">
+                                <input type="text" class="qc-test-value-input" placeholder="${placeholder}" value="${defaultValue}">
+                                ${unitLabel ? `<span class="qc-test-unit">${unitLabel}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
+                });
+                
+                html += '</div></div>';
+            });
+            
+            container.innerHTML = html;
+            qcUpdateSelectedCount();
+        }
+        
+        // 更新合格选择框样式
+        function qcUpdateQualifiedStyle(select) {
+            if (select.value === 'true') {
+                select.classList.remove('unqualified');
+                select.classList.add('qualified');
+            } else {
+                select.classList.remove('qualified');
+                select.classList.add('unqualified');
+            }
+        }
+        
+        // 更新检测值输入框的placeholder
+        function qcUpdateTestValueHints() {
+            const testType = $('qcType').value;
+            const inputs = document.querySelectorAll('.qc-test-value-input');
+            
+            let placeholder = '检测值';
+            let defaultValue = '';
+            let unitLabel = '';
+            if (testType === '细菌') {
+                placeholder = 'CFU/mL';
+                defaultValue = '0';
+                unitLabel = 'CFU/mL';
+            } else if (testType === '内毒素') {
+                placeholder = 'EU/mL';
+                defaultValue = '0';
+                unitLabel = 'EU/mL';
+            }
+            
+            inputs.forEach(input => {
+                input.placeholder = placeholder;
+                if (!input.value || input.value === '0') {
+                    input.value = defaultValue;
+                }
+                const wrap = input.closest('.qc-test-value-wrap');
+                if (wrap) {
+                    let unitSpan = wrap.querySelector('.qc-test-unit');
+                    if (unitLabel) {
+                        if (unitSpan) {
+                            unitSpan.textContent = unitLabel;
+                        } else {
+                            unitSpan = document.createElement('span');
+                            unitSpan.className = 'qc-test-unit';
+                            unitSpan.textContent = unitLabel;
+                            wrap.appendChild(unitSpan);
+                        }
+                    } else if (unitSpan) {
+                        unitSpan.remove();
+                    }
+                }
+            });
+        }
+        
+        // 展开/收起区设备
+        function qcToggleZone(zone) {
+            const panel = document.getElementById('qcZone_' + zone);
+            const btn = document.querySelector('.qc-zone-btn[data-zone="' + zone + '"]');
+            if (!panel) return;
+            
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                if (btn) btn.classList.add('active');
+            } else {
+                panel.style.display = 'none';
+                if (btn) btn.classList.remove('active');
+            }
+        }
+        
+        function qcCloseZone(zone) {
+            const panel = document.getElementById('qcZone_' + zone);
+            const btn = document.querySelector('.qc-zone-btn[data-zone="' + zone + '"]');
+            if (panel) panel.style.display = 'none';
+            if (btn) btn.classList.remove('active');
+        }
+        
+        // 切换设备选中状态
+        function qcToggleDevice(el) {
+            el.classList.toggle('selected');
+            const checkbox = el.querySelector('input[type="checkbox"]');
+            if (checkbox) checkbox.checked = el.classList.contains('selected');
+            qcUpdateSelectedCount();
+        }
+        
+        // 全选/全不选
+        function qcToggleSelectAll(selectAll) {
+            const items = document.querySelectorAll('.qc-device-item-water, .qc-device-item');
+            items.forEach(item => {
+                if (selectAll) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = selectAll;
+            });
+            qcUpdateSelectedCount();
+        }
+        
+        // 更新选中数量
+        function qcUpdateSelectedCount() {
+            const selected = document.querySelectorAll('.qc-device-item-water.selected, .qc-device-item.selected');
+            const countEl = $('qcSelectedCount');
+            if (countEl) {
+                countEl.textContent = selected.length + '台已选';
+            }
+        }
+        
+        // 批量提交
+        async function qcBatchSubmit() {
+            const testDate = $('qcDate').value;
+            const testType = $('qcType').value;
+            const sampleType = $('qcSampleType').value;
+            const tester = $('qcTester').value.trim() || '林茂仁';
+            const notes = $('qcNotes').value.trim();
+            
+            if (!testDate || !testType || !sampleType) {
+                showToast('请填写检测日期、检测类型和样品类型', 'error');
+                return;
+            }
+            
+            // 获取所有选中的设备
+            const selectedDevices = document.querySelectorAll('.qc-device-item-water.selected, .qc-device-item.selected');
+            if (selectedDevices.length === 0) {
+                showToast('请至少选择一台设备', 'error');
+                return;
+            }
+            
+            // 获取标准值
+            const standardKey = `${testType}-${sampleType}`;
+            const standardValue = QC_STANDARDS[standardKey] || QC_STANDARDS[`${testType}-透析用水`] || '';
+            
+            const btn = $('qcSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-icons-round spin">sync</span> 提交中...';
+            
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (const item of selectedDevices) {
+                const deviceId = item.getAttribute('data-device-id');
+                const qualifiedSelect = item.querySelector('.qc-qualified-select');
+                const testValueInput = item.querySelector('.qc-test-value-input');
+                
+                const isQualified = qualifiedSelect ? qualifiedSelect.value === 'true' : true;
+                const testValue = testValueInput ? testValueInput.value.trim() : '';
+                
+                const record = {
+                    test_date: testDate,
+                    test_type: testType,
+                    sample_type: sampleType,
+                    is_qualified: isQualified,
+                    test_value: testValue || null,
+                    device_id: deviceId === '水处理' ? '水处理' : deviceId,
+                    standard_value: standardValue,
+                    tester: tester,
+                    notes: notes || null
+                };
+                
+                try {
+                    await sbRpc('insert_qc_record', { qc_data: record });
+                    successCount++;
+                } catch (e) {
+                    failCount++;
+                    console.error('提交失败:', record, e);
+                }
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-icons-round">check_circle</span> 批量提交';
+            
+            if (failCount > 0) {
+                showToast(`提交完成：成功${successCount}条，失败${failCount}条`, 'warning');
+            } else {
+                showToast(`成功提交${successCount}条检测记录`, 'success');
+            }
+            
+            // 重置表单
+            $('qcNotes').value = '';
+            
+            // 关闭弹窗并刷新
+            closeQCModal();
+            await loadAllData();
+        }
+        
+        // 保留旧函数以兼容（重定向到批量提交）
+        async function saveQC() {
+            await qcBatchSubmit();
+        }
+        
+        // 打开质控弹窗时重置设备选择器
+        function openQCModal(id = null) {
+            $('qcModal').classList.add('show');
+            $('editQCId').value = id || '';
+            $('qcModalTitle').textContent = id ? '编辑检测记录' : '新增质控检测';
+            
+            // 设置默认日期
+            $('qcDate').value = new Date().toISOString().split('T')[0];
+            $('qcType').value = '';
+            $('qcSampleType').value = '';
+            $('qcTester').value = '林茂仁';
+            $('qcNotes').value = '';
+            $('qcStandardHint').style.display = 'none';
+            
+            // 重置设备选择器
+            qcLoadDeviceList();
         }
 
         // ====== 维护弹窗 ======
