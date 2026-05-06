@@ -3110,11 +3110,18 @@ currentModule = mod;
 document.getElementById('btnEngineer').className = 'mod-btn' + (mod === 'engineer' ? ' active' : '');
             document.getElementById('btnWater').className = 'mod-btn' + (mod === 'water' ? ' active' : '');
             document.getElementById('btnQC').className = 'mod-btn' + (mod === 'qc' ? ' active' : '');
+            document.getElementById('btnPatientAssoc').className = 'mod-btn' + (mod === 'patientAssoc' ? ' active' : '');
 
             // 切换子tab显示
             document.getElementById('engSubTabs').style.display = mod === 'engineer' ? 'flex' : 'none';
             document.getElementById('waterSubTabs').style.display = mod === 'water' ? 'flex' : 'none';
             document.getElementById('qcSubTabs').style.display = mod === 'qc' ? 'flex' : 'none';
+            // 患者关联无子Tab，隐藏所有子Tab栏
+            if (mod === 'patientAssoc') {
+                document.getElementById('engSubTabs').style.display = 'none';
+                document.getElementById('waterSubTabs').style.display = 'none';
+                document.getElementById('qcSubTabs').style.display = 'none';
+            }
             
             // 水处理设备信息栏
             var waterInfo = document.getElementById('waterDeviceInfo');
@@ -3126,6 +3133,9 @@ var allPages = ['engFormPage', 'engHistoryPage', 'engStatsPage', 'engMaintPage',
                 var el = document.getElementById(id);
                 if (el) el.style.display = 'none';
             });
+            // 隐藏患者关联浮动按钮（切到其他模块时）
+            var paFloatBtn = document.getElementById('paFloatingBtn');
+            if (paFloatBtn) paFloatBtn.style.display = 'none';
 
             // 切换主题色
             var header = document.getElementById('appHeader');
@@ -3144,6 +3154,17 @@ var allPages = ['engFormPage', 'engHistoryPage', 'engStatsPage', 'engMaintPage',
                 document.documentElement.style.setProperty('--active-primary', 'var(--qc-primary)');
                 document.documentElement.style.setProperty('--active-dark', 'var(--qc-dark)');
                 switchQCTab(currentQCTab);
+            } else if (mod === 'patientAssoc') {
+                header.style.background = 'linear-gradient(135deg, #0A5294, #003D7C)';
+                document.documentElement.style.setProperty('--active-primary', '#0A5294');
+                document.documentElement.style.setProperty('--active-dark', '#003D7C');
+                document.getElementById('engPatientAssocPage').style.display = 'block';
+                document.getElementById('paFloatingBtn').style.display = 'flex';
+                document.getElementById('submitBar').style.display = 'none';
+                engLoadPatientAssoc();
+                // 隐藏水处理设备信息
+                var waterInfo = document.getElementById('waterDeviceInfo');
+                if (waterInfo) waterInfo.style.display = 'none';
             }
 
             window.scrollTo(0, 0);
@@ -3155,19 +3176,14 @@ function switchEngTab(tab) {
 currentEngTab = tab;
 
 // 更新tab按钮样式
-var tabs = ['form', 'history', 'stats', 'maint', 'patientAssoc'];
+var tabs = ['form', 'history', 'stats', 'maint'];
             var btns = document.getElementById('engSubTabs').querySelectorAll('button');
             btns.forEach(function(b, i) {
                 b.className = 'sub-btn' + (tabs[i] === tab ? ' active' : '');
             });
 
 // 切换页面
-            // 隐藏患者关联浮动按钮（除了患者关联页面）
-            if (tab !== 'patientAssoc') {
-                var paBtn = document.getElementById('paFloatingBtn');
-                if (paBtn) paBtn.style.display = 'none';
-            }
-            var pages = ['engFormPage', 'engHistoryPage', 'engStatsPage', 'engMaintPage', 'engPatientAssocPage'];
+            var pages = ['engFormPage', 'engHistoryPage', 'engStatsPage', 'engMaintPage'];
             pages.forEach(function(id) {
                 document.getElementById(id).style.display = 'none';
             });
@@ -3185,10 +3201,6 @@ var tabs = ['form', 'history', 'stats', 'maint', 'patientAssoc'];
                 engInitStatsPage();
             } else if (tab === 'maint') {
                 engLoadMaintHistory();
-            } else if (tab === 'patientAssoc') {
-                engLoadPatientAssoc();
-                document.getElementById('paFloatingBtn').style.display = 'block';
-                document.getElementById('submitBar').style.display = 'none';
             }
 
             updateSubmitButton();
@@ -7071,6 +7083,7 @@ async function deletePatientAssoc(id) {
             <button class="mod-btn active" id="btnEngineer" onclick="switchModule('engineer')">🔧 透析机维护</button>
             <button class="mod-btn" id="btnWater" onclick="switchModule('water')">💧 水处理管理</button>
             <button class="mod-btn" id="btnQC" onclick="switchModule('qc')">📋 质控检测</button>
+            <button class="mod-btn" id="btnPatientAssoc" onclick="switchModule('patientAssoc')">🏥 患者关联</button>
         </div>
     </div>
     <!-- ====== 工程师模块子Tab ====== -->
@@ -7086,9 +7099,6 @@ async function deletePatientAssoc(id) {
 </button>
 <button class="sub-btn" onclick="switchEngTab('maint')">
             🔧 保养
-</button>
-<button class="sub-btn" onclick="switchEngTab('patientAssoc')">
-            🏥 患者关联
 </button>
 </div>
     
