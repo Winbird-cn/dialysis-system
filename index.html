@@ -2871,6 +2871,19 @@ function showDeviceInfo(deviceId) {
     if (!deviceId) return;
     
     var device = window._dialysisDevicesMap[deviceId];
+    
+    // 本地模式fallback：如果map为空，从内嵌数据查找
+    if (!device && typeof LOCAL_DEVICES !== 'undefined') {
+        for (var i = 0; i < LOCAL_DEVICES.length; i++) {
+            if (LOCAL_DEVICES[i].device_id === deviceId) {
+                device = LOCAL_DEVICES[i];
+                // 同时写入map缓存
+                window._dialysisDevicesMap[deviceId] = device;
+                break;
+            }
+        }
+    }
+    
     var body = document.getElementById('deviceInfoBody');
     
     if (device) {
@@ -3262,22 +3275,28 @@ try {
                 var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
                 var repairMap = {};
                 var repairDateMap = {};
+                var assignedRepairs = new Set();
                 (repairs || []).forEach(function(r) {
                     // 按work_log_id匹配
                     if (r.work_log_id) {
                         var key = r.work_log_id;
                         if (!repairMap[key]) repairMap[key] = [];
                         repairMap[key].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', partsReplaced2: r.parts_replaced_2 || '', partsReplaced3: r.parts_replaced_3 || '', repairPerson: r.repair_person || '', repairAction: r.repair_action || '', result: r.result || ''});
+                        assignedRepairs.add(r.id); // 标记已分配
                     }
-                    // 按日期匹配作为fallback
-                    if (r.repair_date) {
-                        var dkey = r.repair_date;
+                });
+                // repairDateMap只包含未分配的repair，按日期+设备ID精确匹配
+                (repairs || []).forEach(function(r) {
+                    if (r.repair_date && !assignedRepairs.has(r.id)) {
+                        var dkey = r.repair_date + '|' + (r.device_id || '');
                         if (!repairDateMap[dkey]) repairDateMap[dkey] = [];
                         repairDateMap[dkey].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', partsReplaced2: r.parts_replaced_2 || '', partsReplaced3: r.parts_replaced_3 || '', repairPerson: r.repair_person || '', repairAction: r.repair_action || '', result: r.result || ''});
                     }
                 });
                 var localLogs = (logs || []).map(function(log) {
-                    var logRepairs = repairMap[log.id] || repairDateMap[log.date] || [];
+                    // 只使用work_log_id匹配，fallback到日期+设备ID精确匹配
+                    var dateKey = log.date + '|' + (log.running_devices || '');
+                    var logRepairs = repairMap[log.id] || repairDateMap[dateKey] || [];
                     return {id: log.local_id || log.id, date: log.date, runningDevices: log.running_devices || 0, inspectionCount: log.inspection_count || 0, selfCheckAbnormal: log.self_check_abnormal || 0, repairCount: log.repair_count || 0, midTreatmentFaults: log.mid_treatment_faults || 0,  notes: log.notes || '', repairs: logRepairs, createdAt: log.created_at || '', synced: true};
                 });
                 engSaveLogs(localLogs);
