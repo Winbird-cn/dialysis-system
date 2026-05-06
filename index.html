@@ -3095,7 +3095,7 @@ var allPages = ['engFormPage', 'engHistoryPage', 'engStatsPage', 'engMaintPage',
                 document.getElementById('engPatientAssocPage').style.display = 'block';
                 document.getElementById('paFloatingBtn').style.display = 'flex';
                 document.getElementById('submitBar').style.display = 'none';
-                engLoadPatientAssoc();
+                if (isSupabaseConfigured) engLoadPatientAssoc();
                 // 隐藏水处理设备信息
                 var waterInfo = document.getElementById('waterDeviceInfo');
                 if (waterInfo) waterInfo.style.display = 'none';
@@ -3400,11 +3400,16 @@ threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
             document.getElementById('engExportEndDate').value = today;
 
 try {
-                await Promise.race([
+                var initResult = await Promise.race([
                     initSupabase(),
-                    new Promise(function(resolve) { setTimeout(function() { resolve(false); }, 8000); })
+                    new Promise(function(resolve) { setTimeout(function() { resolve(false); }, 5000); })
                 ]);
-} catch(e) {}
+                if (!initResult) {
+                    updateSyncStatus('offline', '📱 本地模式');
+                }
+} catch(e) {
+                updateSyncStatus('offline', '📱 本地模式');
+}
 
 engAddRepairItem();
 updateSubmitButton();
