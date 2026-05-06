@@ -1183,6 +1183,250 @@
         }
         
         /* ===== 设备维护页面 ===== */
+        /* 区域Tab选择器 */
+        .area-tabs-wrapper {
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .area-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .area-tab-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .area-tab-btn:hover {
+            background: var(--primary-bg);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .area-tab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .area-tab-count {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        /* 区域概要网格 */
+        .area-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .area-summary-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .area-summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-lighter);
+        }
+        
+        .area-summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .area-summary-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .area-summary-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--primary-bg);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        
+        .area-summary-stats {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .area-summary-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        
+        .area-summary-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .area-summary-dot.normal { background: var(--success); }
+        .area-summary-dot.maintenance { background: var(--warning); }
+        .area-summary-dot.fault { background: var(--danger); }
+        
+        /* 设备列表视图 */
+        .area-devices-section {
+            margin-bottom: 24px;
+        }
+        
+        .area-devices-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .device-cards-compact {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        
+        .device-card-compact {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .device-card-compact:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .device-card-compact.active {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+        }
+        
+        .device-card-compact-id {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        
+        .device-card-compact-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+        
+        .device-card-compact-status.normal { background: var(--success); }
+        .device-card-compact-status.maintenance { background: var(--warning); }
+        .device-card-compact-status.fault { background: var(--danger); animation: blink 1.5s infinite; }
+        
+        .device-card-compact-model {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        /* 设备详情面板 */
+        .device-detail-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .device-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+        }
+        
+        .device-detail-content {
+            padding: 20px;
+        }
+        
+        .device-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .device-detail-item {
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+        
+        .device-detail-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        
+        .device-detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .device-detail-section {
+            margin-top: 20px;
+        }
+        
+        .device-detail-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+        
+        /* 旧样式保留兼容 */
         .device-cards-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -1706,6 +1950,32 @@
             background: #f1f5f9;
             color: #475569;
         }
+        
+        /* 维修记录扩展列 - 响应式显示 */
+        .repair-col-extra {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* 设备链接样式 */
+        .device-link {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .device-link:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+        
+        /* 响应式表格处理 */
+        @media (max-width: 1200px) {
+            .repair-col-extra {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1864,7 +2134,7 @@
                     <div class="charts-row">
                         <div class="chart-card">
                             <div class="chart-header">
-                                <h3 class="chart-title">最近30天维修趋势</h3>
+                                <h3 class="chart-title">最近7天维修趋势</h3>
                             </div>
                             <div class="chart-container">
                                 <canvas id="repairTrendChart"></canvas>
@@ -1907,76 +2177,7 @@
                                     查看全部 <span class="material-icons-round" style="font-size:14px;">arrow_forward</span>
                                 </a>
                             </div>
-                            <div class="qc-overview" id="qcOverview">
-                                <div class="qc-item">
-                                    <div class="qc-item-header">
-                                        <span class="qc-item-name">透析液质量</span>
-                                        <span class="qc-item-status ok">合格</span>
-                                    </div>
-                                    <div class="qc-ring-progress">
-                                        <svg width="80" height="80">
-                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
-                                            <circle class="qc-ring-fill ok" cx="40" cy="40" r="32" 
-                                                stroke-dasharray="201" stroke-dashoffset="20"/>
-                                        </svg>
-                                        <div class="qc-ring-text">
-                                            <div class="qc-ring-percent">95%</div>
-                                            <div class="qc-ring-label">达标</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="qc-item">
-                                    <div class="qc-item-header">
-                                        <span class="qc-item-name">设备校准</span>
-                                        <span class="qc-item-status warning">待检</span>
-                                    </div>
-                                    <div class="qc-ring-progress">
-                                        <svg width="80" height="80">
-                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
-                                            <circle class="qc-ring-fill warning" cx="40" cy="40" r="32" 
-                                                stroke-dasharray="201" stroke-dashoffset="80"/>
-                                        </svg>
-                                        <div class="qc-ring-text">
-                                            <div class="qc-ring-percent">60%</div>
-                                            <div class="qc-ring-label">待检</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="qc-item">
-                                    <div class="qc-item-header">
-                                        <span class="qc-item-name">水处理系统</span>
-                                        <span class="qc-item-status ok">正常</span>
-                                    </div>
-                                    <div class="qc-ring-progress">
-                                        <svg width="80" height="80">
-                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
-                                            <circle class="qc-ring-fill ok" cx="40" cy="40" r="32" 
-                                                stroke-dasharray="201" stroke-dashoffset="0"/>
-                                        </svg>
-                                        <div class="qc-ring-text">
-                                            <div class="qc-ring-percent">100%</div>
-                                            <div class="qc-ring-label">正常</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="qc-item">
-                                    <div class="qc-item-header">
-                                        <span class="qc-item-name">消毒记录</span>
-                                        <span class="qc-item-status ok">正常</span>
-                                    </div>
-                                    <div class="qc-ring-progress">
-                                        <svg width="80" height="80">
-                                            <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
-                                            <circle class="qc-ring-fill ok" cx="40" cy="40" r="32" 
-                                                stroke-dasharray="201" stroke-dashoffset="0"/>
-                                        </svg>
-                                        <div class="qc-ring-text">
-                                            <div class="qc-ring-percent">100%</div>
-                                            <div class="qc-ring-label">正常</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="qc-overview" id="qcOverview"></div>
                         </div>
                     </div>
 
@@ -2068,6 +2269,9 @@
                                     <th onclick="sortRepairs('fault_type')">故障类型 <span class="material-icons-round sort-icon">unfold_more</span></th>
                                     <th>故障描述</th>
                                     <th>更换配件</th>
+                                    <th class="repair-col-extra">配件二</th>
+                                    <th class="repair-col-extra">配件三</th>
+                                    <th class="repair-col-extra">维修人员</th>
                                     <th onclick="sortRepairs('result')">处理结果 <span class="material-icons-round sort-icon">unfold_more</span></th>
                                     <th>操作</th>
                                 </tr>
@@ -2139,8 +2343,38 @@
                             <span class="material-icons-round">add</span> 新增维护记录
                         </button>
                     </div>
-                    <div class="device-cards-grid" id="deviceCardsGrid"></div>
-                    <div class="data-table-wrapper">
+                    <!-- 设备区域Tab选择器 -->
+                    <div class="area-tabs-wrapper">
+                        <div class="area-tabs" id="areaTabs"></div>
+                    </div>
+                    
+                    <!-- 设备概要视图（全部视图） -->
+                    <div class="area-summary-grid" id="areaSummaryGrid"></div>
+                    
+                    <!-- 设备列表视图（选中某区时显示） -->
+                    <div class="area-devices-section" id="areaDevicesSection" style="display:none;">
+                        <div class="area-devices-header">
+                            <h3 class="records-title" id="currentAreaTitle"></h3>
+                            <button class="btn btn-secondary" onclick="closeAreaDevices()">
+                                <span class="material-icons-round">arrow_back</span> 返回概要
+                            </button>
+                        </div>
+                        <div class="device-cards-compact" id="deviceCardsCompact"></div>
+                    </div>
+                    
+                    <!-- 设备详情面板 -->
+                    <div class="device-detail-panel" id="deviceDetailPanel" style="display:none;">
+                        <div class="device-detail-header">
+                            <h3 class="records-title" id="deviceDetailTitle">设备详情</h3>
+                            <button class="modal-close" onclick="closeDeviceDetail()">
+                                <span class="material-icons-round">close</span>
+                            </button>
+                        </div>
+                        <div class="device-detail-content" id="deviceDetailContent"></div>
+                    </div>
+                    
+                    <!-- 维护记录和维修记录表格 -->
+                    <div class="data-table-wrapper" id="recordsTableWrapper">
                         <div class="records-header" style="padding:16px 16px 0;">
                             <h3 class="records-title" id="maintenanceListTitle">维护记录列表</h3>
                         </div>
@@ -2306,9 +2540,29 @@
                     <label class="form-label">故障描述</label>
                     <textarea id="repairDesc" class="form-input" placeholder="详细描述故障现象..."></textarea>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">更换配件一</label>
+                        <input type="text" id="repairParts" class="form-input" placeholder="如：透析器、管路">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">更换配件二</label>
+                        <input type="text" id="repairParts2" class="form-input" placeholder="第二件更换配件">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">更换配件三</label>
+                        <input type="text" id="repairParts3" class="form-input" placeholder="第三件更换配件">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">维修人员</label>
+                        <input type="text" id="repairPerson" class="form-input" placeholder="维修人员姓名">
+                    </div>
+                </div>
                 <div class="form-group">
-                    <label class="form-label">更换配件</label>
-                    <input type="text" id="repairParts" class="form-input" placeholder="如：透析器、管路">
+                    <label class="form-label">维修处理</label>
+                    <textarea id="repairAction" class="form-input" rows="3" placeholder="详细记录维修处理过程..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -2706,17 +2960,6 @@
                 coreSuccess = true;
                 showToast('核心数据加载完成', 'success');
                 
-                // ===== 核心数据到齐，先渲染仪表盘和表格 =====
-                updateDeviceSelects();
-                fillMonthSelect();
-                updateStats();
-                renderRepairTrendChart();
-                renderFaultTypeChart();
-                renderRecentRepairs();
-                renderDeviceBoard();
-                renderWorkLogTable();
-                renderRepairTable();
-                
                 // ===== 第2组：QC、维护、设备（逐个加载避免超时） =====
                 showToast('正在加载QC和维护数据...', 'default');
                 try {
@@ -2776,14 +3019,23 @@
                     }
                 });
                 
-                // ===== 渲染第2组数据相关页面 =====
+                // ===== 渲染页面 =====
+                updateDeviceSelects();
+                fillMonthSelect();
+                updateStats();
+                renderRepairTrendChart();
+                renderFaultTypeChart();
+                renderRecentRepairs();
+                renderQCOverview();
+                renderDeviceBoard();
+                renderWorkLogTable();
+                renderRepairTable();
                 renderQCTable();
+                renderAreaTabs();
+                renderAreaSummary();
                 renderDeviceCards();
                 renderMaintenanceTable();
                 renderWaterTable();
-                // 刷新设备看板（用最新的设备数据）
-                renderDeviceBoard();
-                updateStats();
                 
                 // 显示最终提示
                 if (partialFailure) {
@@ -2849,7 +3101,7 @@
         function renderRepairTrendChart() {
             const ctx = $('repairTrendChart').getContext('2d');
             const days = [];
-            for (let i = 29; i >= 0; i--) {
+            for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 days.push(d.toISOString().split('T')[0]);
@@ -2861,7 +3113,7 @@
             window.repairTrendChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: days.map(d => { const parts = d.slice(5).split('-'); return parts[0] + '/' + parts[1]; }),
+                    labels: days.map(d => d.slice(5).replace('-', '/')),
                     datasets: [{
                         label: '维修次数',
                         data: counts,
@@ -2944,6 +3196,8 @@
         // ====== 最近维修记录 ======
         function renderRecentRepairs() {
             const container = $('recentRepairs');
+            if (!container) return;
+            
             const recent = [...repairItems]
                 .filter(r => r.repair_date)
                 .sort((a, b) => (b.repair_date || '').localeCompare(a.repair_date || ''))
@@ -2966,6 +3220,94 @@
                             <div class="record-meta">${r.repair_date || ''} · ${r.fault_desc || '无描述'}</div>
                         </div>
                         <span class="record-status ${status}">${r.result || '处理中'}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ====== 质控检测状态动态渲染 ======
+        function renderQCOverview() {
+            const container = $('qcOverview');
+            if (!container) return;
+            
+            // 计算细菌检测合格率
+            const bacteriaTests = qcRecords.filter(r => r.test_type && r.test_type.includes('细菌'));
+            const bacteriaQualified = bacteriaTests.filter(r => r.is_qualified === true || r.is_qualified === 1);
+            const bacteriaRate = bacteriaTests.length > 0 ? Math.round((bacteriaQualified.length / bacteriaTests.length) * 100) : 0;
+            
+            // 计算内毒素检测合格率
+            const endotoxinTests = qcRecords.filter(r => r.test_type && r.test_type.includes('内毒素'));
+            const endotoxinQualified = endotoxinTests.filter(r => r.is_qualified === true || r.is_qualified === 1);
+            const endotoxinRate = endotoxinTests.length > 0 ? Math.round((endotoxinQualified.length / endotoxinTests.length) * 100) : 0;
+            
+            // 水处理状态 - 检查最近一条日常记录
+            let waterStatus = { rate: 100, label: '正常', cls: 'ok' };
+            if (waterData.daily && waterData.daily.length > 0) {
+                const sorted = [...waterData.daily].sort((a, b) => (b.check_date || '').localeCompare(a.check_date || ''));
+                const latest = sorted[0];
+                if (latest) {
+                    // 如果有任何异常指标，降低状态
+                    const hasIssue = false; // 根据实际数据逻辑调整
+                    if (hasIssue) {
+                        waterStatus = { rate: 80, label: '待检', cls: 'warning' };
+                    }
+                }
+            }
+            
+            // 消毒记录 - 检查最近是否有消毒记录
+            let disStatus = { rate: 100, label: '正常', cls: 'ok' };
+            if (waterData.disinfection && waterData.disinfection.length > 0) {
+                const sorted = [...waterData.disinfection].sort((a, b) => (b.disinfection_date || '').localeCompare(a.disinfection_date || ''));
+                const latest = sorted[0];
+                if (latest) {
+                    const today = new Date().toISOString().split('T')[0];
+                    const daysDiff = Math.floor((new Date(today) - new Date(latest.disinfection_date)) / (1000 * 60 * 60 * 24));
+                    if (daysDiff > 7) {
+                        disStatus = { rate: 50, label: '待消毒', cls: 'overdue' };
+                    }
+                }
+            } else {
+                disStatus = { rate: 0, label: '无记录', cls: 'overdue' };
+            }
+            
+            // 设备校准状态 - 根据最近校准记录计算
+            const calibrationTests = qcRecords.filter(r => r.test_type && (r.test_type.includes('校准') || r.test_type.includes('校正')));
+            const recentMonth = new Date();
+            recentMonth.setMonth(recentMonth.getMonth() - 1);
+            const monthStr = recentMonth.toISOString().split('T')[0].substring(0, 7);
+            const recentCalibrations = calibrationTests.filter(r => r.test_date && r.test_date >= monthStr);
+            const calibrationRate = calibrationTests.length > 0 
+                ? Math.round((recentCalibrations.length / Math.max(calibrationTests.length, 1)) * 100) 
+                : 60;
+            
+            const items = [
+                { name: '透析液质量', rate: bacteriaRate, label: bacteriaRate >= 95 ? '合格' : '待检', cls: bacteriaRate >= 95 ? 'ok' : (bacteriaRate >= 80 ? 'warning' : 'overdue') },
+                { name: '设备校准', rate: calibrationRate, label: calibrationRate >= 90 ? '合格' : '待检', cls: calibrationRate >= 90 ? 'ok' : (calibrationRate >= 60 ? 'warning' : 'overdue') },
+                { name: '水处理系统', rate: waterStatus.rate, label: waterStatus.label, cls: waterStatus.cls },
+                { name: '消毒记录', rate: disStatus.rate, label: disStatus.label, cls: disStatus.cls }
+            ];
+            
+            const circumference = 2 * Math.PI * 32; // 201
+            
+            container.innerHTML = items.map(item => {
+                const offset = circumference * (1 - item.rate / 100);
+                return `
+                    <div class="qc-item">
+                        <div class="qc-item-header">
+                            <span class="qc-item-name">${item.name}</span>
+                            <span class="qc-item-status ${item.cls}">${item.label}</span>
+                        </div>
+                        <div class="qc-ring-progress">
+                            <svg width="80" height="80">
+                                <circle class="qc-ring-bg" cx="40" cy="40" r="32"/>
+                                <circle class="qc-ring-fill ${item.cls}" cx="40" cy="40" r="32" 
+                                    stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+                            </svg>
+                            <div class="qc-ring-text">
+                                <div class="qc-ring-percent">${item.rate}%</div>
+                                <div class="qc-ring-label">${item.label}</div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -3095,19 +3437,27 @@
             
             const tbody = $('repairTableBody');
             if (pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><span class="material-icons-round">build</span><p>暂无维修记录</p></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="empty-state"><span class="material-icons-round">build</span><p>暂无维修记录</p></td></tr>`;
             } else {
                 tbody.innerHTML = pageData.map(r => {
                     const status = r.result === '已修复' ? 'success' : (r.result === '处理中' ? 'warning' : 'danger');
+                    // 设备详情显示（点击可查看完整信息）
+                    const deviceDetail = `<a href="#" onclick="event.preventDefault();showDeviceDetail('${r.device_id}')" class="device-link"><strong>${r.device_id || '-'}</strong></a>`;
+                    // 故障描述（过长截断）
+                    const faultDesc = r.fault_desc ? (r.fault_desc.length > 20 ? r.fault_desc.substring(0, 20) + '...' : r.fault_desc) : '-';
                     return `
                         <tr>
                             <td>${r.repair_date || '-'}</td>
-                            <td><strong>${r.device_id || '-'}</strong></td>
+                            <td>${deviceDetail}</td>
                             <td><span class="badge badge-info">${r.fault_type || '-'}</span></td>
-                            <td>${r.fault_desc || '-'}</td>
+                            <td title="${r.fault_desc || ''}">${faultDesc}</td>
                             <td>${r.parts_replaced || '-'}</td>
+                            <td class="repair-col-extra">${r.parts_replaced_2 || '-'}</td>
+                            <td class="repair-col-extra">${r.parts_replaced_3 || '-'}</td>
+                            <td class="repair-col-extra">${r.repair_person || '-'}</td>
                             <td><span class="badge badge-${status}">${r.result || '处理中'}</span></td>
                             <td>
+                                <button class="btn-icon" onclick="viewRepairDetail('${r.repair_id}')" title="查看详情"><span class="material-icons-round">visibility</span></button>
                                 <button class="btn-icon" onclick="editRepair('${r.repair_id}')" title="编辑"><span class="material-icons-round">edit</span></button>
                                 <button class="btn-icon danger" onclick="confirmDelete('repair', '${r.repair_id}')" title="删除"><span class="material-icons-round">delete</span></button>
                             </td>
@@ -3190,6 +3540,135 @@
             return 'normal';  // 无近期维修-绿色
         }
         
+        let currentAreaTab = 'all';
+        
+        function renderAreaTabs() {
+            const container = $('areaTabs');
+            if (!container) return;
+            
+            // 按区分组统计
+            const areaGroups = {};
+            devices.forEach(d => {
+                const areaNum = d.area_bed ? d.area_bed.split('-')[0] : '00';
+                if (!areaGroups[areaNum]) areaGroups[areaNum] = [];
+                areaGroups[areaNum].push(d);
+            });
+            
+            const sortedAreas = Object.keys(areaGroups).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            let html = `<button class="area-tab-btn ${currentAreaTab === 'all' ? 'active' : ''}" onclick="switchAreaTab('all')">
+                全部<span class="area-tab-count">${devices.length}台</span>
+            </button>`;
+            
+            sortedAreas.forEach(areaNum => {
+                const count = areaGroups[areaNum].length;
+                html += `<button class="area-tab-btn ${currentAreaTab === areaNum ? 'active' : ''}" onclick="switchAreaTab('${areaNum}')">
+                    第${areaNum}区<span class="area-tab-count">${count}台</span>
+                </button>`;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function switchAreaTab(areaNum) {
+            currentAreaTab = areaNum;
+            renderAreaTabs();
+            
+            const summaryGrid = $('areaSummaryGrid');
+            const devicesSection = $('areaDevicesSection');
+            const detailPanel = $('deviceDetailPanel');
+            
+            // 关闭详情面板
+            if (detailPanel) detailPanel.style.display = 'none';
+            
+            if (areaNum === 'all') {
+                // 显示概要视图
+                summaryGrid.style.display = 'grid';
+                devicesSection.style.display = 'none';
+                renderAreaSummary();
+            } else {
+                // 显示选中区的设备列表
+                summaryGrid.style.display = 'none';
+                devicesSection.style.display = 'block';
+                $('currentAreaTitle').textContent = `第${areaNum}区设备`;
+                renderAreaDevices(areaNum);
+            }
+        }
+        
+        function renderAreaSummary() {
+            const container = $('areaSummaryGrid');
+            if (!container) return;
+            
+            // 按区分组
+            const areaGroups = {};
+            devices.forEach(d => {
+                const areaNum = d.area_bed ? d.area_bed.split('-')[0] : '00';
+                if (!areaGroups[areaNum]) areaGroups[areaNum] = [];
+                areaGroups[areaNum].push(d);
+            });
+            
+            const sortedAreas = Object.keys(areaGroups).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            container.innerHTML = sortedAreas.map(areaNum => {
+                const areaDevices = areaGroups[areaNum];
+                const normalCount = areaDevices.filter(d => getDeviceMaintenanceStatus(d.device_id) === 'normal').length;
+                const maintenanceCount = areaDevices.filter(d => getDeviceMaintenanceStatus(d.device_id) === 'maintenance').length;
+                const faultCount = areaDevices.filter(d => getDeviceMaintenanceStatus(d.device_id) === 'fault').length;
+                
+                return `
+                    <div class="area-summary-card" onclick="switchAreaTab('${areaNum}')">
+                        <div class="area-summary-header">
+                            <span class="area-summary-title">第${areaNum}区</span>
+                            <span class="area-summary-count">${areaDevices.length}台</span>
+                        </div>
+                        <div class="area-summary-stats">
+                            <div class="area-summary-stat">
+                                <span class="area-summary-dot normal"></span>
+                                <span style="color:var(--success)">${normalCount}</span>
+                            </div>
+                            <div class="area-summary-stat">
+                                <span class="area-summary-dot maintenance"></span>
+                                <span style="color:var(--warning)">${maintenanceCount}</span>
+                            </div>
+                            <div class="area-summary-stat">
+                                <span class="area-summary-dot fault"></span>
+                                <span style="color:var(--danger)">${faultCount}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderAreaDevices(areaNum) {
+            const container = $('deviceCardsCompact');
+            if (!container) return;
+            
+            const areaDevices = devices.filter(d => {
+                const dAreaNum = d.area_bed ? d.area_bed.split('-')[0] : '00';
+                return dAreaNum === areaNum;
+            }).sort((a, b) => (a.device_id || '').localeCompare(b.device_id || ''));
+            
+            container.innerHTML = areaDevices.map(d => {
+                const deviceId = d.device_id || '';
+                const status = getDeviceMaintenanceStatus(deviceId);
+                const deviceType = d.device_type || '血液透析机';
+                const isActive = selectedDeviceId === deviceId;
+                
+                return `
+                    <div class="device-card-compact ${isActive ? 'active' : ''}" onclick="selectDeviceCard('${deviceId}', event)">
+                        <span class="device-card-compact-status ${status}"></span>
+                        <span class="device-card-compact-id">${deviceId}</span>
+                        <span class="device-card-compact-model">${deviceType}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function closeAreaDevices() {
+            switchAreaTab('all');
+        }
+
         function renderDeviceCards() {
             const container = $('deviceCardsGrid');
             
@@ -3251,11 +3730,152 @@
             container.innerHTML = html;
         }
 
-        function selectDeviceCard(deviceId) {
+        function selectDeviceCard(deviceId, event) {
+            if (event) event.stopPropagation();
             selectedDeviceId = selectedDeviceId === deviceId ? '' : deviceId;
             $('maintenanceDevice').value = selectedDeviceId;
-            renderDeviceCards();
+            
+            // 如果在区域设备视图中，更新选中状态
+            if (currentAreaTab !== 'all') {
+                renderAreaDevices(currentAreaTab);
+            }
+            
+            // 如果选中设备，显示详情
+            if (selectedDeviceId) {
+                showDeviceDetail(selectedDeviceId);
+            } else {
+                closeDeviceDetail();
+            }
+            
             renderMaintenanceTable();
+        }
+        
+        function showDeviceDetail(deviceId) {
+            const device = devices.find(d => d.device_id === deviceId);
+            if (!device) return;
+            
+            const detailPanel = $('deviceDetailPanel');
+            const content = $('deviceDetailContent');
+            
+            if (!detailPanel || !content) return;
+            
+            const status = getDeviceMaintenanceStatus(deviceId);
+            const deviceRepairs = repairItems.filter(r => r.device_id === deviceId);
+            const deviceMaintenance = maintenanceRecords.filter(r => r.device_id === deviceId);
+            
+            content.innerHTML = `
+                <div class="device-detail-grid">
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">设备编号</div>
+                        <div class="device-detail-value">${device.device_id || '-'}</div>
+                    </div>
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">设备类型</div>
+                        <div class="device-detail-value">${device.device_type || '血液透析机'}</div>
+                    </div>
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">制造商</div>
+                        <div class="device-detail-value">${device.manufacturer || '-'}</div>
+                    </div>
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">启用日期</div>
+                        <div class="device-detail-value">${device.start_date || '-'}</div>
+                    </div>
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">床位区域</div>
+                        <div class="device-detail-value">${device.area_bed || '-'}</div>
+                    </div>
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">当前状态</div>
+                        <div class="device-detail-value">
+                            <span class="badge badge-${status === 'normal' ? 'success' : (status === 'maintenance' ? 'warning' : 'danger')}">
+                                ${status === 'normal' ? '正常' : (status === 'maintenance' ? '待维护' : '故障')}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">维修次数</div>
+                        <div class="device-detail-value">${deviceRepairs.length}次</div>
+                    </div>
+                    <div class="device-detail-item">
+                        <div class="device-detail-label">维护次数</div>
+                        <div class="device-detail-value">${deviceMaintenance.length}次</div>
+                    </div>
+                </div>
+                
+                <!-- 维修记录 -->
+                <div class="device-detail-section">
+                    <div class="device-detail-section-title">维修记录 (${deviceRepairs.length}条)</div>
+                    ${deviceRepairs.length > 0 ? `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>故障类型</th>
+                                    <th>故障描述</th>
+                                    <th>更换配件</th>
+                                    <th>维修人员</th>
+                                    <th>维修结果</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${deviceRepairs.slice(0, 10).map(r => {
+                                    // 合并显示所有配件
+                                    const parts = [r.parts_replaced, r.parts_replaced_2, r.parts_replaced_3].filter(p => p).join(', ') || '-';
+                                    return `
+                                    <tr>
+                                        <td>${r.repair_date || '-'}</td>
+                                        <td><span class="badge badge-warning">${r.fault_type || '-'}</span></td>
+                                        <td title="${r.fault_desc || ''}">${r.fault_desc && r.fault_desc.length > 15 ? r.fault_desc.substring(0, 15) + '...' : (r.fault_desc || '-')}</td>
+                                        <td title="${parts}">${parts.length > 20 ? parts.substring(0, 20) + '...' : parts}</td>
+                                        <td>${r.repair_person || '-'}</td>
+                                        <td><span class="badge badge-${r.result === '已修复' ? 'success' : 'warning'}">${r.result || '处理中'}</span></td>
+                                    </tr>
+                                `}).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div style="padding:20px;text-align:center;color:var(--text-muted);">暂无维修记录</div>'}
+                </div>
+                
+                <!-- 维护记录 -->
+                <div class="device-detail-section">
+                    <div class="device-detail-section-title">维护记录 (${deviceMaintenance.length}条)</div>
+                    ${deviceMaintenance.length > 0 ? `
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>维护类型</th>
+                                    <th>维护内容</th>
+                                    <th>维护人员</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${deviceMaintenance.slice(0, 10).map(r => `
+                                    <tr>
+                                        <td>${r.maintenance_date || '-'}</td>
+                                        <td><span class="badge badge-info">${r.maintenance_type || '-'}</span></td>
+                                        <td>${r.description || '-'}</td>
+                                        <td>${r.maintenance_person || '-'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : '<div style="padding:20px;text-align:center;color:var(--text-muted);">暂无维护记录</div>'}
+                </div>
+            `;
+            
+            detailPanel.style.display = 'block';
+            $('deviceDetailTitle').textContent = `设备 ${deviceId} 详情`;
+            
+            // 隐藏记录表格（因为详情面板已显示）
+            $('recordsTableWrapper').style.display = 'none';
+        }
+        
+        function closeDeviceDetail() {
+            const detailPanel = $('deviceDetailPanel');
+            if (detailPanel) detailPanel.style.display = 'none';
+            $('recordsTableWrapper').style.display = 'block';
         }
 
         function filterMaintenance() {
@@ -3263,6 +3883,13 @@
             renderDeviceCards();
             maintenancePage = 1;
             renderMaintenanceTable();
+            
+            // 如果选中设备，同步显示详情
+            if (selectedDeviceId) {
+                showDeviceDetail(selectedDeviceId);
+            } else {
+                closeDeviceDetail();
+            }
         }
 
         function renderMaintenanceTable() {
@@ -3477,6 +4104,10 @@
                     $('repairResult').value = r.result || '已修复';
                     $('repairDesc').value = r.fault_desc || '';
                     $('repairParts').value = r.parts_replaced || '';
+                    $('repairParts2').value = r.parts_replaced_2 || '';
+                    $('repairParts3').value = r.parts_replaced_3 || '';
+                    $('repairPerson').value = r.repair_person || '';
+                    $('repairAction').value = r.repair_action || '';
                 }
             } else {
                 $('repairDate').value = new Date().toISOString().split('T')[0];
@@ -3485,11 +4116,48 @@
                 $('repairResult').value = '已修复';
                 $('repairDesc').value = '';
                 $('repairParts').value = '';
+                $('repairParts2').value = '';
+                $('repairParts3').value = '';
+                $('repairPerson').value = '';
+                $('repairAction').value = '';
             }
         }
 
         function closeRepairModal() { $('repairModal').classList.remove('show'); }
         function editRepair(id) { openRepairModal(id); }
+
+        // 查看维修记录详情
+        function viewRepairDetail(id) {
+            const r = repairItems.find(x => x.repair_id === id);
+            if (!r) return;
+            
+            const detailHtml = `
+                <div style="padding: 20px;">
+                    <h4 style="margin-bottom: 16px; color: var(--primary);">维修记录详情</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><strong>维修日期：</strong>${r.repair_date || '-'}</div>
+                        <div><strong>设备编号：</strong>${r.device_id || '-'}</div>
+                        <div><strong>故障类型：</strong>${r.fault_type || '-'}</div>
+                        <div><strong>处理结果：</strong>${r.result || '-'}</div>
+                        <div><strong>更换配件一：</strong>${r.parts_replaced || '-'}</div>
+                        <div><strong>更换配件二：</strong>${r.parts_replaced_2 || '-'}</div>
+                        <div><strong>更换配件三：</strong>${r.parts_replaced_3 || '-'}</div>
+                        <div><strong>维修人员：</strong>${r.repair_person || '-'}</div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <strong>故障描述：</strong>
+                        <p style="margin-top: 8px; padding: 12px; background: var(--bg); border-radius: 8px;">${r.fault_desc || '-'}</p>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <strong>维修处理：</strong>
+                        <p style="margin-top: 8px; padding: 12px; background: var(--bg); border-radius: 8px;">${r.repair_action || '-'}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 使用提示框显示详情
+            alert(detailHtml.replace(/<\/?strong>/g, '').replace(/<\/?p>/g, '\n').replace(/<[^>]+>/g, '').replace(/\n\n+/g, '\n'));
+        }
 
         async function saveRepair() {
             const id = $('editRepairId').value;
@@ -3499,7 +4167,11 @@
                 fault_type: $('repairFaultType').value,
                 result: $('repairResult').value,
                 fault_desc: $('repairDesc').value || null,
-                parts_replaced: $('repairParts').value || null
+                parts_replaced: $('repairParts').value || null,
+                parts_replaced_2: $('repairParts2').value || null,
+                parts_replaced_3: $('repairParts3').value || null,
+                repair_person: $('repairPerson').value || null,
+                repair_action: $('repairAction').value || null
             };
             
             if (!data.repair_date || !data.device_id || !data.fault_type) {
