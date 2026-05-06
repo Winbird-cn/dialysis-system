@@ -158,12 +158,14 @@
         /* 一级模块切换按钮 - 胶囊型 */
         .mod-switch {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
             padding: 12px 16px 16px;
         }
         
         .mod-btn {
             flex: 1;
+            min-width: calc(50% - 12px);
             min-height: 44px;
             padding: 10px 12px;
             font-size: 13px;
@@ -2560,8 +2562,14 @@
 var patientAssocData = [];
 
 async function engLoadPatientAssoc() {
-    var startDate = document.getElementById('paStartDate').value;
-    var endDate = document.getElementById('paEndDate').value;
+    // 设置日期默认值
+    var startDateEl = document.getElementById('paStartDate');
+    var endDateEl = document.getElementById('paEndDate');
+    if (!startDateEl.value) startDateEl.value = new Date().toISOString().split('T')[0];
+    if (!endDateEl.value) endDateEl.value = new Date().toISOString().split('T')[0];
+    
+    var startDate = startDateEl.value;
+    var endDate = endDateEl.value;
     var deviceId = document.getElementById('paDeviceFilter').value;
     
     try {
@@ -6744,8 +6752,14 @@ function toggleWaterInfo() {
 var patientAssocData = [];
 
 async function engLoadPatientAssoc() {
-    var startDate = document.getElementById('paStartDate').value;
-    var endDate = document.getElementById('paEndDate').value;
+    // 设置日期默认值
+    var startDateEl = document.getElementById('paStartDate');
+    var endDateEl = document.getElementById('paEndDate');
+    if (!startDateEl.value) startDateEl.value = new Date().toISOString().split('T')[0];
+    if (!endDateEl.value) endDateEl.value = new Date().toISOString().split('T')[0];
+    
+    var startDate = startDateEl.value;
+    var endDate = endDateEl.value;
     var deviceId = document.getElementById('paDeviceFilter').value;
     
     try {
