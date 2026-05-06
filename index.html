@@ -157,21 +157,24 @@
         
         /* 一级模块切换按钮 - 胶囊型 */
         .mod-switch {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            padding: 10px 12px 14px;
+            display: flex;
+            gap: 4px;
+            padding: 8px 10px 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .mod-btn {
-            min-height: 36px;
-            padding: 6px 6px;
-            font-size: 12px;
+            flex: 1;
+            min-height: 32px;
+            min-width: 0;
+            padding: 4px 2px;
+            font-size: 11px;
             font-weight: 600;
-            line-height: 1.2;
+            line-height: 1.1;
             color: rgba(255,255,255,0.75);
             background: rgba(255,255,255,0.12);
-            border: 1.5px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 999px;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -3347,6 +3350,7 @@ if (currentModule === 'engineer') {
 }
 
 // ====== Supabase 初始化 ======
+updateSyncStatus("offline", "📱 本地模式");
 async function initSupabase() {
 try {
                 var r = await fetch(SUPABASE_URL + '/rest/v1/work_logs?select=id&limit=1', {
@@ -6992,7 +6996,7 @@ async function deletePatientAssoc(id) {
     <div id="appHeader">
         <div class="header-top">
             <span class="header-subtitle">中山大学附属第五医院透析中心</span>
-            <span id="syncStatus">📡 初始化中...</span>
+            <span id="syncStatus">📱 本地模式</span>
         </div>
         <div class="header-title">透析工程管理系统</div>
         <div class="mod-switch">
