@@ -2505,7 +2505,253 @@
                 transform: rotate(360deg);
             }
         }
-    </style>
+    
+
+        /* ====== 患者关联页面样式 ====== */
+        .patient-assoc-page {
+            padding: 12px;
+        }
+        
+        /* 患者关联记录卡片 */
+        .pa-record-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pa-record-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .pa-record-card:active {
+            transform: scale(0.98);
+        }
+        
+        .pa-record-header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pa-record-device {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .pa-record-status {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        
+        .pa-expand-icon {
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: transform 0.2s ease;
+        }
+        
+        /* 状态标签 */
+        .record-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .record-status.success {
+            background: var(--success-bg);
+            color: var(--success-text);
+        }
+        
+        .record-status.warning {
+            background: var(--warning-bg);
+            color: var(--warning-text);
+        }
+        
+        .record-status.danger {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+        }
+        
+        /* Badge样式 */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-info { background: var(--primary-bg-light); color: var(--primary); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning-text); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger-text); }
+        
+        /* 详情展开区 */
+        .pa-record-detail {
+            display: none;
+            padding: 0 16px 16px;
+            border-top: 1px solid var(--divider);
+        }
+        
+        .pa-record-detail.show {
+            display: block;
+        }
+        
+        .history-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding-top: 12px;
+        }
+        
+        .history-grid > div {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .history-grid > div strong {
+            color: var(--text);
+        }
+        
+        /* 操作按钮 */
+        .pa-record-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--divider);
+        }
+        
+        .pa-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pa-btn-edit {
+            background: var(--primary-bg-light);
+            color: var(--primary);
+        }
+        
+        .pa-btn-delete {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+        }
+        
+        /* 日期分组 */
+        .pa-date-group {
+            margin-bottom: 16px;
+        }
+        
+        .pa-date-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        
+        .date-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .date-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--border);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .chevron {
+            font-size: 10px;
+            color: var(--text-secondary);
+            transition: transform 0.2s ease;
+        }
+        
+        .chevron.expanded {
+            transform: rotate(180deg);
+        }
+        
+        .pa-date-body {
+            padding-left: 4px;
+        }
+        
+        /* 浮动添加按钮 */
+        .pa-float-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-btn);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-float);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 24px;
+        }
+        
+        .pa-float-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 弹窗样式 */
+        .pa-modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .pa-record-card {
+                border-radius: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .pa-record-header {
+                padding: 10px 12px;
+            }
+            
+            .pa-record-detail {
+                padding: 0 12px 12px;
+            }
+            
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pa-modal-content {
+                margin: 5px;
+                border-radius: 12px;
+                padding: 16px;
+            }
+        }
+
+</style>
 </head>
 <body>
     <!-- ====== 登录页 ====== -->
@@ -2556,325 +2802,7 @@
         }
     })();
     
-// ====== 患者关联功能 ======
-var patientAssocData = [];
 
-async function engLoadPatientAssoc() {
-    // 设置日期默认值
-    var startDateEl = document.getElementById('paStartDate');
-    var endDateEl = document.getElementById('paEndDate');
-    if (!startDateEl.value) startDateEl.value = new Date().toISOString().split('T')[0];
-    if (!endDateEl.value) endDateEl.value = new Date().toISOString().split('T')[0];
-    
-    var startDate = startDateEl.value;
-    var endDate = endDateEl.value;
-    var deviceId = document.getElementById('paDeviceFilter').value;
-    
-    try {
-        var params = { pwd: SYSTEM_PWD, p_limit: 100 };
-        if (startDate) params.p_start_date = startDate;
-        if (endDate) params.p_end_date = endDate;
-        if (deviceId) params.p_device_id = deviceId;
-        
-        patientAssocData = await sbRpc('get_device_patient_events', params);
-        if (!patientAssocData) patientAssocData = [];
-        
-        // 更新设备筛选下拉
-        updatePADeviceFilter();
-        
-        // 渲染列表
-        renderPatientAssocList();
-        
-        // 更新统计
-        updatePAStats();
-    } catch (e) {
-        console.error('加载患者关联记录失败:', e);
-        showToast('加载失败', 'error');
-    }
-}
-
-function updatePADeviceFilter() {
-    var select = document.getElementById('paDeviceFilter');
-    var modalSelect = document.getElementById('paDeviceId');
-    
-    // 保留"全部设备"选项
-    var currentValue = select.value;
-    select.innerHTML = '<option value="">全部设备</option>';
-    
-    // 合并所有设备
-    var allDevices = {};
-    devices.forEach(function(d) {
-        if (d.device_id) allDevices[d.device_id] = d;
-    });
-    
-    Object.keys(allDevices).sort().forEach(function(id) {
-        var opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = id + ' (' + (allDevices[id].area || '未知') + ')';
-        select.appendChild(opt);
-    });
-    
-    select.value = currentValue;
-    
-    // 更新弹窗设备选择
-    modalSelect.innerHTML = '<option value="">请选择设备</option>';
-    Object.keys(allDevices).sort().forEach(function(id) {
-        var opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = id + ' (' + (allDevices[id].area || '未知') + ')';
-        modalSelect.appendChild(opt);
-    });
-}
-
-function updatePAStats() {
-    var total = patientAssocData.length;
-    var interrupted = 0;
-    var changed = 0;
-    
-    patientAssocData.forEach(function(r) {
-        if (r.treatment_interrupted && r.treatment_interrupted !== '未中断') interrupted++;
-        if (r.handling_method === '换机重上') changed++;
-    });
-    
-    document.getElementById('paTotalCount').textContent = total;
-    document.getElementById('paInterruptedCount').textContent = interrupted;
-    document.getElementById('paChangedCount').textContent = changed;
-}
-
-function renderPatientAssocList() {
-    var container = document.getElementById('paRecordList');
-    var emptyState = document.getElementById('paEmptyState');
-    
-    if (!patientAssocData || patientAssocData.length === 0) {
-        container.innerHTML = '';
-        emptyState.style.display = 'block';
-        return;
-    }
-    
-    emptyState.style.display = 'none';
-    
-    // 按日期分组
-    var groups = {};
-    patientAssocData.forEach(function(r) {
-        var date = r.event_date || '未知日期';
-        if (!groups[date]) groups[date] = [];
-        groups[date].push(r);
-    });
-    
-    var html = '';
-    Object.keys(groups).sort().reverse().forEach(function(date) {
-        html += '<div class="date-group">';
-        html += '<div class="date-group-header" onclick="toggleDateGroup(this)">';
-        html += '<span class="date-text">' + date + '</span>';
-        html += '<span class="date-count">' + groups[date].length + '条</span>';
-        html += '<span class="chevron">▼</span>';
-        html += '</div>';
-        html += '<div class="date-group-body" style="display:none;">';
-        
-        groups[date].forEach(function(r) {
-            var interruptedClass = '';
-            var interruptedText = r.treatment_interrupted || '未中断';
-            if (r.treatment_interrupted === '暂停后继续') {
-                interruptedClass = 'warning';
-            } else if (r.treatment_interrupted === '中断终止') {
-                interruptedClass = 'danger';
-            } else {
-                interruptedClass = 'success';
-            }
-            
-            var methodClass = '';
-            if (r.handling_method === '原机继续') methodClass = 'info';
-            else if (r.handling_method === '换机重上') methodClass = 'warning';
-            else if (r.handling_method === '终止透析') methodClass = 'danger';
-            
-            html += '<div class="compact-record" onclick="toggleRecordDetail(this, event)" style="margin-bottom:8px;">';
-            html += '<div class="record-main">';
-            html += '<div class="record-device">' + (r.device_id || '-') + ' | ' + (r.bed_number || '-') + '床 | ' + (r.patient_code || '-') + '</div>';
-            html += '<div class="record-fault">';
-            html += '<span class="record-status ' + interruptedClass + '">' + interruptedText + '</span> ';
-            if (r.handling_method) {
-                html += '<span class="badge badge-' + methodClass + '">' + r.handling_method + '</span>';
-            }
-            html += '</div>';
-            html += '</div>';
-            html += '<span class="record-expand">详情 ▼</span>';
-            html += '</div>';
-            
-            html += '<div class="record-detail">';
-            html += '<div class="history-grid">';
-            html += '<div><strong>故障阶段:</strong> ' + (r.fault_phase || '-') + '</div>';
-            html += '<div><strong>中断时长:</strong> ' + (r.interrupt_minutes ? r.interrupt_minutes + '分钟' : '-') + '</div>';
-            html += '<div><strong>并发症:</strong> ' + (r.complication || '无') + '</div>';
-            html += '<div><strong>创建时间:</strong> ' + (r.created_at ? r.created_at.substring(0, 16).replace('T', ' ') : '-') + '</div>';
-            html += '</div>';
-            if (r.remarks) {
-                html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--divider);"><strong>备注:</strong> ' + r.remarks + '</div>';
-            }
-            html += '<div class="history-actions" style="margin-top:12px;">';
-            html += '<button class="history-btn edit" onclick="openPatientAssocModal(' + r.id + ')">编辑</button>';
-            html += '<button class="history-btn delete" onclick="deletePatientAssoc(' + r.id + ')">删除</button>';
-            html += '</div>';
-            html += '</div>';
-        });
-        
-        html += '</div></div>';
-    });
-    
-    container.innerHTML = html;
-}
-
-function toggleDateGroup(header) {
-    var body = header.nextElementSibling;
-    var chevron = header.querySelector('.chevron');
-    if (body.style.display === 'none') {
-        body.style.display = 'block';
-        chevron.classList.add('expanded');
-    } else {
-        body.style.display = 'none';
-        chevron.classList.remove('expanded');
-    }
-}
-
-function toggleRecordDetail(record, event) {
-    event.stopPropagation();
-    var detail = record.nextElementSibling;
-    var expand = record.querySelector('.record-expand');
-    if (detail.classList.contains('show')) {
-        detail.classList.remove('show');
-        expand.textContent = '详情 ▼';
-    } else {
-        detail.classList.add('show');
-        expand.textContent = '收起 ▲';
-    }
-}
-
-function openPatientAssocModal(id) {
-    event.stopPropagation();
-    var modal = document.getElementById('patientAssocModal');
-    var form = document.getElementById('paForm');
-    var title = document.getElementById('paModalTitle');
-    
-    form.reset();
-    document.getElementById('paEditId').value = '';
-    document.getElementById('paInterruptMinutesGroup').style.display = 'none';
-    
-    // 设置默认日期为今天
-    var today = new Date().toISOString().substring(0, 10);
-    document.getElementById('paEventDate').value = today;
-    
-    if (id) {
-        // 编辑模式
-        title.textContent = '编辑患者关联';
-        var record = patientAssocData.find(function(r) { return r.id === id; });
-        if (record) {
-            document.getElementById('paEditId').value = record.id;
-            document.getElementById('paEventDate').value = record.event_date || '';
-            document.getElementById('paDeviceId').value = record.device_id || '';
-            document.getElementById('paBedNumber').value = record.bed_number || '';
-            document.getElementById('paPatientCode').value = record.patient_code || '';
-            document.getElementById('paFaultPhase').value = record.fault_phase || '';
-            document.getElementById('paInterrupted').value = record.treatment_interrupted || '';
-            document.getElementById('paInterruptMinutes').value = record.interrupt_minutes || '';
-            document.getElementById('paHandlingMethod').value = record.handling_method || '';
-            document.getElementById('paComplication').value = record.complication || '';
-            document.getElementById('paRemarks').value = record.remarks || '';
-            
-            toggleInterruptMinutes();
-        }
-    } else {
-        title.textContent = '新增患者关联';
-    }
-    
-    modal.classList.add('show');
-}
-
-function closePatientAssocModal() {
-    document.getElementById('patientAssocModal').classList.remove('show');
-}
-
-function toggleInterruptMinutes() {
-    var interrupted = document.getElementById('paInterrupted').value;
-    var group = document.getElementById('paInterruptMinutesGroup');
-    if (interrupted === '暂停后继续' || interrupted === '中断终止') {
-        group.style.display = 'block';
-    } else {
-        group.style.display = 'none';
-        document.getElementById('paInterruptMinutes').value = '';
-    }
-}
-
-async function engSavePatientAssoc() {
-    var editId = document.getElementById('paEditId').value;
-    var eventDate = document.getElementById('paEventDate').value;
-    var deviceId = document.getElementById('paDeviceId').value;
-    var bedNumber = document.getElementById('paBedNumber').value;
-    var patientCode = document.getElementById('paPatientCode').value;
-    var faultPhase = document.getElementById('paFaultPhase').value;
-    var interrupted = document.getElementById('paInterrupted').value;
-    var interruptMinutes = document.getElementById('paInterruptMinutes').value;
-    var handlingMethod = document.getElementById('paHandlingMethod').value;
-    var complication = document.getElementById('paComplication').value;
-    var remarks = document.getElementById('paRemarks').value;
-    
-    if (!eventDate) {
-        showToast('请选择日期', 'warning');
-        return;
-    }
-    if (!deviceId) {
-        showToast('请选择设备', 'warning');
-        return;
-    }
-    
-    var eventData = {
-        device_id: deviceId,
-        event_date: eventDate,
-        bed_number: bedNumber,
-        patient_code: patientCode,
-        fault_phase: faultPhase,
-        treatment_interrupted: interrupted,
-        interrupt_minutes: interruptMinutes ? parseInt(interruptMinutes) : null,
-        handling_method: handlingMethod,
-        complication: complication,
-        remarks: remarks
-    };
-    
-    try {
-        showToast('保存中...', 'info');
-        
-        if (editId) {
-            // 更新需要先删除再插入
-            await sbRpc('delete_device_patient_event', { pwd: SYSTEM_PWD, p_id: parseInt(editId) });
-        }
-        
-        await sbRpc('insert_device_patient_event', {
-            pwd: SYSTEM_PWD,
-            event_data: eventData
-        });
-        
-        showToast('保存成功', 'success');
-        closePatientAssocModal();
-        engLoadPatientAssoc();
-    } catch (e) {
-        console.error('保存失败:', e);
-        showToast('保存失败: ' + e.message, 'error');
-    }
-}
-
-async function deletePatientAssoc(id) {
-    event.stopPropagation();
-    if (!confirm('确定要删除这条患者关联记录吗？')) return;
-    
-    try {
-        await sbRpc('delete_device_patient_event', { pwd: SYSTEM_PWD, p_id: id });
-        showToast('删除成功', 'success');
-        engLoadPatientAssoc();
-    } catch (e) {
-        console.error('删除失败:', e);
-        showToast('删除失败', 'error');
-    }
-}
-
-</script>
 
 <script>
 // ====== 全局配置 ======
@@ -3338,7 +3266,7 @@ try {
                 });
                 var localLogs = (logs || []).map(function(log) {
                     var logRepairs = repairMap[log.id] || repairDateMap[log.date] || [];
-                    return {id: log.local_id || log.id, date: log.date, runningDevices: log.running_devices || 0, inspectionCount: log.inspection_count || 0, selfCheckAbnormal: log.self_check_abnormal || 0, repairCount: log.repair_count || 0, midTreatmentFaults: log.mid_treatment_faults || 0, treatmentInterruptions: log.treatment_interruptions || 0, patientSwitch: log.patient_switch || 0, forcedOffline: log.forced_offline || 0, patientWaitTime: log.patient_wait_time || 0, notes: log.notes || '', repairs: logRepairs, createdAt: log.created_at || '', synced: true};
+                    return {id: log.local_id || log.id, date: log.date, runningDevices: log.running_devices || 0, inspectionCount: log.inspection_count || 0, selfCheckAbnormal: log.self_check_abnormal || 0, repairCount: log.repair_count || 0, midTreatmentFaults: log.mid_treatment_faults || 0,  notes: log.notes || '', repairs: logRepairs, createdAt: log.created_at || '', synced: true};
                 });
                 engSaveLogs(localLogs);
                 engRenderHistory();
@@ -3592,10 +3520,7 @@ try {
                         self_check_abnormal: log.selfCheckAbnormal,
                         repair_count: log.repairCount,
                         mid_treatment_faults: log.midTreatmentFaults,
-                        treatment_interruptions: log.treatmentInterruptions,
-                        patient_switch: log.patientSwitch,
-                        forced_offline: log.forcedOffline,
-                        patient_wait_time: log.patientWaitTime,
+
                         notes: log.notes || null
                     }
                 });
@@ -3649,10 +3574,7 @@ try {
                 selfCheckAbnormal: parseInt(document.getElementById('engSelfCheckAbnormal').value) || 0,
                 repairCount: parseInt(document.getElementById('engRepairCount').value) || 0,
                 midTreatmentFaults: parseInt(document.getElementById('engMidTreatmentFaults').value) || 0,
-                treatmentInterruptions: parseInt(document.getElementById('engTreatmentInterruptions').value) || 0,
-                patientSwitch: parseInt(document.getElementById('engPatientSwitch').value) || 0,
-                forcedOffline: parseInt(document.getElementById('engForcedOffline').value) || 0,
-                patientWaitTime: parseInt(document.getElementById('engPatientWaitTime').value) || 0,
+
                 repairs: engGetRepairItems(),
                 notes: document.getElementById('engNotes').value.trim(),
                 createdAt: new Date().toISOString(),
@@ -3689,8 +3611,7 @@ try {
             var today = new Date().toISOString().split('T')[0];
             document.getElementById('engLogDate').value = today;
             ['engRunningDevices', 'engInspectionCount', 'engSelfCheckAbnormal', 
-             'engRepairCount', 'engMidTreatmentFaults', 'engTreatmentInterruptions',
-             'engPatientSwitch', 'engForcedOffline', 'engPatientWaitTime'].forEach(function(id) {
+             'engRepairCount', 'engMidTreatmentFaults'].forEach(function(id) {
                 document.getElementById(id).value = '';
             });
             document.getElementById('engNotes').value = '';
@@ -3770,7 +3691,7 @@ try {
                     isExpanded = false;
                 }
                 
-                html += '<div class="date-group">';
+                html += '<div class="pa-date-group">';
                 html += '<div class="date-group-header" onclick="engToggleDateGroup(\'' + date + '\')">';
                 html += '<span class="date-text">📅 ' + engFormatDate(date) + '</span>';
                 html += '<span style="display:flex;align-items:center;gap:8px">';
@@ -3796,13 +3717,13 @@ try {
                             var partsDisplay = allParts.length > 0 ? allParts.join('、') : '';
                             
                             html += '<div class="compact-record" onclick="engToggleRecordDetail(\'' + recordId + '\', event)">';
-                            html += '<div class="record-main">';
-                            html += '<div class="record-device">' + (r.deviceId ? '<span class="device-id-link" onclick="showDeviceInfo(\'' + r.deviceId + '\'); event.stopPropagation();">' + r.deviceId + '</span>' : '未指定') + '</div>';
-                            html += '<div class="record-fault">' + (r.faultType || '') + (partsDisplay ? ' → ' + partsDisplay : '') + '</div>';
+                            html += '<div class="pa-record-header">';
+                            html += '<div class="pa-record-device">' + (r.deviceId ? '<span class="device-id-link" onclick="showDeviceInfo(\'' + r.deviceId + '\'); event.stopPropagation();">' + r.deviceId + '</span>' : '未指定') + '</div>';
+                            html += '<div class="pa-record-status">' + (r.faultType || '') + (partsDisplay ? ' → ' + partsDisplay : '') + '</div>';
                             html += '</div>';
                             html += '<div class="record-right">';
                             html += '<span class="record-status ' + statusClass + '">' + statusText + '</span>';
-                            html += '<span class="record-expand">▶</span>';
+                            html += '<span class="pa-expand-icon">▶</span>';
                             html += '</div>';
                             html += '</div>';
                             
@@ -3811,32 +3732,31 @@ try {
                             html += '<div>运行设备: ' + (log.runningDevices || 0) + '台</div>';
                             html += '<div>巡检: ' + (log.inspectionCount || 0) + '台</div>';
                             html += '<div>报修: ' + (log.repairCount || 0) + '次</div>';
-                            html += '<div>中断: ' + (log.treatmentInterruptions || 0) + '次</div>';
-                            html += '</div>';
+    html += '</div>';
                             if (partsDisplay) html += '<div style="margin-bottom:4px;"><strong>更换配件:</strong> ' + engEscapeHtml(partsDisplay) + '</div>';
                             if (r.repairPerson) html += '<div style="margin-bottom:4px;"><strong>维修人员:</strong> ' + engEscapeHtml(r.repairPerson) + '</div>';
                             if (r.repairAction) html += '<div style="margin-bottom:4px;"><strong>维修处理:</strong> ' + engEscapeHtml(r.repairAction) + '</div>';
                             if (r.faultDesc) html += '<div style="margin-bottom:4px;">故障描述: ' + engEscapeHtml(r.faultDesc) + '</div>';
                             if (log.notes) html += '<div style="margin-bottom:4px;">备注: ' + engEscapeHtml(log.notes) + '</div>';
                             html += '<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">';
-                            html += '<button class="history-btn edit" style="flex:1;min-width:45%;padding:6px;font-size:12px;" onclick="engEditRepairItem(' + log.id + ',' + rIdx + ')">✏️ 编辑维修</button>';
-                            html += '<button class="history-btn delete" style="flex:1;min-width:45%;padding:6px;font-size:12px;" onclick="engDeleteRepairItem(' + log.id + ',' + rIdx + ')">🗑️ 删除维修</button>';
+                            html += '<button class="pa-btn pa-btn-edit" style="flex:1;min-width:45%;padding:6px;font-size:12px;" onclick="engEditRepairItem(' + log.id + ',' + rIdx + ')">✏️ 编辑维修</button>';
+                            html += '<button class="pa-btn pa-btn-delete" style="flex:1;min-width:45%;padding:6px;font-size:12px;" onclick="engDeleteRepairItem(' + log.id + ',' + rIdx + ')">🗑️ 删除维修</button>';
                             html += '</div>';
                             html += '<div style="display:flex;gap:8px;margin-top:4px;">';
-                            html += '<button class="history-btn edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑日志</button>';
-                            html += '<button class="history-btn delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除日志</button>';
+                            html += '<button class="pa-btn pa-btn-edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑日志</button>';
+                            html += '<button class="pa-btn pa-btn-delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除日志</button>';
                             html += '</div></div>';
                         });
                     } else {
                         var recordId = log.id + '_0';
                         var isRecordExpanded = engExpandedRecords[recordId];
                         html += '<div class="compact-record" onclick="engToggleRecordDetail(\'' + recordId + '\', event)">';
-                        html += '<div class="record-main">';
-                        html += '<div class="record-device">' + engFormatDate(log.date) + ' 日常记录</div>';
-                        html += '<div class="record-fault">运行' + (log.runningDevices || 0) + '台 · 报修' + (log.repairCount || 0) + '次 · 中断' + (log.treatmentInterruptions || 0) + '次</div>';
+                        html += '<div class="pa-record-header">';
+                        html += '<div class="pa-record-device">' + engFormatDate(log.date) + ' 日常记录</div>';
+                        html += '<div class="pa-record-status">运行' + (log.runningDevices || 0) + '台 · 报修' + (log.repairCount || 0) + '次 </div>';
                         html += '</div>';
                         html += '<div class="record-right">';
-                        html += '<span class="record-expand">▶</span>';
+                        html += '<span class="pa-expand-icon">▶</span>';
                         html += '</div>';
                         html += '</div>';
                         
@@ -3847,14 +3767,11 @@ try {
                         html += '<div>自检异常: ' + (log.selfCheckAbnormal || 0) + '台</div>';
                         html += '<div>报修: ' + (log.repairCount || 0) + '次</div>';
                         html += '<div>治疗中故障: ' + (log.midTreatmentFaults || 0) + '次</div>';
-                        html += '<div>中断: ' + (log.treatmentInterruptions || 0) + '次</div>';
-                        html += '<div>转机: ' + (log.patientSwitch || 0) + '次</div>';
-                        html += '<div>下机: ' + (log.forcedOffline || 0) + '人次</div>';
-                        html += '</div>';
+html += '</div>';
                         if (log.notes) html += '<div style="margin-bottom:4px;">备注: ' + engEscapeHtml(log.notes) + '</div>';
                         html += '<div style="display:flex;gap:8px;margin-top:4px;">';
-                        html += '<button class="history-btn edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑日志</button>';
-                        html += '<button class="history-btn delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除日志</button>';
+                        html += '<button class="pa-btn pa-btn-edit" style="flex:1;padding:6px;font-size:12px;" onclick="engEditLog(' + log.id + ')">✏️ 编辑日志</button>';
+                        html += '<button class="pa-btn pa-btn-delete" style="flex:1;padding:6px;font-size:12px;" onclick="engDeleteLog(' + log.id + ')">🗑️ 删除日志</button>';
                         html += '</div></div>';
                     }
                 });
@@ -3924,7 +3841,7 @@ try {
             currentEditLogId = id;
             currentEditingRepairItem = false;
             
-            var body = '<input type="hidden" id="editLogId" value="' + log.id + '"><div class="card"><div class="card-title">📅 基本信息</div><div class="form-group"><label class="form-label">日期</label><input type="date" id="editLogDate" class="form-input" value="' + log.date + '"></div></div><div class="card"><div class="card-title">⚙️ 设备运行</div><div class="form-row"><div class="form-group"><label class="form-label">当日运行设备数</label><input type="number" id="editRunningDevices" class="form-input" value="' + (log.runningDevices || '') + '"></div><div class="form-group"><label class="form-label">日常巡检台数</label><input type="number" id="editInspectionCount" class="form-input" value="' + (log.inspectionCount || '') + '"></div></div></div><div class="card"><div class="card-title">🔧 故障维修</div><div class="form-row"><div class="form-group"><label class="form-label">故障报修次数</label><input type="number" id="editRepairCount" class="form-input" value="' + (log.repairCount || '') + '"></div><div class="form-group"><label class="form-label">治疗中故障次数</label><input type="number" id="editMidTreatmentFaults" class="form-input" value="' + (log.midTreatmentFaults || '') + '"></div></div><div class="form-row"><div class="form-group"><label class="form-label">导致治疗中断次数</label><input type="number" id="editTreatmentInterruptions" class="form-input" value="' + (log.treatmentInterruptions || '') + '"></div><div class="form-group"><label class="form-label">患者转机台次</label><input type="number" id="editPatientSwitch" class="form-input" value="' + (log.patientSwitch || '') + '"></div></div></div><div class="card"><div class="card-title">📝 备注</div><div class="form-group"><textarea id="editNotes" class="form-input" rows="3">' + (log.notes || '') + '</textarea></div></div>';
+            var body = '<input type="hidden" id="editLogId" value="' + log.id + '"><div class="card"><div class="card-title">📅 基本信息</div><div class="form-group"><label class="form-label">日期</label><input type="date" id="editLogDate" class="form-input" value="' + log.date + '"></div></div><div class="card"><div class="card-title">⚙️ 设备运行</div><div class="form-row"><div class="form-group"><label class="form-label">当日运行设备数</label><input type="number" id="editRunningDevices" class="form-input" value="' + (log.runningDevices || '') + '"></div><div class="form-group"><label class="form-label">日常巡检台数</label><input type="number" id="editInspectionCount" class="form-input" value="' + (log.inspectionCount || '') + '"></div></div></div><div class="card"><div class="card-title">🔧 故障维修</div><div class="form-row"><div class="form-group"><label class="form-label">故障报修次数</label><input type="number" id="editRepairCount" class="form-input" value="' + (log.repairCount || '') + '"></div><div class="form-group"><label class="form-label">治疗中故障次数</label><input type="number" id="editMidTreatmentFaults" class="form-input" value="' + (log.midTreatmentFaults || '') + '"></div></div></div><div class="card"><div class="card-title">📝 备注</div><div class="form-group"><textarea id="editNotes" class="form-input" rows="3">' + (log.notes || '') + '</textarea></div></div>';
             
             document.getElementById('editModalBody').innerHTML = body;
             document.getElementById('editModal').classList.add('show');
@@ -3955,8 +3872,7 @@ try {
                 log.inspectionCount = parseInt(document.getElementById('editInspectionCount').value) || 0;
                 log.repairCount = parseInt(document.getElementById('editRepairCount').value) || 0;
                 log.midTreatmentFaults = parseInt(document.getElementById('editMidTreatmentFaults').value) || 0;
-                log.treatmentInterruptions = parseInt(document.getElementById('editTreatmentInterruptions').value) || 0;
-                log.patientSwitch = parseInt(document.getElementById('editPatientSwitch').value) || 0;
+
                 log.notes = document.getElementById('editNotes').value.trim();
                 
                 engSaveLogs(logs);
@@ -3975,10 +3891,7 @@ try {
                                     self_check_abnormal: log.selfCheckAbnormal,
                                     repair_count: log.repairCount,
                                     mid_treatment_faults: log.midTreatmentFaults,
-                                    treatment_interruptions: log.treatmentInterruptions,
-                                    patient_switch: log.patientSwitch,
-                                    forced_offline: log.forcedOffline,
-                                    patient_wait_time: log.patientWaitTime,
+
                                     notes: log.notes || null
                                 }
                             });
@@ -4891,14 +4804,13 @@ try {
                 logs = (logs || []).filter(function(log) { return log.date >= startStr && log.date <= endStr; });
                 
                 var mappedLogs = logs.map(function(log) {
-                    return {id: log.local_id || log.id, date: log.date, runningDevices: log.running_devices || 0, inspectionCount: log.inspection_count || 0, selfCheckAbnormal: log.self_check_abnormal || 0, repairCount: log.repair_count || 0, midTreatmentFaults: log.mid_treatment_faults || 0, treatmentInterruptions: log.treatment_interruptions || 0, patientSwitch: log.patient_switch || 0, forcedOffline: log.forced_offline || 0, patientWaitTime: log.patient_wait_time || 0, notes: log.notes || '', repairs: repairMap[log.id] || [], createdAt: log.created_at || '', synced: true};
+                    return {id: log.local_id || log.id, date: log.date, runningDevices: log.running_devices || 0, inspectionCount: log.inspection_count || 0, selfCheckAbnormal: log.self_check_abnormal || 0, repairCount: log.repair_count || 0, midTreatmentFaults: log.mid_treatment_faults || 0,  notes: log.notes || '', repairs: repairMap[log.id] || [], createdAt: log.created_at || '', synced: true};
                 });
                 
                 mappedLogs = mappedLogs.filter(function(log) { return (log.repairs || []).length > 0; });
                 
                 var totalFaults = mappedLogs.reduce(function(sum, log) { return sum + (log.repairCount || 0); }, 0);
-                var totalInterruptions = mappedLogs.reduce(function(sum, log) { return sum + (log.treatmentInterruptions || 0); }, 0);
-                
+                                
                 var deviceSet = {};
                 var partsMap = {};
                 mappedLogs.forEach(function(log) {
@@ -6508,7 +6420,7 @@ function qcRenderHistory() {
     visibleDates.forEach(function(date) {
         var dayRecords = grouped[date];
         
-        html += '<div class="date-group">';
+        html += '<div class="pa-date-group">';
         html += '<div class="date-group-header" onclick="qcToggleDateGroup(\'' + date + '\')">';
         html += '<span class="date-text">📅 ' + date + '</span>';
         html += '<span style="display:flex;align-items:center;gap:8px;">';
@@ -6526,9 +6438,9 @@ function qcRenderHistory() {
             var deviceLabel = r.device_id ? ' | ' + r.device_id : '';
             
             html += '<div class="compact-record">';
-            html += '<div class="record-main">';
-            html += '<div class="record-device">' + testTypeLabel + ' - ' + sampleLabel + '<span style="color:var(--qc-primary);">' + deviceLabel + '</span></div>';
-            html += '<div class="record-fault">' + (r.test_value || '无具体数值') + '</div>';
+            html += '<div class="pa-record-header">';
+            html += '<div class="pa-record-device">' + testTypeLabel + ' - ' + sampleLabel + '<span style="color:var(--qc-primary);">' + deviceLabel + '</span></div>';
+            html += '<div class="pa-record-status">' + (r.test_value || '无具体数值') + '</div>';
             html += '</div>';
             html += '<div class="record-right">';
             html += '<span class="record-status ' + statusClass + '">' + statusText + '</span>';
@@ -6783,6 +6695,7 @@ async function engLoadPatientAssoc() {
     }
 }
 
+// 更新患者关联设备下拉选项（按区分组）
 function updatePADeviceFilter() {
     var select = document.getElementById('paDeviceFilter');
     var modalSelect = document.getElementById('paDeviceId');
@@ -6791,29 +6704,13 @@ function updatePADeviceFilter() {
     var currentValue = select.value;
     select.innerHTML = '<option value="">全部设备</option>';
     
-    // 合并所有设备
-    var allDevices = {};
-    devices.forEach(function(d) {
-        if (d.device_id) allDevices[d.device_id] = d;
-    });
-    
-    Object.keys(allDevices).sort().forEach(function(id) {
-        var opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = id + ' (' + (allDevices[id].area || '未知') + ')';
-        select.appendChild(opt);
-    });
-    
+    // 使用deviceOptionsHTML（与维修记录一样的设备列表）
+    var optionsHtml = deviceOptionsHTML.replace('<option value="">选择设备</option>', '');
+    select.innerHTML = '<option value="">全部设备</option>' + optionsHtml;
     select.value = currentValue;
     
-    // 更新弹窗设备选择
-    modalSelect.innerHTML = '<option value="">请选择设备</option>';
-    Object.keys(allDevices).sort().forEach(function(id) {
-        var opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = id + ' (' + (allDevices[id].area || '未知') + ')';
-        modalSelect.appendChild(opt);
-    });
+    // 更新弹窗设备选择（使用相同列表）
+    modalSelect.innerHTML = '<option value="">请选择设备</option>' + optionsHtml;
 }
 
 function updatePAStats() {
@@ -6853,13 +6750,13 @@ function renderPatientAssocList() {
     
     var html = '';
     Object.keys(groups).sort().reverse().forEach(function(date) {
-        html += '<div class="date-group">';
-        html += '<div class="date-group-header" onclick="toggleDateGroup(this)">';
+        html += '<div class="pa-date-group">';
+        html += '<div class="pa-date-header" onclick="toggleDateGroup(this)">';
         html += '<span class="date-text">' + date + '</span>';
         html += '<span class="date-count">' + groups[date].length + '条</span>';
         html += '<span class="chevron">▼</span>';
         html += '</div>';
-        html += '<div class="date-group-body" style="display:none;">';
+        html += '<div class="pa-date-body" style="display:none;">';
         
         groups[date].forEach(function(r) {
             var interruptedClass = '';
@@ -6877,20 +6774,20 @@ function renderPatientAssocList() {
             else if (r.handling_method === '换机重上') methodClass = 'warning';
             else if (r.handling_method === '终止透析') methodClass = 'danger';
             
-            html += '<div class="compact-record" onclick="toggleRecordDetail(this, event)" style="margin-bottom:8px;">';
-            html += '<div class="record-main">';
-            html += '<div class="record-device">' + (r.device_id || '-') + ' | ' + (r.bed_number || '-') + '床 | ' + (r.patient_code || '-') + '</div>';
-            html += '<div class="record-fault">';
+            html += '<div class="pa-record-card" onclick="toggleRecordDetail(this, event)">';
+            html += '<div class="pa-record-header">';
+            html += '<div class="pa-record-device">' + (r.device_id || '-') + ' | ' + (r.bed_number || '-') + '床 | ' + (r.patient_code || '-') + '</div>';
+            html += '<div class="pa-record-status">';
             html += '<span class="record-status ' + interruptedClass + '">' + interruptedText + '</span> ';
             if (r.handling_method) {
                 html += '<span class="badge badge-' + methodClass + '">' + r.handling_method + '</span>';
             }
             html += '</div>';
             html += '</div>';
-            html += '<span class="record-expand">详情 ▼</span>';
+            html += '<span class="pa-expand-icon">详情 ▼</span>';
             html += '</div>';
             
-            html += '<div class="record-detail">';
+            html += '<div class="pa-record-detail">';
             html += '<div class="history-grid">';
             html += '<div><strong>故障阶段:</strong> ' + (r.fault_phase || '-') + '</div>';
             html += '<div><strong>中断时长:</strong> ' + (r.interrupt_minutes ? r.interrupt_minutes + '分钟' : '-') + '</div>';
@@ -6900,9 +6797,9 @@ function renderPatientAssocList() {
             if (r.remarks) {
                 html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--divider);"><strong>备注:</strong> ' + r.remarks + '</div>';
             }
-            html += '<div class="history-actions" style="margin-top:12px;">';
-            html += '<button class="history-btn edit" onclick="openPatientAssocModal(' + r.id + ')">编辑</button>';
-            html += '<button class="history-btn delete" onclick="deletePatientAssoc(' + r.id + ')">删除</button>';
+            html += '<div class="pa-record-actions">';
+            html += '<button class="pa-btn pa-btn-edit" onclick="openPatientAssocModal(' + r.id + ')">编辑</button>';
+            html += '<button class="pa-btn pa-btn-delete" onclick="deletePatientAssoc(' + r.id + ')">删除</button>';
             html += '</div>';
             html += '</div>';
         });
@@ -7194,26 +7091,7 @@ async function deletePatientAssoc(id) {
                     <input type="number" id="engMidTreatmentFaults" class="form-input" placeholder="0" min="0" inputmode="numeric">
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">导致治疗中断次数</label>
-                    <input type="number" id="engTreatmentInterruptions" class="form-input" placeholder="0" min="0" inputmode="numeric">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">患者转机台次 <small style="color:var(--text-secondary)">(中度影响)</small></label>
-                    <input type="number" id="engPatientSwitch" class="form-input" placeholder="0" min="0" inputmode="numeric">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">被迫下机人次 <small style="color:var(--danger)">(重度影响)</small></label>
-                    <input type="number" id="engForcedOffline" class="form-input" placeholder="0" min="0" inputmode="numeric">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">患者等待总时间(分钟)</label>
-                    <input type="number" id="engPatientWaitTime" class="form-input" placeholder="0" min="0" inputmode="numeric">
-                </div>
-            </div>
+
 </div>
         
 <div class="card">
@@ -7856,7 +7734,7 @@ async function deletePatientAssoc(id) {
 
 
 <!-- ====== 透析机维护-患者关联 ====== -->
-<div id="engPatientAssocPage" class="page-content" style="display:none;">
+<div id="engPatientAssocPage" class="page-content patient-assoc-page" style="display:none;">
     <!-- 筛选栏 -->
     <div class="card" style="margin-bottom:12px;">
         <div class="card-title">🔍 筛选条件</div>
@@ -8015,7 +7893,7 @@ async function deletePatientAssoc(id) {
 
 <!-- ====== 患者关联新增/详情弹窗 ====== -->
 <div class="modal-overlay" id="patientAssocModal">
-    <div class="modal-content" style="max-height:90vh;overflow-y:auto;padding:20px;">
+    <div class="modal-content pa-modal-content">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <h3 style="font-size:18px;font-weight:600;color:var(--text);" id="paModalTitle">新增患者关联</h3>
             <button onclick="closePatientAssocModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-secondary);padding:4px;">&times;</button>
