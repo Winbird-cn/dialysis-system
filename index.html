@@ -3151,7 +3151,32 @@ var resultOptionsHTML = '<option value="">选择结果</option><option value="�
         
 function engCreateRepairItemHTML(num, data) {
 data = data || {};
-return '<div class="repair-item" id="eng_repair_' + num + '"><div class="repair-header"><span class="repair-num">维修 #' + num + '</span><button type="button" class="remove-btn" onclick="engRemoveRepairItem(' + num + ')">✕</button></div><div class="form-group"><label class="form-label">设备区号-编号</label><select class="form-select eng-repair-field" data-field="deviceId">' + deviceOptionsHTML + '</select></div><div class="form-row" style="margin-top:8px"><div class="form-group"><label class="form-label">故障类型</label><select class="form-select eng-repair-field" data-field="faultType" onchange="engToggleOtherInput(this,\'faultTypeOther_' + num + '\')">' + faultTypeOptionsHTML + '</select></div><div class="form-group"><label class="form-label">更换配件</label><select class="form-select eng-repair-field" data-field="partsReplaced" onchange="engToggleOtherInput(this,\'partsOther_' + num + '\')">' + partsOptionsHTML + '</select></div></div><div class="form-group" id="faultTypeOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入故障类型</label><input type="text" class="form-input eng-repair-other" data-for-field="faultType" placeholder="请输入故障类型"></div><div class="form-group" id="partsOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入配件名称</label><input type="text" class="form-input eng-repair-other" data-for-field="partsReplaced" placeholder="请输入配件名称"></div><div class="form-group" style="margin-top:8px"><label class="form-label">更换配件二</label><input type="text" class="form-input eng-repair-field" data-field="partsReplaced2" placeholder="可选" value="' + engEscapeHtml(data.partsReplaced2 || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">更换配件三</label><input type="text" class="form-input eng-repair-field" data-field="partsReplaced3" placeholder="可选" value="' + engEscapeHtml(data.partsReplaced3 || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">维修人员</label><input type="text" class="form-input eng-repair-field" data-field="repairPerson" placeholder="可选" value="' + engEscapeHtml(data.repairPerson || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">维修处理</label><textarea class="form-input eng-repair-field" data-field="repairAction" placeholder="可选" rows="2">' + engEscapeHtml(data.repairAction || '') + '</textarea></div><div class="form-group" style="margin-top:8px"><label class="form-label">故障描述</label><input type="text" class="form-input eng-repair-field" data-field="faultDesc" placeholder="简要描述故障现象" value="' + engEscapeHtml(data.faultDesc || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">处理结果</label><select class="form-select eng-repair-field" data-field="result">' + resultOptionsHTML + '</select></div></div>';
+// 处理配件二/三的预选值和"其他"输入
+var parts2Value = data.partsReplaced2 || '';
+var parts2Select = partsOptionsHTML;
+var parts2OtherDisplay = 'none';
+var parts2OtherValue = '';
+if (parts2Value) {
+    var found2 = false;
+    for (var i2 = 0; i2 < 16; i2++) { // 遍历options检查是否存在
+        var opt2Match = parts2Select.match(new RegExp('<option value="' + parts2Value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '">'));
+        if (opt2Match) { found2 = true; break; }
+    }
+    if (!found2) { parts2Select = parts2Select.replace('<option value="">选择配件</option>', '<option value="其他">其他</option>'); parts2OtherDisplay = 'block'; parts2OtherValue = parts2Value; }
+}
+var parts3Value = data.partsReplaced3 || '';
+var parts3Select = partsOptionsHTML;
+var parts3OtherDisplay = 'none';
+var parts3OtherValue = '';
+if (parts3Value) {
+    var found3 = false;
+    for (var i3 = 0; i3 < 16; i3++) {
+        var opt3Match = parts3Select.match(new RegExp('<option value="' + parts3Value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '">'));
+        if (opt3Match) { found3 = true; break; }
+    }
+    if (!found3) { parts3Select = parts3Select.replace('<option value="">选择配件</option>', '<option value="其他">其他</option>'); parts3OtherDisplay = 'block'; parts3OtherValue = parts3Value; }
+}
+return '<div class="repair-item" id="eng_repair_' + num + '"><div class="repair-header"><span class="repair-num">维修 #' + num + '</span><button type="button" class="remove-btn" onclick="engRemoveRepairItem(' + num + ')">✕</button></div><div class="form-group"><label class="form-label">设备区号-编号</label><select class="form-select eng-repair-field" data-field="deviceId">' + deviceOptionsHTML + '</select></div><div class="form-row" style="margin-top:8px"><div class="form-group"><label class="form-label">故障类型</label><select class="form-select eng-repair-field" data-field="faultType" onchange="engToggleOtherInput(this,\'faultTypeOther_' + num + '\')">' + faultTypeOptionsHTML + '</select></div><div class="form-group"><label class="form-label">更换配件</label><select class="form-select eng-repair-field" data-field="partsReplaced" onchange="engToggleOtherInput(this,\'partsOther_' + num + '\')">' + partsOptionsHTML + '</select></div></div><div class="form-group" id="faultTypeOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入故障类型</label><input type="text" class="form-input eng-repair-other" data-for-field="faultType" placeholder="请输入故障类型"></div><div class="form-group" id="partsOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入配件名称</label><input type="text" class="form-input eng-repair-other" data-for-field="partsReplaced" placeholder="请输入配件名称"></div><div class="form-group" style="margin-top:8px"><label class="form-label">更换配件二</label><select class="form-select eng-repair-field" data-field="partsReplaced2" onchange="engToggleOtherInput(this,\'partsOther2_' + num + '\')">' + parts2Select + '</select></div><div class="form-group" id="partsOther2_' + num + '" style="display:' + parts2OtherDisplay + ';margin-top:8px"><label class="form-label">请输入配件名称</label><input type="text" class="form-input eng-repair-other" data-for-field="partsReplaced2" placeholder="请输入配件名称" value="' + engEscapeHtml(parts2OtherValue) + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">更换配件三</label><select class="form-select eng-repair-field" data-field="partsReplaced3" onchange="engToggleOtherInput(this,\'partsOther3_' + num + '\')">' + parts3Select + '</select></div><div class="form-group" id="partsOther3_' + num + '" style="display:' + parts3OtherDisplay + ';margin-top:8px"><label class="form-label">请输入配件名称</label><input type="text" class="form-input eng-repair-other" data-for-field="partsReplaced3" placeholder="请输入配件名称" value="' + engEscapeHtml(parts3OtherValue) + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">维修人员</label><input type="text" class="form-input eng-repair-field" data-field="repairPerson" placeholder="可选" value="' + engEscapeHtml(data.repairPerson || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">维修处理</label><textarea class="form-input eng-repair-field" data-field="repairAction" placeholder="可选" rows="2">' + engEscapeHtml(data.repairAction || '') + '</textarea></div><div class="form-group" style="margin-top:8px"><label class="form-label">故障描述</label><input type="text" class="form-input eng-repair-field" data-field="faultDesc" placeholder="简要描述故障现象" value="' + engEscapeHtml(data.faultDesc || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">处理结果</label><select class="form-select eng-repair-field" data-field="result">' + resultOptionsHTML + '</select></div></div>';
 }
 
 function engToggleOtherInput(selectEl, otherId) {
@@ -3649,6 +3674,8 @@ try {
             var deviceSelectHtml = '<select id="editRepairDeviceId" class="form-select">' + deviceOptionsHTML + '</select>';
             var faultSelectHtml = '<select id="editRepairFaultType" class="form-select" onchange="engToggleOtherInput(this,\'editRepairFaultTypeOther\')">' + faultTypeOptionsHTML + '</select>';
             var partsSelectHtml = '<select id="editRepairParts" class="form-select" onchange="engToggleOtherInput(this,\'editRepairPartsOther\')">' + partsOptionsHTML + '</select>';
+            var parts2SelectHtml = '<select id="editRepairParts2" class="form-select" onchange="engToggleOtherInput(this,\'editRepairParts2Other\')">' + partsOptionsHTML + '</select>';
+            var parts3SelectHtml = '<select id="editRepairParts3" class="form-select" onchange="engToggleOtherInput(this,\'editRepairParts3Other\')">' + partsOptionsHTML + '</select>';
             var resultSelectHtml = '<select id="editRepairResult" class="form-select">' + resultOptionsHTML + '</select>';
             
             var body = '<div class="card"><div class="card-title">✏️ 编辑维修项目</div>';
@@ -3657,8 +3684,10 @@ try {
             body += '<div class="form-group" id="editRepairFaultTypeOther" style="display:none;"><label class="form-label">请输入故障类型</label><input type="text" id="editRepairFaultTypeOtherInput" class="form-input" placeholder="请输入故障类型"></div>';
             body += '<div class="form-group"><label class="form-label">更换配件</label>' + partsSelectHtml + '</div>';
             body += '<div class="form-group" id="editRepairPartsOther" style="display:none;"><label class="form-label">请输入配件名称</label><input type="text" id="editRepairPartsOtherInput" class="form-input" placeholder="请输入配件名称"></div>';
-            body += '<div class="form-group"><label class="form-label">更换配件二</label><input type="text" id="editRepairParts2" class="form-input" placeholder="可选" value="' + engEscapeHtml(r.partsReplaced2 || '') + '"></div>';
-            body += '<div class="form-group"><label class="form-label">更换配件三</label><input type="text" id="editRepairParts3" class="form-input" placeholder="可选" value="' + engEscapeHtml(r.partsReplaced3 || '') + '"></div>';
+            body += '<div class="form-group"><label class="form-label">更换配件二</label>' + parts2SelectHtml + '</div>';
+            body += '<div class="form-group" id="editRepairParts2Other" style="display:none;"><label class="form-label">请输入配件名称</label><input type="text" id="editRepairParts2OtherInput" class="form-input" placeholder="请输入配件名称"></div>';
+            body += '<div class="form-group"><label class="form-label">更换配件三</label>' + parts3SelectHtml + '</div>';
+            body += '<div class="form-group" id="editRepairParts3Other" style="display:none;"><label class="form-label">请输入配件名称</label><input type="text" id="editRepairParts3OtherInput" class="form-input" placeholder="请输入配件名称"></div>';
             body += '<div class="form-group"><label class="form-label">维修人员</label><input type="text" id="editRepairPerson" class="form-input" placeholder="可选" value="' + engEscapeHtml(r.repairPerson || '') + '"></div>';
             body += '<div class="form-group"><label class="form-label">维修处理</label><textarea id="editRepairAction" class="form-input" placeholder="可选" rows="2">' + engEscapeHtml(r.repairAction || '') + '</textarea></div>';
             body += '<div class="form-group"><label class="form-label">故障描述</label><input type="text" id="editRepairFaultDesc" class="form-input" placeholder="简要描述故障现象" value="' + engEscapeHtml(r.faultDesc || '') + '"></div>';
@@ -3671,6 +3700,8 @@ try {
             var deviceSelect = document.getElementById('editRepairDeviceId');
             var faultSelect = document.getElementById('editRepairFaultType');
             var partsSelect = document.getElementById('editRepairParts');
+            var parts2Select = document.getElementById('editRepairParts2');
+            var parts3Select = document.getElementById('editRepairParts3');
             var resultSelect = document.getElementById('editRepairResult');
             
             if (deviceSelect && r.deviceId) {
@@ -3734,6 +3765,78 @@ try {
                     document.getElementById('editRepairPartsOtherInput').value = r.partsReplaced;
                 }
             }
+            // 配件二回填
+            if (parts2Select && r.partsReplaced2) {
+                var found2 = false;
+                for (var i = 0; i < parts2Select.options.length; i++) {
+                    if (parts2Select.options[i].value === r.partsReplaced2) {
+                        parts2Select.selectedIndex = i;
+                        found2 = true;
+                        break;
+                    }
+                }
+                if (!found2) {
+                    for (var i = 0; i < parts2Select.options.length; i++) {
+                        var optVal = parts2Select.options[i].value;
+                        if (optVal && r.partsReplaced2.indexOf(optVal) !== -1) {
+                            parts2Select.selectedIndex = i;
+                            found2 = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found2) {
+                    for (var i = 0; i < parts2Select.options.length; i++) {
+                        var optVal = parts2Select.options[i].value;
+                        if (optVal && optVal.indexOf(r.partsReplaced2) !== -1) {
+                            parts2Select.selectedIndex = i;
+                            found2 = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found2 && r.partsReplaced2) {
+                    parts2Select.value = '其他';
+                    document.getElementById('editRepairParts2Other').style.display = 'block';
+                    document.getElementById('editRepairParts2OtherInput').value = r.partsReplaced2;
+                }
+            }
+            // 配件三回填
+            if (parts3Select && r.partsReplaced3) {
+                var found3 = false;
+                for (var i = 0; i < parts3Select.options.length; i++) {
+                    if (parts3Select.options[i].value === r.partsReplaced3) {
+                        parts3Select.selectedIndex = i;
+                        found3 = true;
+                        break;
+                    }
+                }
+                if (!found3) {
+                    for (var i = 0; i < parts3Select.options.length; i++) {
+                        var optVal = parts3Select.options[i].value;
+                        if (optVal && r.partsReplaced3.indexOf(optVal) !== -1) {
+                            parts3Select.selectedIndex = i;
+                            found3 = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found3) {
+                    for (var i = 0; i < parts3Select.options.length; i++) {
+                        var optVal = parts3Select.options[i].value;
+                        if (optVal && optVal.indexOf(r.partsReplaced3) !== -1) {
+                            parts3Select.selectedIndex = i;
+                            found3 = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found3 && r.partsReplaced3) {
+                    parts3Select.value = '其他';
+                    document.getElementById('editRepairParts3Other').style.display = 'block';
+                    document.getElementById('editRepairParts3OtherInput').value = r.partsReplaced3;
+                }
+            }
             if (resultSelect && r.result) {
                 for (var i = 0; i < resultSelect.options.length; i++) {
                     if (resultSelect.options[i].value === r.result) {
@@ -3763,8 +3866,14 @@ try {
             if (partsReplaced === '其他') {
                 partsReplaced = document.getElementById('editRepairPartsOtherInput').value.trim() || partsReplaced;
             }
-            var partsReplaced2 = document.getElementById('editRepairParts2').value.trim();
-            var partsReplaced3 = document.getElementById('editRepairParts3').value.trim();
+            var partsReplaced2 = document.getElementById('editRepairParts2').value;
+            if (partsReplaced2 === '其他') {
+                partsReplaced2 = document.getElementById('editRepairParts2OtherInput').value.trim() || partsReplaced2;
+            }
+            var partsReplaced3 = document.getElementById('editRepairParts3').value;
+            if (partsReplaced3 === '其他') {
+                partsReplaced3 = document.getElementById('editRepairParts3OtherInput').value.trim() || partsReplaced3;
+            }
             var repairPerson = document.getElementById('editRepairPerson').value.trim();
             var repairAction = document.getElementById('editRepairAction').value.trim();
             var faultDesc = document.getElementById('editRepairFaultDesc').value.trim();

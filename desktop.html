@@ -2547,18 +2547,60 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">更换配件二</label>
-                        <input type="text" id="repairParts2" class="form-input" placeholder="第二件更换配件">
+                        <select id="repairParts2" class="form-input" onchange="togglePartsOther(this, 'repairParts2Other')">
+                            <option value="">选择配件</option>
+                            <option value="腔体系统">腔体系统</option>
+                            <option value="泵头系统">泵头系统</option>
+                            <option value="电路/板卡">电路/板卡</option>
+                            <option value="血泵转子">血泵转子</option>
+                            <option value="平衡腔膜片">平衡腔膜片</option>
+                            <option value="电导度传感器">电导度传感器</option>
+                            <option value="温度传感器">温度传感器</option>
+                            <option value="PDA压力传感器">PDA压力传感器</option>
+                            <option value="PE除气压力传感器">PE除气压力传感器</option>
+                            <option value="漏血传感器">漏血传感器</option>
+                            <option value="SAD空气传感器">SAD空气传感器</option>
+                            <option value="液位传感器">液位传感器</option>
+                            <option value="电机">电机</option>
+                            <option value="水路">水路</option>
+                            <option value="其他">其他</option>
+                        </select>
                     </div>
+                </div>
+                <div class="form-group" id="repairParts2Other" style="display:none; margin-top: 8px;">
+                    <label class="form-label">请输入配件名称</label>
+                    <input type="text" id="repairParts2OtherInput" class="form-input" placeholder="请输入配件名称">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">更换配件三</label>
-                        <input type="text" id="repairParts3" class="form-input" placeholder="第三件更换配件">
+                        <select id="repairParts3" class="form-input" onchange="togglePartsOther(this, 'repairParts3Other')">
+                            <option value="">选择配件</option>
+                            <option value="腔体系统">腔体系统</option>
+                            <option value="泵头系统">泵头系统</option>
+                            <option value="电路/板卡">电路/板卡</option>
+                            <option value="血泵转子">血泵转子</option>
+                            <option value="平衡腔膜片">平衡腔膜片</option>
+                            <option value="电导度传感器">电导度传感器</option>
+                            <option value="温度传感器">温度传感器</option>
+                            <option value="PDA压力传感器">PDA压力传感器</option>
+                            <option value="PE除气压力传感器">PE除气压力传感器</option>
+                            <option value="漏血传感器">漏血传感器</option>
+                            <option value="SAD空气传感器">SAD空气传感器</option>
+                            <option value="液位传感器">液位传感器</option>
+                            <option value="电机">电机</option>
+                            <option value="水路">水路</option>
+                            <option value="其他">其他</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">维修人员</label>
                         <input type="text" id="repairPerson" class="form-input" placeholder="维修人员姓名">
                     </div>
+                </div>
+                <div class="form-group" id="repairParts3Other" style="display:none; margin-top: 8px;">
+                    <label class="form-label">请输入配件名称</label>
+                    <input type="text" id="repairParts3OtherInput" class="form-input" placeholder="请输入配件名称">
                 </div>
                 <div class="form-group">
                     <label class="form-label">维修处理</label>
@@ -2751,6 +2793,9 @@
         const SUPABASE_URL = 'https://sthqzmxtkgnzuvpzxohn.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0aHF6bXh0a2duenV2cHp4b2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Mzg1OTcsImV4cCI6MjA5MzExNDU5N30.0KkEAhEHBSXrxwD42QnOpxNM6lvnE-lG3I2rMwSXdUc';
         const SYSTEM_PWD = 'abcd1234';
+        
+        // ====== 配件选项 ======
+        const partsOptionsHTML = '<option value="">选择配件</option><option value="腔体系统">腔体系统</option><option value="泵头系统">泵头系统</option><option value="电路/板卡">电路/板卡</option><option value="血泵转子">血泵转子</option><option value="平衡腔膜片">平衡腔膜片</option><option value="电导度传感器">电导度传感器</option><option value="温度传感器">温度传感器</option><option value="PDA压力传感器">PDA压力传感器</option><option value="PE除气压力传感器">PE除气压力传感器</option><option value="漏血传感器">漏血传感器</option><option value="SAD空气传感器">SAD空气传感器</option><option value="液位传感器">液位传感器</option><option value="电机">电机</option><option value="水路">水路</option><option value="其他">其他</option>';
 
         // ====== 状态 ======
         let currentPage = 'dashboard';
@@ -4095,6 +4140,12 @@
             $('editRepairId').value = id || '';
             $('repairModalTitle').textContent = id ? '编辑维修记录' : '新增维修记录';
             
+            // 重置配件二/三的"其他"输入框
+            $('repairParts2Other').style.display = 'none';
+            $('repairParts3Other').style.display = 'none';
+            $('repairParts2OtherInput').value = '';
+            $('repairParts3OtherInput').value = '';
+            
             if (id) {
                 const r = repairItems.find(x => x.repair_id === id);
                 if (r) {
@@ -4104,8 +4155,84 @@
                     $('repairResult').value = r.result || '已修复';
                     $('repairDesc').value = r.fault_desc || '';
                     $('repairParts').value = r.parts_replaced || '';
-                    $('repairParts2').value = r.parts_replaced_2 || '';
-                    $('repairParts3').value = r.parts_replaced_3 || '';
+                    // 配件二回填
+                    if (r.parts_replaced_2) {
+                        var parts2Select = $('repairParts2');
+                        var found2 = false;
+                        for (var i2 = 0; i2 < parts2Select.options.length; i2++) {
+                            if (parts2Select.options[i2].value === r.parts_replaced_2) {
+                                parts2Select.selectedIndex = i2;
+                                found2 = true;
+                                break;
+                            }
+                        }
+                        if (!found2) {
+                            for (var i2 = 0; i2 < parts2Select.options.length; i2++) {
+                                var optVal2 = parts2Select.options[i2].value;
+                                if (optVal2 && r.parts_replaced_2.indexOf(optVal2) !== -1) {
+                                    parts2Select.selectedIndex = i2;
+                                    found2 = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found2) {
+                            for (var i2 = 0; i2 < parts2Select.options.length; i2++) {
+                                var optVal2 = parts2Select.options[i2].value;
+                                if (optVal2 && optVal2.indexOf(r.parts_replaced_2) !== -1) {
+                                    parts2Select.selectedIndex = i2;
+                                    found2 = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found2) {
+                            parts2Select.value = '其他';
+                            $('repairParts2Other').style.display = 'block';
+                            $('repairParts2OtherInput').value = r.parts_replaced_2;
+                        }
+                    } else {
+                        $('repairParts2').value = '';
+                    }
+                    // 配件三回填
+                    if (r.parts_replaced_3) {
+                        var parts3Select = $('repairParts3');
+                        var found3 = false;
+                        for (var i3 = 0; i3 < parts3Select.options.length; i3++) {
+                            if (parts3Select.options[i3].value === r.parts_replaced_3) {
+                                parts3Select.selectedIndex = i3;
+                                found3 = true;
+                                break;
+                            }
+                        }
+                        if (!found3) {
+                            for (var i3 = 0; i3 < parts3Select.options.length; i3++) {
+                                var optVal3 = parts3Select.options[i3].value;
+                                if (optVal3 && r.parts_replaced_3.indexOf(optVal3) !== -1) {
+                                    parts3Select.selectedIndex = i3;
+                                    found3 = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found3) {
+                            for (var i3 = 0; i3 < parts3Select.options.length; i3++) {
+                                var optVal3 = parts3Select.options[i3].value;
+                                if (optVal3 && optVal3.indexOf(r.parts_replaced_3) !== -1) {
+                                    parts3Select.selectedIndex = i3;
+                                    found3 = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found3) {
+                            parts3Select.value = '其他';
+                            $('repairParts3Other').style.display = 'block';
+                            $('repairParts3OtherInput').value = r.parts_replaced_3;
+                        }
+                    } else {
+                        $('repairParts3').value = '';
+                    }
                     $('repairPerson').value = r.repair_person || '';
                     $('repairAction').value = r.repair_action || '';
                 }
@@ -4158,9 +4285,26 @@
             // 使用提示框显示详情
             alert(detailHtml.replace(/<\/?strong>/g, '').replace(/<\/?p>/g, '\n').replace(/<[^>]+>/g, '').replace(/\n\n+/g, '\n'));
         }
+        
+        // 切换"其他"输入框显示
+        function togglePartsOther(selectEl, otherId) {
+            var otherGroup = document.getElementById(otherId);
+            if (otherGroup) otherGroup.style.display = selectEl.value === '其他' ? 'block' : 'none';
+        }
 
         async function saveRepair() {
             const id = $('editRepairId').value;
+            
+            // 处理配件二/三的"其他"选项
+            var parts2 = $('repairParts2').value;
+            if (parts2 === '其他') {
+                parts2 = $('repairParts2OtherInput').value.trim() || parts2;
+            }
+            var parts3 = $('repairParts3').value;
+            if (parts3 === '其他') {
+                parts3 = $('repairParts3OtherInput').value.trim() || parts3;
+            }
+            
             const data = {
                 repair_date: $('repairDate').value,
                 device_id: $('repairDeviceId').value,
@@ -4168,8 +4312,8 @@
                 result: $('repairResult').value,
                 fault_desc: $('repairDesc').value || null,
                 parts_replaced: $('repairParts').value || null,
-                parts_replaced_2: $('repairParts2').value || null,
-                parts_replaced_3: $('repairParts3').value || null,
+                parts_replaced_2: parts2 || null,
+                parts_replaced_3: parts3 || null,
                 repair_person: $('repairPerson').value || null,
                 repair_action: $('repairAction').value || null
             };
