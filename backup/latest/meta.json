@@ -1,11 +1,14 @@
 {
-  "backup_time": "2026-05-05T18:22:47Z",
+  "backup_time": "2026-05-07T02:20:00Z",
   "tables": {
     "repair_items": {
-      "bytes": 167047,
-      "records": 643
+      "bytes": 377458,
+      "method": "rest_api"
+    },
+    "work_logs": {
+      "bytes": 0,
+      "method": "rest_api",
+      "note": "empty or access denied"
     }
-  },
-  "total_bytes": 167047,
-  "note": "work_logs returned empty; other tables (dialysis_*, water_*) are empty or RPC functions not available"
+  }
 }
