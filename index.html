@@ -6849,6 +6849,13 @@ function openPatientAssocModal(id) {
     var today = new Date().toISOString().substring(0, 10);
     document.getElementById('paEventDate').value = today;
     
+    // 填充设备下拉选项
+    var modalSelect = document.getElementById('paDeviceId');
+    if (typeof deviceOptionsHTML !== 'undefined' && modalSelect.options.length <= 1) {
+        var opts = deviceOptionsHTML.replace('<option value="">选择设备</option>', '');
+        modalSelect.innerHTML = '<option value="">请选择设备</option>' + opts;
+    }
+    
     if (id) {
         // 编辑模式
         title.textContent = '编辑患者关联';
