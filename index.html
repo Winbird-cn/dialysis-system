@@ -3155,7 +3155,7 @@ function switchEngTab(tab) {
 currentEngTab = tab;
 
 // 更新tab按钮样式
-var tabs = ['form', 'history', 'stats', 'maint'];
+var tabs = ['form', 'history', 'stats', 'maint', 'patientAssoc'];
             var btns = document.getElementById('engSubTabs').querySelectorAll('button');
             btns.forEach(function(b, i) {
                 b.className = 'sub-btn' + (tabs[i] === tab ? ' active' : '');
@@ -7086,6 +7086,9 @@ async function deletePatientAssoc(id) {
 </button>
 <button class="sub-btn" onclick="switchEngTab('maint')">
             🔧 保养
+</button>
+<button class="sub-btn" onclick="switchEngTab('patientAssoc')">
+            🏥 患者关联
 </button>
 </div>
     
