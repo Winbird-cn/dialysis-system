@@ -2981,13 +2981,13 @@ try {
                     if (r.work_log_id) {
                         var key = r.work_log_id;
                         if (!repairMap[key]) repairMap[key] = [];
-                        repairMap[key].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+                        repairMap[key].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', partsReplaced2: r.parts_replaced_2 || '', partsReplaced3: r.parts_replaced_3 || '', repairPerson: r.repair_person || '', repairAction: r.repair_action || '', result: r.result || ''});
                     }
                     // 按日期匹配作为fallback
                     if (r.repair_date) {
                         var dkey = r.repair_date;
                         if (!repairDateMap[dkey]) repairDateMap[dkey] = [];
-                        repairDateMap[dkey].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+                        repairDateMap[dkey].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', partsReplaced2: r.parts_replaced_2 || '', partsReplaced3: r.parts_replaced_3 || '', repairPerson: r.repair_person || '', repairAction: r.repair_action || '', result: r.result || ''});
                     }
                 });
                 var localLogs = (logs || []).map(function(log) {
@@ -3151,7 +3151,7 @@ var resultOptionsHTML = '<option value="">选择结果</option><option value="�
         
 function engCreateRepairItemHTML(num, data) {
 data = data || {};
-return '<div class="repair-item" id="eng_repair_' + num + '"><div class="repair-header"><span class="repair-num">维修 #' + num + '</span><button type="button" class="remove-btn" onclick="engRemoveRepairItem(' + num + ')">✕</button></div><div class="form-group"><label class="form-label">设备区号-编号</label><select class="form-select eng-repair-field" data-field="deviceId">' + deviceOptionsHTML + '</select></div><div class="form-row" style="margin-top:8px"><div class="form-group"><label class="form-label">故障类型</label><select class="form-select eng-repair-field" data-field="faultType" onchange="engToggleOtherInput(this,\'faultTypeOther_' + num + '\')">' + faultTypeOptionsHTML + '</select></div><div class="form-group"><label class="form-label">更换配件</label><select class="form-select eng-repair-field" data-field="partsReplaced" onchange="engToggleOtherInput(this,\'partsOther_' + num + '\')">' + partsOptionsHTML + '</select></div></div><div class="form-group" id="faultTypeOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入故障类型</label><input type="text" class="form-input eng-repair-other" data-for-field="faultType" placeholder="请输入故障类型"></div><div class="form-group" id="partsOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入配件名称</label><input type="text" class="form-input eng-repair-other" data-for-field="partsReplaced" placeholder="请输入配件名称"></div><div class="form-group" style="margin-top:8px"><label class="form-label">故障描述</label><input type="text" class="form-input eng-repair-field" data-field="faultDesc" placeholder="简要描述故障现象" value="' + (data.faultDesc || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">处理结果</label><select class="form-select eng-repair-field" data-field="result">' + resultOptionsHTML + '</select></div></div>';
+return '<div class="repair-item" id="eng_repair_' + num + '"><div class="repair-header"><span class="repair-num">维修 #' + num + '</span><button type="button" class="remove-btn" onclick="engRemoveRepairItem(' + num + ')">✕</button></div><div class="form-group"><label class="form-label">设备区号-编号</label><select class="form-select eng-repair-field" data-field="deviceId">' + deviceOptionsHTML + '</select></div><div class="form-row" style="margin-top:8px"><div class="form-group"><label class="form-label">故障类型</label><select class="form-select eng-repair-field" data-field="faultType" onchange="engToggleOtherInput(this,\'faultTypeOther_' + num + '\')">' + faultTypeOptionsHTML + '</select></div><div class="form-group"><label class="form-label">更换配件</label><select class="form-select eng-repair-field" data-field="partsReplaced" onchange="engToggleOtherInput(this,\'partsOther_' + num + '\')">' + partsOptionsHTML + '</select></div></div><div class="form-group" id="faultTypeOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入故障类型</label><input type="text" class="form-input eng-repair-other" data-for-field="faultType" placeholder="请输入故障类型"></div><div class="form-group" id="partsOther_' + num + '" style="display:none;margin-top:8px"><label class="form-label">请输入配件名称</label><input type="text" class="form-input eng-repair-other" data-for-field="partsReplaced" placeholder="请输入配件名称"></div><div class="form-group" style="margin-top:8px"><label class="form-label">更换配件二</label><input type="text" class="form-input eng-repair-field" data-field="partsReplaced2" placeholder="可选" value="' + engEscapeHtml(data.partsReplaced2 || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">更换配件三</label><input type="text" class="form-input eng-repair-field" data-field="partsReplaced3" placeholder="可选" value="' + engEscapeHtml(data.partsReplaced3 || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">维修人员</label><input type="text" class="form-input eng-repair-field" data-field="repairPerson" placeholder="可选" value="' + engEscapeHtml(data.repairPerson || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">维修处理</label><textarea class="form-input eng-repair-field" data-field="repairAction" placeholder="可选" rows="2">' + engEscapeHtml(data.repairAction || '') + '</textarea></div><div class="form-group" style="margin-top:8px"><label class="form-label">故障描述</label><input type="text" class="form-input eng-repair-field" data-field="faultDesc" placeholder="简要描述故障现象" value="' + engEscapeHtml(data.faultDesc || '') + '"></div><div class="form-group" style="margin-top:8px"><label class="form-label">处理结果</label><select class="form-select eng-repair-field" data-field="result">' + resultOptionsHTML + '</select></div></div>';
 }
 
 function engToggleOtherInput(selectEl, otherId) {
@@ -3244,6 +3244,10 @@ try {
                                     fault_type: r.faultType || null,
                                     fault_desc: r.faultDesc || null,
                                     parts_replaced: r.partsReplaced || null,
+                                    parts_replaced_2: r.partsReplaced2 || null,
+                                    parts_replaced_3: r.partsReplaced3 || null,
+                                    repair_person: r.repairPerson || null,
+                                    repair_action: r.repairAction || null,
                                     result: r.result || null,
                                     repair_date: log.date
                                 }
@@ -3359,6 +3363,10 @@ try {
                             if ((r.deviceId && r.deviceId.toLowerCase().indexOf(kw) !== -1) ||
                                 (r.faultType && r.faultType.toLowerCase().indexOf(kw) !== -1) ||
                                 (r.partsReplaced && r.partsReplaced.toLowerCase().indexOf(kw) !== -1) ||
+                                (r.partsReplaced2 && r.partsReplaced2.toLowerCase().indexOf(kw) !== -1) ||
+                                (r.partsReplaced3 && r.partsReplaced3.toLowerCase().indexOf(kw) !== -1) ||
+                                (r.repairPerson && r.repairPerson.toLowerCase().indexOf(kw) !== -1) ||
+                                (r.repairAction && r.repairAction.toLowerCase().indexOf(kw) !== -1) ||
                                 (r.faultDesc && r.faultDesc.toLowerCase().indexOf(kw) !== -1)) return true;
                         }
                     }
@@ -3409,10 +3417,17 @@ try {
                             var statusClass = r.result === '修复完成' ? 'fixed' : (r.result === '临时处理' ? 'temp' : 'pending');
                             var statusText = r.result || '未知';
                             
+                            // 合并配件显示
+                            var allParts = [];
+                            if (r.partsReplaced) allParts.push(r.partsReplaced);
+                            if (r.partsReplaced2) allParts.push(r.partsReplaced2);
+                            if (r.partsReplaced3) allParts.push(r.partsReplaced3);
+                            var partsDisplay = allParts.length > 0 ? allParts.join('、') : '';
+                            
                             html += '<div class="compact-record" onclick="engToggleRecordDetail(\'' + recordId + '\', event)">';
                             html += '<div class="record-main">';
                             html += '<div class="record-device">' + (r.deviceId ? '<span class="device-id-link" onclick="showDeviceInfo(\'' + r.deviceId + '\'); event.stopPropagation();">' + r.deviceId + '</span>' : '未指定') + '</div>';
-                            html += '<div class="record-fault">' + (r.faultType || '') + (r.partsReplaced ? ' → 换' + r.partsReplaced : '') + '</div>';
+                            html += '<div class="record-fault">' + (r.faultType || '') + (partsDisplay ? ' → ' + partsDisplay : '') + '</div>';
                             html += '</div>';
                             html += '<div class="record-right">';
                             html += '<span class="record-status ' + statusClass + '">' + statusText + '</span>';
@@ -3427,6 +3442,9 @@ try {
                             html += '<div>报修: ' + (log.repairCount || 0) + '次</div>';
                             html += '<div>中断: ' + (log.treatmentInterruptions || 0) + '次</div>';
                             html += '</div>';
+                            if (partsDisplay) html += '<div style="margin-bottom:4px;"><strong>更换配件:</strong> ' + engEscapeHtml(partsDisplay) + '</div>';
+                            if (r.repairPerson) html += '<div style="margin-bottom:4px;"><strong>维修人员:</strong> ' + engEscapeHtml(r.repairPerson) + '</div>';
+                            if (r.repairAction) html += '<div style="margin-bottom:4px;"><strong>维修处理:</strong> ' + engEscapeHtml(r.repairAction) + '</div>';
                             if (r.faultDesc) html += '<div style="margin-bottom:4px;">故障描述: ' + engEscapeHtml(r.faultDesc) + '</div>';
                             if (log.notes) html += '<div style="margin-bottom:4px;">备注: ' + engEscapeHtml(log.notes) + '</div>';
                             html += '<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">';
@@ -3639,6 +3657,10 @@ try {
             body += '<div class="form-group" id="editRepairFaultTypeOther" style="display:none;"><label class="form-label">请输入故障类型</label><input type="text" id="editRepairFaultTypeOtherInput" class="form-input" placeholder="请输入故障类型"></div>';
             body += '<div class="form-group"><label class="form-label">更换配件</label>' + partsSelectHtml + '</div>';
             body += '<div class="form-group" id="editRepairPartsOther" style="display:none;"><label class="form-label">请输入配件名称</label><input type="text" id="editRepairPartsOtherInput" class="form-input" placeholder="请输入配件名称"></div>';
+            body += '<div class="form-group"><label class="form-label">更换配件二</label><input type="text" id="editRepairParts2" class="form-input" placeholder="可选" value="' + engEscapeHtml(r.partsReplaced2 || '') + '"></div>';
+            body += '<div class="form-group"><label class="form-label">更换配件三</label><input type="text" id="editRepairParts3" class="form-input" placeholder="可选" value="' + engEscapeHtml(r.partsReplaced3 || '') + '"></div>';
+            body += '<div class="form-group"><label class="form-label">维修人员</label><input type="text" id="editRepairPerson" class="form-input" placeholder="可选" value="' + engEscapeHtml(r.repairPerson || '') + '"></div>';
+            body += '<div class="form-group"><label class="form-label">维修处理</label><textarea id="editRepairAction" class="form-input" placeholder="可选" rows="2">' + engEscapeHtml(r.repairAction || '') + '</textarea></div>';
             body += '<div class="form-group"><label class="form-label">故障描述</label><input type="text" id="editRepairFaultDesc" class="form-input" placeholder="简要描述故障现象" value="' + engEscapeHtml(r.faultDesc || '') + '"></div>';
             body += '<div class="form-group"><label class="form-label">处理结果</label>' + resultSelectHtml + '</div>';
             body += '</div>';
@@ -3741,12 +3763,20 @@ try {
             if (partsReplaced === '其他') {
                 partsReplaced = document.getElementById('editRepairPartsOtherInput').value.trim() || partsReplaced;
             }
+            var partsReplaced2 = document.getElementById('editRepairParts2').value.trim();
+            var partsReplaced3 = document.getElementById('editRepairParts3').value.trim();
+            var repairPerson = document.getElementById('editRepairPerson').value.trim();
+            var repairAction = document.getElementById('editRepairAction').value.trim();
             var faultDesc = document.getElementById('editRepairFaultDesc').value.trim();
             var result = document.getElementById('editRepairResult').value;
             
             r.deviceId = deviceId;
             r.faultType = faultType;
             r.partsReplaced = partsReplaced;
+            r.partsReplaced2 = partsReplaced2;
+            r.partsReplaced3 = partsReplaced3;
+            r.repairPerson = repairPerson;
+            r.repairAction = repairAction;
             r.faultDesc = faultDesc;
             r.result = result;
             
@@ -3765,6 +3795,10 @@ try {
                                 device_id: deviceId,
                                 fault_type: faultType,
                                 parts_replaced: partsReplaced,
+                                parts_replaced_2: partsReplaced2,
+                                parts_replaced_3: partsReplaced3,
+                                repair_person: repairPerson,
+                                repair_action: repairAction,
                                 fault_desc: faultDesc,
                                 result: result
                             })
@@ -3941,6 +3975,12 @@ try {
                     if (r.parts_replaced) {
                         partsCount[r.parts_replaced] = (partsCount[r.parts_replaced] || 0) + 1;
                     }
+                    if (r.parts_replaced_2) {
+                        partsCount[r.parts_replaced_2] = (partsCount[r.parts_replaced_2] || 0) + 1;
+                    }
+                    if (r.parts_replaced_3) {
+                        partsCount[r.parts_replaced_3] = (partsCount[r.parts_replaced_3] || 0) + 1;
+                    }
                 });
                 
                 var html = '';
@@ -3993,12 +4033,21 @@ try {
                     return b.repair_date.localeCompare(a.repair_date);
                 });
                 sortedDesc.forEach(function(r) {
+                    // 合并配件显示
+                    var allParts = [];
+                    if (r.parts_replaced) allParts.push(r.parts_replaced);
+                    if (r.parts_replaced_2) allParts.push(r.parts_replaced_2);
+                    if (r.parts_replaced_3) allParts.push(r.parts_replaced_3);
+                    var partsDisplay = allParts.length > 0 ? allParts.join('、') : '';
+                    
                     html += '<div class="history-item" style="margin-bottom:8px;padding:10px;">';
                     html += '<div class="history-date">' + (r.repair_date || '未知日期') + '</div>';
                     html += '<div class="history-grid">';
                     if (r.fault_type) html += '<div><strong>故障类型：</strong>' + engEscapeHtml(r.fault_type) + '</div>';
                     if (r.repair_method) html += '<div><strong>维修方式：</strong>' + engEscapeHtml(r.repair_method) + '</div>';
-                    if (r.parts_replaced) html += '<div><strong>更换配件：</strong>' + engEscapeHtml(r.parts_replaced) + '</div>';
+                    if (partsDisplay) html += '<div><strong>更换配件：</strong>' + engEscapeHtml(partsDisplay) + '</div>';
+                    if (r.repair_person) html += '<div><strong>维修人员：</strong>' + engEscapeHtml(r.repair_person) + '</div>';
+                    if (r.repair_action) html += '<div class="full"><strong>维修处理：</strong>' + engEscapeHtml(r.repair_action) + '</div>';
                     if (r.fault_description) html += '<div class="full"><strong>故障描述：</strong>' + engEscapeHtml(r.fault_description) + '</div>';
                     html += '</div></div>';
                 });
@@ -4036,8 +4085,12 @@ try {
                                 '设备编号': r.device_id || '',
                                 '故障类型': r.fault_type || '',
                                 '故障描述': r.fault_desc || '',
-                                '处理结果': r.result || '',
-                                '更换配件': r.parts_replaced || ''
+                                '更换配件': r.parts_replaced || '',
+                                '更换配件二': r.parts_replaced_2 || '',
+                                '更换配件三': r.parts_replaced_3 || '',
+                                '维修人员': r.repair_person || '',
+                                '维修处理': r.repair_action || '',
+                                '处理结果': r.result || ''
                             });
                         }
                     });
@@ -4057,8 +4110,12 @@ try {
                                 '设备编号': r.deviceId || '',
                                 '故障类型': r.faultType || '',
                                 '故障描述': r.faultDesc || '',
-                                '处理结果': r.result || '',
-                                '更换配件': r.partsReplaced || ''
+                                '更换配件': r.partsReplaced || '',
+                                '更换配件二': r.partsReplaced2 || '',
+                                '更换配件三': r.partsReplaced3 || '',
+                                '维修人员': r.repairPerson || '',
+                                '维修处理': r.repairAction || '',
+                                '处理结果': r.result || ''
                             });
                         }
                     });
@@ -4259,6 +4316,8 @@ try {
             filteredRepairs.forEach(function(r) {
                 if (r.device_id) deviceSet[r.device_id] = true;
                 if (r.parts_replaced) partsMap[r.parts_replaced] = (partsMap[r.parts_replaced] || 0) + 1;
+                if (r.parts_replaced_2) partsMap[r.parts_replaced_2] = (partsMap[r.parts_replaced_2] || 0) + 1;
+                if (r.parts_replaced_3) partsMap[r.parts_replaced_3] = (partsMap[r.parts_replaced_3] || 0) + 1;
             });
             
             // 治疗中断需要从work_logs查
@@ -4371,7 +4430,7 @@ try {
                     if (r.device_id === '中央供液室') return;
                     var key = r.work_log_id;
                     if (!repairMap[key]) repairMap[key] = [];
-                    repairMap[key].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', result: r.result || ''});
+                    repairMap[key].push({deviceId: r.device_id || '', faultType: r.fault_type || '', faultDesc: r.fault_desc || '', partsReplaced: r.parts_replaced || '', partsReplaced2: r.parts_replaced_2 || '', partsReplaced3: r.parts_replaced_3 || '', result: r.result || ''});
                 });
                 
                 logs = (logs || []).filter(function(log) { return log.date >= startStr && log.date <= endStr; });
@@ -4391,6 +4450,8 @@ try {
                     (log.repairs || []).forEach(function(r) {
                         if (r.deviceId) deviceSet[r.deviceId] = true;
                         if (r.partsReplaced) partsMap[r.partsReplaced] = (partsMap[r.partsReplaced] || 0) + 1;
+                        if (r.partsReplaced2) partsMap[r.partsReplaced2] = (partsMap[r.partsReplaced2] || 0) + 1;
+                        if (r.partsReplaced3) partsMap[r.partsReplaced3] = (partsMap[r.partsReplaced3] || 0) + 1;
                     });
                 });
                 
