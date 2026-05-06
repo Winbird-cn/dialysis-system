@@ -157,16 +157,16 @@
         
         /* 一级模块切换按钮 - 胶囊型 */
         .mod-switch {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 6px;
             padding: 10px 12px 14px;
         }
         
         .mod-btn {
-            flex: 1;
-            min-height: 38px;
-            padding: 6px 4px;
-            font-size: 11px;
+            min-height: 36px;
+            padding: 6px 6px;
+            font-size: 12px;
             font-weight: 600;
             line-height: 1.2;
             color: rgba(255,255,255,0.75);
@@ -3351,7 +3351,7 @@ async function initSupabase() {
 try {
                 var r = await fetch(SUPABASE_URL + '/rest/v1/work_logs?select=id&limit=1', {
                     headers: sbHeaders(),
-                    signal: AbortSignal.timeout(5000)
+                    signal: AbortSignal.timeout(3000)
                 });
                 if (!r.ok) throw new Error('连接测试失败');
                 isSupabaseConfigured = true;
@@ -3399,17 +3399,12 @@ threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
             document.getElementById('engExportStartDate').value = threeMonthsAgo.toISOString().split('T')[0];
             document.getElementById('engExportEndDate').value = today;
 
-try {
-                var initResult = await Promise.race([
-                    initSupabase(),
-                    new Promise(function(resolve) { setTimeout(function() { resolve(false); }, 5000); })
-                ]);
-                if (!initResult) {
-                    updateSyncStatus('offline', '📱 本地模式');
-                }
-} catch(e) {
-                updateSyncStatus('offline', '📱 本地模式');
-}
+// 非阻塞初始化：不await，后台执行
+initSupabase().then(function(result) {
+    if (!result) updateSyncStatus('offline', '📱 本地模式');
+}).catch(function() {
+    updateSyncStatus('offline', '📱 本地模式');
+});
 
 engAddRepairItem();
 updateSubmitButton();
@@ -7001,10 +6996,10 @@ async function deletePatientAssoc(id) {
         </div>
         <div class="header-title">透析工程管理系统</div>
         <div class="mod-switch">
-            <button class="mod-btn active" id="btnEngineer" onclick="switchModule('engineer')">🔧 透析机维护</button>
-            <button class="mod-btn" id="btnWater" onclick="switchModule('water')">💧 水处理管理</button>
-            <button class="mod-btn" id="btnQC" onclick="switchModule('qc')">📋 质控检测</button>
-            <button class="mod-btn" id="btnPatientAssoc" onclick="switchModule('patientAssoc')">🏥 患者关联</button>
+            <button class="mod-btn active" id="btnEngineer" onclick="switchModule('engineer')">🔧 透析机</button>
+            <button class="mod-btn" id="btnWater" onclick="switchModule('water')">💧 水处理</button>
+            <button class="mod-btn" id="btnQC" onclick="switchModule('qc')">📋 质控</button>
+            <button class="mod-btn" id="btnPatientAssoc" onclick="switchModule('patientAssoc')">🏥 患者</button>
         </div>
     </div>
     <!-- ====== 工程师模块子Tab ====== -->
