@@ -3350,7 +3350,6 @@ if (currentModule === 'engineer') {
 }
 
 // ====== Supabase 初始化 ======
-updateSyncStatus("offline", "📱 本地模式");
 async function initSupabase() {
 try {
                 var r = await fetch(SUPABASE_URL + '/rest/v1/work_logs?select=id&limit=1', {
@@ -3379,6 +3378,9 @@ if (el) {
 
 // ====== 初始化 ======
 document.addEventListener('DOMContentLoaded', async function() {
+// 立即标记本地模式，连接成功后更新
+updateSyncStatus('offline', '📱 本地模式');
+
 var today = new Date().toISOString().split('T')[0];
             document.getElementById('engLogDate').value = today;
             document.getElementById('wRecordDate').value = today;
@@ -3403,12 +3405,14 @@ threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
             document.getElementById('engExportStartDate').value = threeMonthsAgo.toISOString().split('T')[0];
             document.getElementById('engExportEndDate').value = today;
 
-// 非阻塞初始化：不await，后台执行
-initSupabase().then(function(result) {
-    if (!result) updateSyncStatus('offline', '📱 本地模式');
-}).catch(function() {
-    updateSyncStatus('offline', '📱 本地模式');
-});
+// 非阻塞初始化：延迟执行，确保UI先渲染
+setTimeout(function() {
+    initSupabase().then(function(result) {
+        if (!result) updateSyncStatus('offline', '📱 本地模式');
+    }).catch(function() {
+        updateSyncStatus('offline', '📱 本地模式');
+    });
+}, 500);
 
 engAddRepairItem();
 updateSubmitButton();
