@@ -5095,6 +5095,431 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) showApp();
         });
-    </script>
+    
+// ====== 患者关联功能 ======
+var paData = [];
+var paSortField = 'event_date';
+var paSortDir = 'desc';
+
+async function loadPAData() {
+    var startDate = document.getElementById('paStartDate').value;
+    var endDate = document.getElementById('paEndDate').value;
+    var deviceId = document.getElementById('paDeviceFilter').value;
+    
+    try {
+        var params = { pwd: SYSTEM_PWD, p_limit: 200 };
+        if (startDate) params.p_start_date = startDate;
+        if (endDate) params.p_end_date = endDate;
+        if (deviceId) params.p_device_id = deviceId;
+        
+        paData = await sbRpc('get_device_patient_events', params);
+        if (!paData) paData = [];
+        
+        // 更新设备筛选下拉
+        updatePADeviceFilter();
+        
+        // 渲染表格
+        renderPATable();
+        
+        // 更新统计
+        updatePAStats();
+    } catch (e) {
+        console.error('加载患者关联记录失败:', e);
+    }
+}
+
+function updatePADeviceFilter() {
+    var select = document.getElementById('paDeviceFilter');
+    var modalSelect = document.getElementById('paDeviceId');
+    
+    // 保留"全部设备"选项
+    var currentValue = select.value;
+    select.innerHTML = '<option value="">全部设备</option>';
+    
+    // 合并所有设备
+    var allDevices = {};
+    if (devices && devices.length > 0) {
+        devices.forEach(function(d) {
+            if (d.device_id) allDevices[d.device_id] = d;
+        });
+    }
+    
+    Object.keys(allDevices).sort().forEach(function(id) {
+        var opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = id + ' (' + (allDevices[id].area || '未知') + ')';
+        select.appendChild(opt);
+    });
+    
+    select.value = currentValue;
+    
+    // 更新弹窗设备选择
+    modalSelect.innerHTML = '<option value="">请选择设备</option>';
+    Object.keys(allDevices).sort().forEach(function(id) {
+        var opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = id + ' (' + (allDevices[id].area || '未知') + ')';
+        modalSelect.appendChild(opt);
+    });
+}
+
+function updatePAStats() {
+    var today = new Date().toISOString().substring(0, 10);
+    var todayCount = 0;
+    var interrupted = 0;
+    var changed = 0;
+    
+    paData.forEach(function(r) {
+        if (r.event_date === today) todayCount++;
+        if (r.treatment_interrupted && r.treatment_interrupted !== '未中断') interrupted++;
+        if (r.handling_method === '换机重上') changed++;
+    });
+    
+    document.getElementById('paTodayCount').textContent = todayCount;
+    document.getElementById('paInterruptedCount').textContent = interrupted;
+    document.getElementById('paChangedCount').textContent = changed;
+}
+
+function renderPATable() {
+    var tbody = document.getElementById('paTableBody');
+    
+    if (!paData || paData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><span class="material-icons-round">event_busy</span><p>暂无记录</p></td></tr>';
+        return;
+    }
+    
+    // 排序
+    var sorted = [...paData].sort(function(a, b) {
+        var aVal = a[paSortField] || '';
+        var bVal = b[paSortField] || '';
+        if (paSortDir === 'asc') {
+            return aVal > bVal ? 1 : -1;
+        } else {
+            return aVal < bVal ? 1 : -1;
+        }
+    });
+    
+    // 过滤
+    var search = document.getElementById('paSearch').value.toLowerCase();
+    if (search) {
+        sorted = sorted.filter(function(r) {
+            return (r.patient_code && r.patient_code.toLowerCase().includes(search)) ||
+                   (r.bed_number && r.bed_number.toLowerCase().includes(search)) ||
+                   (r.device_id && r.device_id.toLowerCase().includes(search)) ||
+                   (r.remarks && r.remarks.toLowerCase().includes(search));
+        });
+    }
+    
+    if (sorted.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><span class="material-icons-round">search_off</span><p>未找到匹配的记录</p></td></tr>';
+        return;
+    }
+    
+    var html = '';
+    sorted.forEach(function(r) {
+        var interruptedClass = '';
+        var interruptedText = r.treatment_interrupted || '未中断';
+        if (r.treatment_interrupted === '暂停后继续') {
+            interruptedClass = 'warning';
+        } else if (r.treatment_interrupted === '中断终止') {
+            interruptedClass = 'danger';
+        } else {
+            interruptedClass = 'success';
+        }
+        
+        var methodClass = '';
+        var methodBg = '';
+        if (r.handling_method === '原机继续') {
+            methodClass = 'badge-info';
+        } else if (r.handling_method === '换机重上') {
+            methodClass = 'badge-warning';
+        } else if (r.handling_method === '终止透析') {
+            methodClass = 'badge-danger';
+        }
+        
+        html += '<tr>';
+        html += '<td>' + (r.event_date || '-') + '</td>';
+        html += '<td><strong style="color:var(--primary);">' + (r.device_id || '-') + '</strong></td>';
+        html += '<td>' + (r.bed_number || '-') + '</td>';
+        html += '<td>' + (r.patient_code || '-') + '</td>';
+        html += '<td>' + (r.fault_phase || '-') + '</td>';
+        html += '<td><span class="record-status ' + interruptedClass + '">' + interruptedText + '</span></td>';
+        html += '<td>' + (r.interrupt_minutes ? r.interrupt_minutes + '分钟' : '-') + '</td>';
+        html += '<td>' + (r.handling_method ? '<span class="badge ' + methodClass + '">' + r.handling_method + '</span>' : '-') + '</td>';
+        html += '<td>' + (r.complication || '-') + '</td>';
+        html += '<td>';
+        html += '<button class="btn btn-sm btn-secondary" onclick="openPADetailModal(' + r.id + ')" style="margin-right:4px;">详情</button>';
+        html += '<button class="btn btn-sm btn-danger" onclick="deletePAData(' + r.id + ')">删除</button>';
+        html += '</td>';
+        html += '</tr>';
+    });
+    
+    tbody.innerHTML = html;
+}
+
+function sortPA(field) {
+    if (paSortField === field) {
+        paSortDir = paSortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+        paSortField = field;
+        paSortDir = 'desc';
+    }
+    renderPATable();
+    
+    // 更新排序图标
+    document.querySelectorAll('#page-patientAssoc .data-table th').forEach(function(th) {
+        var icon = th.querySelector('.sort-icon');
+        if (icon) {
+            if (th.onclick && th.onclick.toString().includes("sortPA('" + field + "')")) {
+                icon.textContent = paSortDir === 'asc' ? '↑' : '↓';
+            } else {
+                icon.textContent = '↕';
+            }
+        }
+    });
+}
+
+function filterPAData() {
+    renderPATable();
+}
+
+function openPADetailModal(id) {
+    var modal = document.getElementById('paModal');
+    var title = document.getElementById('paModalTitle');
+    var form = document.getElementById('paForm');
+    
+    form.reset();
+    document.getElementById('paEditId').value = '';
+    document.getElementById('paInterruptMinutesGroup').style.display = 'none';
+    
+    // 设置默认日期为今天
+    var today = new Date().toISOString().substring(0, 10);
+    document.getElementById('paEventDate').value = today;
+    
+    // 确保设备选项已加载
+    updatePADeviceFilter();
+    
+    if (id) {
+        title.textContent = '编辑患者关联';
+        var record = paData.find(function(r) { return r.id === id; });
+        if (record) {
+            document.getElementById('paEditId').value = record.id;
+            document.getElementById('paEventDate').value = record.event_date || '';
+            document.getElementById('paDeviceId').value = record.device_id || '';
+            document.getElementById('paBedNumber').value = record.bed_number || '';
+            document.getElementById('paPatientCode').value = record.patient_code || '';
+            document.getElementById('paFaultPhase').value = record.fault_phase || '';
+            document.getElementById('paInterrupted').value = record.treatment_interrupted || '';
+            document.getElementById('paInterruptMinutes').value = record.interrupt_minutes || '';
+            document.getElementById('paHandlingMethod').value = record.handling_method || '';
+            document.getElementById('paComplication').value = record.complication || '';
+            document.getElementById('paRemarks').value = record.remarks || '';
+            
+            togglePAInterruptMinutes();
+        }
+    } else {
+        title.textContent = '新增患者关联';
+    }
+    
+    modal.classList.add('show');
+}
+
+function closePAModal() {
+    document.getElementById('paModal').classList.remove('show');
+}
+
+function togglePAInterruptMinutes() {
+    var interrupted = document.getElementById('paInterrupted').value;
+    var group = document.getElementById('paInterruptMinutesGroup');
+    if (interrupted === '暂停后继续' || interrupted === '中断终止') {
+        group.style.display = 'flex';
+    } else {
+        group.style.display = 'none';
+        document.getElementById('paInterruptMinutes').value = '';
+    }
+}
+
+async function savePAData() {
+    var editId = document.getElementById('paEditId').value;
+    var eventDate = document.getElementById('paEventDate').value;
+    var deviceId = document.getElementById('paDeviceId').value;
+    var bedNumber = document.getElementById('paBedNumber').value;
+    var patientCode = document.getElementById('paPatientCode').value;
+    var faultPhase = document.getElementById('paFaultPhase').value;
+    var interrupted = document.getElementById('paInterrupted').value;
+    var interruptMinutes = document.getElementById('paInterruptMinutes').value;
+    var handlingMethod = document.getElementById('paHandlingMethod').value;
+    var complication = document.getElementById('paComplication').value;
+    var remarks = document.getElementById('paRemarks').value;
+    
+    if (!eventDate) {
+        alert('请选择日期');
+        return;
+    }
+    if (!deviceId) {
+        alert('请选择设备');
+        return;
+    }
+    
+    var eventData = {
+        device_id: deviceId,
+        event_date: eventDate,
+        bed_number: bedNumber,
+        patient_code: patientCode,
+        fault_phase: faultPhase,
+        treatment_interrupted: interrupted,
+        interrupt_minutes: interruptMinutes ? parseInt(interruptMinutes) : null,
+        handling_method: handlingMethod,
+        complication: complication,
+        remarks: remarks
+    };
+    
+    try {
+        if (editId) {
+            await sbRpc('delete_device_patient_event', { pwd: SYSTEM_PWD, p_id: parseInt(editId) });
+        }
+        
+        await sbRpc('insert_device_patient_event', {
+            pwd: SYSTEM_PWD,
+            event_data: eventData
+        });
+        
+        alert('保存成功');
+        closePAModal();
+        loadPAData();
+    } catch (e) {
+        console.error('保存失败:', e);
+        alert('保存失败: ' + e.message);
+    }
+}
+
+async function deletePAData(id) {
+    if (!confirm('确定要删除这条患者关联记录吗？')) return;
+    
+    try {
+        await sbRpc('delete_device_patient_event', { pwd: SYSTEM_PWD, p_id: id });
+        alert('删除成功');
+        loadPAData();
+    } catch (e) {
+        console.error('删除失败:', e);
+        alert('删除失败');
+    }
+}
+
+// 在switchPage函数中添加患者关联页面的数据加载
+var originalSwitchPage = switchPage;
+switchPage = function(page) {
+    originalSwitchPage(page);
+    if (page === 'patientAssoc') {
+        // 设置默认日期范围
+        var today = new Date();
+        var firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        document.getElementById('paStartDate').value = firstDay.toISOString().substring(0, 10);
+        document.getElementById('paEndDate').value = today.toISOString().substring(0, 10);
+        loadPAData();
+    }
+};
+
+</script>
+
+<!-- 患者关联新增/详情模态框 -->
+<div class="modal-overlay" id="paModal">
+    <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="paModalTitle">新增患者关联</h3>
+            <button class="modal-close" onclick="closePAModal()">&times;</button>
+        </div>
+        <form id="paForm" class="modal-body">
+            <input type="hidden" id="paEditId">
+            
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-group">
+                    <label class="form-label">日期 <span class="required">*</span></label>
+                    <input type="date" id="paEventDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">设备 <span class="required">*</span></label>
+                    <select id="paDeviceId" class="form-input" required>
+                        <option value="">请选择设备</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-group">
+                    <label class="form-label">床号</label>
+                    <input type="text" id="paBedNumber" class="form-input" placeholder="如: 3床">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">患者编号</label>
+                    <input type="text" id="paPatientCode" class="form-input" placeholder="如: P001">
+                </div>
+            </div>
+            
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-group">
+                    <label class="form-label">故障发生阶段</label>
+                    <select id="paFaultPhase" class="form-input">
+                        <option value="">请选择</option>
+                        <option value="初期">初期</option>
+                        <option value="中期">中期</option>
+                        <option value="末期">末期</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">是否中断治疗</label>
+                    <select id="paInterrupted" class="form-input" onchange="togglePAInterruptMinutes()">
+                        <option value="">请选择</option>
+                        <option value="未中断">未中断</option>
+                        <option value="暂停后继续">暂停后继续</option>
+                        <option value="中断终止">中断终止</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row" style="grid-template-columns: 1fr 1fr;" id="paInterruptMinutesGroup" style="display:none;">
+                <div class="form-group">
+                    <label class="form-label">中断时长(分钟)</label>
+                    <input type="number" id="paInterruptMinutes" class="form-input" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">处理方式</label>
+                    <select id="paHandlingMethod" class="form-input">
+                        <option value="">请选择</option>
+                        <option value="原机继续">原机继续</option>
+                        <option value="换机重上">换机重上</option>
+                        <option value="终止透析">终止透析</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">并发症</label>
+                <select id="paComplication" class="form-input">
+                    <option value="">无</option>
+                    <option value="低血压">低血压</option>
+                    <option value="透析器凝血">透析器凝血</option>
+                    <option value="空气栓塞">空气栓塞</option>
+                    <option value="溶血">溶血</option>
+                    <option value="寒战发热">寒战发热</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">备注</label>
+                <textarea id="paRemarks" class="form-input" rows="3" placeholder="特殊情况说明..."></textarea>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closePAModal()">取消</button>
+            <button class="btn btn-primary" onclick="savePAData()">
+                <span class="material-icons-round">save</span>
+                保存
+            </button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
