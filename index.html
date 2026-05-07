@@ -2971,7 +2971,7 @@ async function sbRpc(funcName, params, retries) {
                 method: 'POST',
                 headers: sbHeaders(),
                 body: JSON.stringify(params),
-                signal: AbortSignal.timeout(30000)
+                signal: AbortSignal.timeout(10000)
             });
             if (!r.ok) {
                 var errText = await r.text();
@@ -3264,12 +3264,18 @@ async function engLoadMaintHistory() {
 
 // ====== 从云端加载透析机历史记录 ======
 async function engLoadHistoryFromCloud() {
+// 先立即渲染本地数据，避免UI卡住
+engRenderHistory();
+
 if (!isSupabaseConfigured) {
-                engRenderHistory();
                 return;
 }
-var container = document.getElementById('engHistoryList');
-container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">从云端加载中...</div>';
+// 如果有本地数据，后台同步云端；如果没有，显示加载中
+var localLogs = engGetLogs();
+if (localLogs.length === 0) {
+    var container = document.getElementById('engHistoryList');
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);">从云端加载中...</div>';
+}
 try {
                 var logs = await sbRpc('get_work_logs', { pwd: SYSTEM_PWD });
                 var repairs = await sbRpc('get_repair_items', { pwd: SYSTEM_PWD });
