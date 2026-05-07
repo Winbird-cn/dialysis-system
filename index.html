@@ -3645,21 +3645,31 @@ try {
             logs.unshift(log);
             engSaveLogs(logs);
             
-            if (isSupabaseConfigured && isOnline) {
-                updateSyncStatus('syncing', '🔄 同步中...');
-                var result = await engSaveToCloud(log);
-                if (result) {
-                    log.synced = true;
-                    log.cloudId = result.id;
-                    engSaveLogs(logs);
-                    updateSyncStatus('synced', '☁️ 已同步');
-                } else {
-                    updateSyncStatus('pending', '⏳ 待同步');
-                }
-            }
-            
+            // 先重置表单和提示成功，不阻塞用户
             engResetForm();
             showToast('✅ 提交成功！', 'success');
+            
+            // 后台异步同步到云端，不阻塞UI
+            if (isSupabaseConfigured && isOnline) {
+                updateSyncStatus('syncing', '🔄 同步中...');
+                (async function() {
+                    try {
+                        var result = await engSaveToCloud(log);
+                        if (result) {
+                            log.synced = true;
+                            log.cloudId = result.id;
+                            engSaveLogs(logs);
+                            updateSyncStatus('synced', '☁️ 已同步');
+                        } else {
+                            updateSyncStatus('pending', '⏳ 待同步');
+                        }
+                    } catch(e) {
+                        updateSyncStatus('pending', '⏳ 待同步');
+                    }
+                })();
+            } else {
+                updateSyncStatus('pending', '⏳ 待同步');
+            }
         }
         
         function engResetForm() {
