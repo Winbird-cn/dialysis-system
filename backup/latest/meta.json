@@ -1,10 +1,50 @@
 {
-  "backup_time": "2026-05-09T18:20:05Z",
-  "backup_time_local": "2026-05-10 02:20:05",
+  "backup_time": "2026-05-10T18:21:00Z",
   "tables": {
-    "repair_items": 1000,
-    "work_logs": 387
+    "repair_items": {
+      "count": 1000,
+      "size": 377458
+    },
+    "work_logs": {
+      "count": 387,
+      "size": 191700
+    },
+    "dialysis_devices": {
+      "count": 0,
+      "size": 386
+    },
+    "dialysis_qc": {
+      "count": 0,
+      "size": 305
+    },
+    "dialysis_maintenance": {
+      "count": 0,
+      "size": 323
+    },
+    "water_daily_log": {
+      "count": 0,
+      "size": 307
+    },
+    "water_disinfection": {
+      "count": 0,
+      "size": 321
+    },
+    "water_microbio_test": {
+      "count": 0,
+      "size": 313
+    },
+    "water_chem_test": {
+      "count": 0,
+      "size": 305
+    },
+    "water_consumables": {
+      "count": 0,
+      "size": 319
+    },
+    "water_maintenance": {
+      "count": 0,
+      "size": 319
+    }
   },
-  "total_size_bytes": 573254,
-  "status": "partial - RPC函数不可用，主表已备份"
+  "total_size_bytes": 572056
 }
