@@ -1,50 +1,17 @@
 {
-  "backup_time": "2026-05-10T18:21:00Z",
+  "backup_time": "2026-05-11T18:27:51Z",
   "tables": {
-    "repair_items": {
-      "count": 1000,
-      "size": 377458
-    },
-    "work_logs": {
-      "count": 387,
-      "size": 191700
-    },
-    "dialysis_devices": {
-      "count": 0,
-      "size": 386
-    },
-    "dialysis_qc": {
-      "count": 0,
-      "size": 305
-    },
-    "dialysis_maintenance": {
-      "count": 0,
-      "size": 323
-    },
-    "water_daily_log": {
-      "count": 0,
-      "size": 307
-    },
-    "water_disinfection": {
-      "count": 0,
-      "size": 321
-    },
-    "water_microbio_test": {
-      "count": 0,
-      "size": 313
-    },
-    "water_chem_test": {
-      "count": 0,
-      "size": 305
-    },
-    "water_consumables": {
-      "count": 0,
-      "size": 319
-    },
-    "water_maintenance": {
-      "count": 0,
-      "size": 319
-    }
+    "repair_items": 1000,
+    "work_logs": 387,
+    "dialysis_devices": 96,
+    "dialysis_qc": 4,
+    "dialysis_maintenance": 4,
+    "water_daily_log": 0,
+    "water_disinfection": 0,
+    "water_microbio": 0,
+    "water_chem": 0,
+    "water_consumables": 4,
+    "water_maintenance": 4
   },
-  "total_size_bytes": 572056
+  "total_records": 1499
 }

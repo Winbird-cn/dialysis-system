@@ -1,1 +1,6 @@
-{"code":"PGRST202","details":"Searched for the function public.get_water_maintenance with parameter p_password or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.","hint":null,"message":"Could not find the function public.get_water_maintenance(p_password) in the schema cache"}
+{
+  "code": "PGRST203",
+  "details": null,
+  "hint": "Try renaming the parameters or the function itself in the database so function overloading can be resolved",
+  "message": "Could not choose the best candidate function between: public.get_water_maintenance(pwd => text, start_date => text, end_date => text), public.get_water_maintenance(pwd => text, start_date => text, end_date => text, limit_count => integer)"
+}
