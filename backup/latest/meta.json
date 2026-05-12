@@ -1,17 +1,9 @@
 {
-  "backup_time": "2026-05-11T18:27:51Z",
+  "backup_time": "2026-05-12T18:27:02Z",
+  "source": "Supabase dialysis-system",
   "tables": {
     "repair_items": 1000,
     "work_logs": 387,
-    "dialysis_devices": 96,
-    "dialysis_qc": 4,
-    "dialysis_maintenance": 4,
-    "water_daily_log": 0,
-    "water_disinfection": 0,
-    "water_microbio": 0,
-    "water_chem": 0,
-    "water_consumables": 4,
-    "water_maintenance": 4
-  },
-  "total_records": 1499
+    "dialysis_devices": 96
+  }
 }

@@ -1,6 +1,0 @@
-{
-  "code": "PGRST203",
-  "details": null,
-  "hint": "Try renaming the parameters or the function itself in the database so function overloading can be resolved",
-  "message": "Could not choose the best candidate function between: public.get_water_consumables(pwd => text, start_date => text, end_date => text), public.get_water_consumables(pwd => text, item_name => text, start_date => text, end_date => text)"
-}
