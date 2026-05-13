@@ -1,9 +1,34 @@
 {
-  "backup_time": "2026-05-12T18:27:02Z",
-  "source": "Supabase dialysis-system",
+  "backup_time": "2026-05-14T02:27:26.457455",
   "tables": {
-    "repair_items": 1000,
-    "work_logs": 387,
-    "dialysis_devices": 96
-  }
+    "dialysis_devices": {
+      "records": 96,
+      "size_bytes": 33001
+    },
+    "dialysis_maintenance": {
+      "records": 1,
+      "size_bytes": 89
+    },
+    "dialysis_qc": {
+      "records": 1,
+      "size_bytes": 101
+    },
+    "repair_items": {
+      "records": 1000,
+      "size_bytes": 377458
+    },
+    "water_consumables": {
+      "records": 1,
+      "size_bytes": 396
+    },
+    "water_maintenance": {
+      "records": 1,
+      "size_bytes": 401
+    },
+    "work_logs": {
+      "records": 387,
+      "size_bytes": 191700
+    }
+  },
+  "total_size_bytes": 603146
 }
