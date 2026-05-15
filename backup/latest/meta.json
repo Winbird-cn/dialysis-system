@@ -1,8 +1,10 @@
 {
-  "backup_time": "2026-05-15T02:29:11.847001+08:00",
+  "backup_time": "2026-05-15T18:27:13Z",
+  "backup_time_cst": "2026-05-16 02:27:13 (CST)",
   "tables": {
     "repair_items": 1000,
     "work_logs": 387,
     "dialysis_devices": 96
-  }
+  },
+  "note": "dialysis_qc, dialysis_maintenance, water_* tables RPC functions not found"
 }
