@@ -1,10 +1,13 @@
 {
-  "backup_time": "2026-05-15T18:27:13Z",
-  "backup_time_cst": "2026-05-16 02:27:13 (CST)",
+  "backup_time": "2026-05-17T02:28:56.384478",
+  "source": "Supabase dialysis-system",
   "tables": {
     "repair_items": 1000,
     "work_logs": 387,
-    "dialysis_devices": 96
+    "dialysis_devices": 96,
+    "dialysis_qc": 4,
+    "dialysis_maintenance": 4
   },
-  "note": "dialysis_qc, dialysis_maintenance, water_* tables RPC functions not found"
+  "total_records": 1491,
+  "total_size_bytes": 602816
 }
