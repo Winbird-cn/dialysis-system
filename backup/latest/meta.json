@@ -1,51 +1,17 @@
 {
-  "backup_time": "2026-05-18T02:26:32+08:00",
-  "source": "Supabase dialysis-system",
+  "backup_time": "2026-05-19T02:27:12.646625",
   "tables": {
-    "water_daily_log": {
-      "records": 0,
-      "size": 2
-    },
-    "work_logs": {
-      "records": 387,
-      "size": 191700
-    },
-    "repair_items": {
-      "records": 1000,
-      "size": 377458
-    },
-    "water_maintenance": {
-      "records": 0,
-      "size": 401
-    },
-    "water_consumables": {
-      "records": 0,
-      "size": 396
-    },
-    "water_chem_test": {
-      "records": 0,
-      "size": 2
-    },
-    "dialysis_qc": {
-      "records": 0,
-      "size": 101
-    },
-    "water_disinfection": {
-      "records": 0,
-      "size": 2
-    },
-    "dialysis_devices": {
-      "records": 96,
-      "size": 33001
-    },
-    "water_microbio_test": {
-      "records": 0,
-      "size": 2
-    },
-    "dialysis_maintenance": {
-      "records": 0,
-      "size": 103
-    }
+    "repair_items": 1000,
+    "work_logs": 387,
+    "dialysis_devices": 96,
+    "dialysis_qc": 1,
+    "dialysis_maintenance": 1,
+    "water_daily_log": 0,
+    "water_disinfection": 0,
+    "water_microbio_test": 0,
+    "water_chem_test": 0,
+    "water_consumables": 1,
+    "water_maintenance": 1
   },
-  "generated": "2026-05-18T02:27:39+08:00"
+  "total_records": 1487
 }
