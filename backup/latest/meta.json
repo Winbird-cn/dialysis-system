@@ -1,17 +1,17 @@
 {
-  "backup_time": "2026-05-19T02:27:12.646625",
+  "backup_time": "2026-05-19T18:27:21.201Z",
   "tables": {
     "repair_items": 1000,
     "work_logs": 387,
     "dialysis_devices": 96,
-    "dialysis_qc": 1,
-    "dialysis_maintenance": 1,
+    "dialysis_qc": 0,
+    "dialysis_maintenance": 0,
     "water_daily_log": 0,
     "water_disinfection": 0,
     "water_microbio_test": 0,
     "water_chem_test": 0,
-    "water_consumables": 1,
-    "water_maintenance": 1
+    "water_consumables": 0,
+    "water_maintenance": 0
   },
-  "total_records": 1487
+  "total_records": 1483
 }
