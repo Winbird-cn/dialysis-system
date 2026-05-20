@@ -1,17 +1,9 @@
 {
-  "backup_time": "2026-05-19T18:27:21.201Z",
+  "backup_time": "2026-05-20T18:27:25Z",
+  "backup_time_cst": "2026-05-21 02:27:25",
   "tables": {
     "repair_items": 1000,
     "work_logs": 387,
-    "dialysis_devices": 96,
-    "dialysis_qc": 0,
-    "dialysis_maintenance": 0,
-    "water_daily_log": 0,
-    "water_disinfection": 0,
-    "water_microbio_test": 0,
-    "water_chem_test": 0,
-    "water_consumables": 0,
-    "water_maintenance": 0
-  },
-  "total_records": 1483
+    "dialysis_devices": 96
+  }
 }
