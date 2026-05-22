@@ -1,55 +1,16 @@
 {
-  "backup_time": "2026-05-22T02:27:50.455730+08:00",
+  "backup_time": "2026-05-23T02:26:00+08:00",
   "tables": {
-    "water_daily_log.json": {
-      "records": 0,
-      "size": 2
-    },
-    "work_logs.json": {
-      "records": 387,
-      "size": 191700
-    },
-    "repair_items.json": {
-      "records": 1000,
-      "size": 377458
-    },
-    "water_maintenance.json": {
-      "records": 1,
-      "size": 401
-    },
-    "water_consumables.json": {
-      "records": 1,
-      "size": 396
-    },
-    "water_chem_test.json": {
-      "records": 0,
-      "size": 2
-    },
-    "dialysis_qc.json": {
-      "records": 1,
-      "size": 101
-    },
-    "water_disinfection.json": {
-      "records": 0,
-      "size": 2
-    },
-    "dialysis_devices.json": {
-      "records": 96,
-      "size": 33001
-    },
-    "water_microbio_test.json": {
-      "records": 0,
-      "size": 2
-    },
-    "dialysis_maintenance.json": {
-      "records": 1,
-      "size": 103
-    }
-  },
-  "summary": {
-    "total_tables": 11,
-    "total_records": 1487,
-    "total_size_bytes": 603168,
-    "total_size_human": "589.0 KB"
+    "repair_items": 377458,
+    "work_logs": 191700,
+    "get_dialysis_devices": 33002,
+    "get_qc_records": "error - skipped",
+    "get_maintenance_records": "error - skipped",
+    "get_water_daily": "empty",
+    "get_water_disinfection": "empty",
+    "get_water_microbio": "empty",
+    "get_water_chem": "empty",
+    "get_water_consumables": 397,
+    "get_water_maintenance": 402
   }
 }
