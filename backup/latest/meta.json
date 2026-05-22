@@ -1,16 +1,11 @@
 {
-  "backup_time": "2026-05-23T02:26:00+08:00",
+  "backup_time": "2026-05-23T02:27:00+08:00",
   "tables": {
     "repair_items": 377458,
     "work_logs": 191700,
     "get_dialysis_devices": 33002,
-    "get_qc_records": "error - skipped",
-    "get_maintenance_records": "error - skipped",
-    "get_water_daily": "empty",
-    "get_water_disinfection": "empty",
-    "get_water_microbio": "empty",
-    "get_water_chem": "empty",
     "get_water_consumables": 397,
     "get_water_maintenance": 402
-  }
+  },
+  "note": "get_qc_records and get_maintenance_records RPC calls failed (column name mismatch), skipped. Water treatment tables returned empty."
 }
