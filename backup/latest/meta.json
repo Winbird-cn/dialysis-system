@@ -1,11 +1,19 @@
 {
-  "backup_time": "2026-05-23T02:27:00+08:00",
+  "backup_time": "2026-05-24 02:27:02",
   "tables": {
-    "repair_items": 377458,
-    "work_logs": 191700,
-    "get_dialysis_devices": 33002,
-    "get_water_consumables": 397,
-    "get_water_maintenance": 402
+    "water_daily_log": 0,
+    "work_logs": 387,
+    "repair_items": 1000,
+    "water_maintenance": 0,
+    "water_consumables": 0,
+    "water_chem_test": 0,
+    "dialysis_qc": 0,
+    "water_disinfection": 0,
+    "meta": 0,
+    "dialysis_devices": 96,
+    "water_microbio_test": 0,
+    "dialysis_maintenance": 0
   },
-  "note": "get_qc_records and get_maintenance_records RPC calls failed (column name mismatch), skipped. Water treatment tables returned empty."
+  "total_records": 1483,
+  "total_size_bytes": 603708
 }
